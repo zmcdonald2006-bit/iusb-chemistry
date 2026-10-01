@@ -2,7 +2,7 @@ import { describe, it, expect } from './harness.js';
 import { DECKS, toGameQuestion, nextGameQuestion, readingTime, recommendedDeck } from '../js/game/decks.js';
 import { createRun, step, setLane, moveLane, dash, resume, summarizeRun, assignLanes, multiplier, PLAYER_X, MAX_LIVES, DASH_TIME, spawnCruise, FISH_GAP } from '../js/game/engine.js';
 import { recordGameRun, buyItem, equipItem, gameState, FISH_PER_CORRECT } from '../js/state/game.js';
-import { defaultState, migrate, mergeStates } from '../js/state/store.js';
+import { defaultState, migrate, mergeStates, earnFish, createStore, memoryStorage } from '../js/state/store.js';
 import { skillStats } from '../js/state/progress.js';
 import { questionFromRef } from '../js/quiz/bank.js';
 import { skillById } from '../content/course.js';
@@ -259,7 +259,8 @@ describe('Game progress', () => {
   it('buys and equips with fish', () => {
     const st = defaultState(T0);
     expect(buyItem(st, 'outfit', 'goggles').ok).toBe(false);
-    st.game.fish = 1000;
+    earnFish(st, 1000);
+    expect(st.game.fish).toBe(1000);
     expect(equipItem(st, 'outfit', 'goggles')).toBe(false);
     expect(buyItem(st, 'outfit', 'goggles').ok).toBe(true);
     expect(st.game.fish).toBe(1000 - OUTFITS.find((o) => o.id === 'goggles').price);
@@ -280,13 +281,52 @@ describe('Game progress', () => {
     expect(old.game.fish).toBe(0);
     expect(old.game.owned).toContain('natural');
     const a = defaultState(T0); const b = defaultState(T0);
-    gameState(a).fish = 50; a.game.owned.push('bow'); a.game.bestByDeck.chains = 300;
-    gameState(b).fish = 80; b.game.owned.push('party'); b.game.bestByDeck.chains = 700;
+    a.meta.deviceId = 'phone'; b.meta.deviceId = 'laptop';
+    earnFish(a, 50); a.game.bestByDeck.chains = 300;
+    earnFish(b, 80); b.game.bestByDeck.chains = 700;
     const m = mergeStates(a, b);
-    expect(m.game.fish).toBe(80);
-    expect(m.game.owned).toContain('bow');
-    expect(m.game.owned).toContain('party');
+    expect(m.game.fish).toBe(130); // earned on two devices: both count
     expect(m.game.bestByDeck.chains).toBe(700);
+  });
+  it('one wallet: earnings on two devices add up, purchases are paid once', () => {
+    const base = defaultState(T0);
+    base.meta.deviceId = 'phone';
+    earnFish(base, 300);
+    const phone = JSON.parse(JSON.stringify(base));
+    const laptop = JSON.parse(JSON.stringify(base));
+    laptop.meta.deviceId = 'laptop';
+    // offline at the same time: the phone plays Sea Lion Splash and buys goggles, the laptop plays Word Splash
+    earnFish(phone, 40);
+    expect(buyItem(phone, 'outfit', 'goggles').ok).toBe(true); // 120
+    earnFish(laptop, 25);
+    const m1 = mergeStates(phone, laptop), m2 = mergeStates(laptop, phone);
+    expect(m1.game.fish).toBe(300 + 40 + 25 - 120);
+    expect(m2.game.fish).toBe(m1.game.fish);
+    expect(m1.game.owned).toContain('goggles');
+    // merging again (or with an older copy) never counts anything twice
+    expect(mergeStates(m1, phone).game.fish).toBe(m1.game.fish);
+    expect(mergeStates(m1, base).game.fish).toBe(m1.game.fish);
+  });
+  it('keeps the fish from saves made before the shared wallet', () => {
+    const old = migrate({ schema: 1, game: { fish: 75, owned: ['bay', 'natural', 'bow'] } }, T0);
+    expect(old.game.fish).toBe(75);
+    expect(old.game.earn.legacy).toBe(75 + OUTFITS.find((o) => o.id === 'bow').price);
+    old.meta.deviceId = 'phone';
+    earnFish(old, 10);
+    expect(old.game.fish).toBe(85);
+    expect(migrate(JSON.parse(JSON.stringify(old)), T0).game.fish).toBe(85); // stable when loaded again
+  });
+  it('backups don\'t carry the device id (a restored backup is a different device)', () => {
+    const s1 = createStore({ storage: memoryStorage(), debounceMs: 0, now: () => T0 });
+    s1.update((st) => { earnFish(st, 20); });
+    expect(!!s1.get().meta.deviceId).toBe(true);
+    const file = s1.exportData();
+    expect(JSON.parse(file).data.meta.deviceId === undefined).toBe(true);
+    const s2 = createStore({ storage: memoryStorage(), debounceMs: 0, now: () => T0 });
+    s2.update((st) => { st.meta.deviceId = 'other'; });
+    s2.importData(file, { mode: 'replace' });
+    expect(s2.get().meta.deviceId).toBe('other');
+    expect(s2.get().game.fish).toBe(20);
   });
 });
 

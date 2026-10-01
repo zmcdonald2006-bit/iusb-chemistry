@@ -3,7 +3,7 @@
 import { stableStringify } from '../state/store.js';
 
 // Settings that belong to one device, not the account.
-export const DEVICE_META = ['lastSeenVersion', 'persistAsked', 'installDismissed', 'lastBackupAt', 'cloudUid', 'nudgeDismissed'];
+export const DEVICE_META = ['lastSeenVersion', 'persistAsked', 'installDismissed', 'lastBackupAt', 'cloudUid', 'nudgeDismissed', 'deviceId'];
 export const MAX_BYTES = 900000;
 const GZIP_OVER = 400000;
 

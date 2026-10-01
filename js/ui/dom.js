@@ -7,7 +7,12 @@ export function h(tag, props = {}, ...children) {
     for (const [k, v] of Object.entries(props)) {
       if (v == null || v === false) continue;
       if (k === 'class') el.className = v;
-      else if (k === 'style' && typeof v === 'object') Object.assign(el.style, v);
+      else if (k === 'style' && typeof v === 'object') {
+        for (const [p, x] of Object.entries(v)) {
+          if (p.startsWith('--')) el.style.setProperty(p, x); // CSS variables need setProperty
+          else el.style[p] = x;
+        }
+      }
       else if (k === 'html') el.innerHTML = v;
       else if (k === 'text') el.textContent = v;
       else if (k === 'dataset') Object.assign(el.dataset, v);
@@ -99,6 +104,7 @@ const P = {
   sparkle: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/><path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z"/>',
   list: '<path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
   nurse: '<path d="M6 3H5a1 1 0 0 0-1 1v4a5 5 0 0 0 10 0V4a1 1 0 0 0-1-1h-1"/><path d="M9 13v2a5 5 0 0 0 10 0v-3"/><circle cx="19" cy="10" r="2"/>',
+  backspace: '<path d="M21 5H8.5L3 12l5.5 7H21a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="m11 9 6 6M17 9l-6 6"/>',
   cloud: '<path d="M7 19a5 5 0 0 1-.9-9.92 6.5 6.5 0 0 1 12.4 1.6A4.2 4.2 0 0 1 17.8 19H7Z"/>',
   cloudCheck: '<path d="M7 19a5 5 0 0 1-.9-9.92 6.5 6.5 0 0 1 12.4 1.6A4.2 4.2 0 0 1 17.8 19H7Z"/><path d="m9.3 13.6 2 2 3.6-3.7"/>',
   cloudUp: '<path d="M7 19a5 5 0 0 1-.9-9.92 6.5 6.5 0 0 1 12.4 1.6A4.2 4.2 0 0 1 17.8 19H7Z"/><path d="M12 16.2v-4.6M9.8 13.6l2.2-2.2 2.2 2.2"/>',

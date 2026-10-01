@@ -39,7 +39,7 @@ applyTheme();
 const NAV_MAIN = [
   { href: '#/', label: 'Home', icon: 'home', match: (p) => p === '/' },
   { href: '#/learn', label: 'Learn', icon: 'book', match: (p) => p.startsWith('/learn') || p.startsWith('/bootcamp') },
-  { href: '#/practice', label: 'Practice', icon: 'target', match: (p) => /^\/(practice|quiz|results|mistakes|game)/.test(p) },
+  { href: '#/practice', label: 'Practice', icon: 'target', match: (p) => /^\/(practice|quiz|results|mistakes|game|words)/.test(p) },
   { href: '#/cards', label: 'Cards', icon: 'cards', match: (p) => p.startsWith('/cards'), badge: () => dueCount() },
   { href: '#/more', label: 'More', icon: 'more', match: (p) => /^\/(more|reactions|lab|reference|tools|progress|settings|about|exams)/.test(p) },
 ];
@@ -51,7 +51,7 @@ const NAV_SIDE = [
   { href: '#/practice', label: 'Practice', icon: 'target', match: (p) => /^\/(practice|quiz|results)/.test(p) },
   { href: '#/cards', label: 'Flashcards', icon: 'cards', match: (p) => p.startsWith('/cards'), badge: () => dueCount() },
   { href: '#/mistakes', label: 'Mistakes', icon: 'redo', match: (p) => p.startsWith('/mistakes'), badge: () => openMistakes(store.get()).length },
-  { href: '#/game', label: 'Sea Lion Splash', icon: 'wave', match: (p) => p.startsWith('/game') },
+  { href: '#/games', label: 'Games', icon: 'wave', match: (p) => p.startsWith('/game') || p.startsWith('/words') },
   { group: 'Tools' },
   { href: '#/reactions', label: 'Reaction map', icon: 'map', match: (p) => p.startsWith('/reactions') },
   { href: '#/lab', label: 'Name Lab', icon: 'lab', match: (p) => p.startsWith('/lab') },
@@ -215,7 +215,7 @@ window.addEventListener('pagehide', () => store.flush());
 // ---- Several tabs/windows open at once ------------------------------------------------------------
 // Pick up progress saved by another tab instead of overwriting it, and redraw overview pages
 // (never a quiz or lesson in progress) when coming back to this tab.
-const PASSIVE_ROUTE = /^\/(progress|learn(\/[^/]+)?|practice|mistakes|cards|bootcamp|exams|more|game)?$/;
+const PASSIVE_ROUTE = /^\/(progress|learn(\/[^/]+)?|practice|mistakes|cards|bootcamp|exams|more|games?)?$/;
 let viewStale = false;
 function pickUpOtherTabs() {
   if (store.reload()) viewStale = true;

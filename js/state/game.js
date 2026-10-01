@@ -1,5 +1,5 @@
-// Saving Sea Lion Splash runs, the fish wallet and the wardrobe.
-import { dayKey, noteMistake, defaultGame } from './store.js';
+// Saving Sea Lion Splash runs, and the wardrobe (bought with the shared fish wallet, see store.js).
+import { dayKey, noteMistake, defaultGame, earnFish, fishBalance } from './store.js';
 import { OUTFITS, THEMES } from '../../content/game.js';
 
 const HISTORY_LIMIT = 40;
@@ -41,7 +41,7 @@ export function recordGameRun(st, { deckId, answers, score, fish, ts }) {
   const correct = answers.filter((a) => a.ok).length;
   const earned = answers.length ? fish + correct * FISH_PER_CORRECT : fish;
   const newBest = score > (g.bestByDeck[deckId] || 0) && score > 0;
-  g.fish += earned;
+  earnFish(st, earned);
   g.runs++;
   g.answered += answers.length;
   g.correct += correct;
@@ -58,10 +58,11 @@ export function buyItem(st, kind, id) {
   const item = catalog(kind).find((x) => x.id === id);
   if (!item) return { ok: false, error: 'Unknown item.' };
   if (g.owned.includes(id)) return { ok: true, already: true };
+  g.fish = fishBalance(g);
   if (g.fish < item.price) return { ok: false, error: `You need ${item.price - g.fish} more fish.` };
-  g.fish -= item.price;
   g.owned.push(id);
   g.owned.sort();
+  g.fish = fishBalance(g); // spending is the price of what's owned
   return { ok: true };
 }
 

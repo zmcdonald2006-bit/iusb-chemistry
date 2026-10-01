@@ -1,5 +1,5 @@
 import { describe, it, expect } from './harness.js';
-import { createStore, memoryStorage, recordAttempt, mergeStates, defaultState, markSectionRead } from '../js/state/store.js';
+import { createStore, memoryStorage, recordAttempt, mergeStates, defaultState, markSectionRead, earnFish } from '../js/state/store.js';
 import { createSync, syncMerge, friendlyError } from '../js/cloud/sync.js';
 import { createFakeCloud } from '../js/cloud/fake.js';
 import { fingerprint, encodeState, decodeState, cloudCopy } from '../js/cloud/codec.js';
@@ -294,7 +294,8 @@ function randomState(seed) {
   for (let i = 0; i < r.int(0, 5); i++) st.cards[`c${r.int(1, 6)}`] = { last: `2026-10-0${r.int(1, 3)}`, reps: r.int(0, 3), due: '2026-10-09', ease: 2.5, interval: r.int(1, 9) };
   for (let i = 0; i < r.int(0, 3); i++) markSectionRead(st, `l0${r.int(1, 3)}`, `s${r.int(1, 3)}`, T0 + r.int(0, 9));
   for (const k of ['accent', 'dailyGoal', 'name']) if (r.chance(0.5)) { st.profile[k] = k === 'dailyGoal' ? r.int(10, 40) : `${k}${r.int(1, 3)}`; st.meta.pt[k] = T0 + r.int(0, 2); }
-  if (r.chance(0.5)) { st.game.fish = r.int(0, 500); st.game.pt = { fish: T0 + r.int(0, 2) }; st.game.owned.push(r.pick(['bow', 'goggles', 'party'])); }
+  if (r.chance(0.5)) { st.meta.deviceId = r.pick(['dA', 'dB', 'dC']); earnFish(st, r.int(0, 500)); st.game.owned.push(r.pick(['bow', 'goggles', 'party'])); }
+  if (r.chance(0.5)) st.game.words = { days: { [`2026-10-0${r.int(1, 3)}`]: { w: r.pick(['ESTER', 'THIOL']), g: r.pick([['ETHER'], ['ETHER', 'ESTER']]), done: r.chance(0.5), won: r.chance(0.5), ts: T0 + r.int(0, 3) } }, stats: { [r.pick(['dA', 'dB'])]: { p: r.int(0, 5), w: r.int(0, 5), d: [r.int(0, 2), 0, 1, 0, 0, 0] } }, best: r.int(0, 4) };
   for (let i = 0; i < r.int(0, 3); i++) st.sessions.push({ id: `s${r.int(1, 5)}`, startedAt: T0 + r.int(0, 3), endedAt: T0 + r.int(4, 9), results: [] });
   if (r.chance(0.5)) st.unlocked[r.pick(['first-session', 'streak-3'])] = T0 + r.int(0, 5);
   return st;

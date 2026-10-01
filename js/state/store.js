@@ -4,6 +4,8 @@
 // Data lives in the browser's localStorage under one key. Everything is plain JSON so a
 // backup file can be opened and inspected by hand.
 
+import { OUTFITS, THEMES } from '../../content/game.js';
+
 export const SCHEMA_VERSION = 1;
 export const STORAGE_KEY = 'chem-companion:v1';
 export const APP_ID = 'chem-companion';
@@ -87,8 +89,12 @@ export function migrate(data, now = Date.now()) {
   }
   s.profile = { ...base.profile, ...(s.profile || {}) };
   s.meta = { ...base.meta, ...(s.meta || {}) };
+  const earned = earnOf(s.game || {}); // before defaults fill in an empty table: older saves keep their fish
   s.game = { ...base.game, ...(s.game || {}) };
   s.game.owned = [...new Set([...base.game.owned, ...(Array.isArray(s.game.owned) ? s.game.owned : [])])].sort(); // sorted, like merges
+  s.game.earn = earned;
+  s.game.fish = fishBalance(s.game);
+  s.game.words = mergeWords(s.game.words, null);
   if (!Array.isArray(s.sessions)) s.sessions = [];
   if (!Array.isArray(s.exams)) s.exams = [];
   return s;
@@ -163,18 +169,20 @@ export function mergeStates(a, b) {
     .slice(-SESSION_LIMIT);
   for (const [k, v] of Object.entries(b.unlocked || {})) out.unlocked[k] = out.unlocked[k] ? Math.min(out.unlocked[k], v) : v;
   out.meta.lastBackupAt = Math.max(out.meta.lastBackupAt || 0, (b.meta && b.meta.lastBackupAt) || 0);
-  // game: wallet and settings from whichever side changed them last (the bigger wallet if
-  // unknown); best scores are maxed and everything bought on either device is kept
+  // game: settings from whichever side changed them last; best scores are maxed; everything bought
+  // on either device is kept; fish earned on every device add up (see the wallet below)
   const ga = out.game || defaultGame();
   const gb = b.game || {};
-  const unknown = !(ga.pt && ga.pt.fish) && !(gb.pt && gb.pt.fish);
-  const bigger = Math.max(ga.fish || 0, gb.fish || 0);
+  const earnA = earnOf(ga), earnB = earnOf(gb);
   ga.pt = mergeFields(ga, gb, ga.pt || {}, gb.pt || {}, GAME_FIELDS);
-  if (unknown) ga.fish = bigger;
   for (const k of ['best', 'runs', 'answered', 'correct']) ga[k] = Math.max(ga[k] || 0, gb[k] || 0);
   ga.bestByDeck = { ...(ga.bestByDeck || {}) };
   for (const [d, v] of Object.entries(gb.bestByDeck || {})) ga.bestByDeck[d] = Math.max(ga.bestByDeck[d] || 0, v);
   ga.owned = [...new Set([...(ga.owned || []), ...(gb.owned || [])])].sort();
+  ga.earn = { ...earnA };
+  for (const [k, v] of Object.entries(earnB)) ga.earn[k] = Math.max(ga.earn[k] || 0, v);
+  ga.fish = fishBalance(ga);
+  ga.words = mergeWords(ga.words, gb.words);
   out.game = ga;
   out.createdAt = Math.min(out.createdAt || Infinity, b.createdAt || Infinity);
   return out;
@@ -201,7 +209,68 @@ function unionBy(xs, ys, id, rank) {
 }
 
 // Simple settings that sync "last change wins", with a change time per field.
-export const GAME_FIELDS = ['fish', 'outfit', 'theme', 'speed', 'sound', 'haptics', 'lastDeck'];
+export const GAME_FIELDS = ['outfit', 'theme', 'speed', 'sound', 'haptics', 'lastDeck'];
+
+// ---- Fish wallet (one wallet for every game) ------------------------------------------------------
+// The balance is never a single number two devices could overwrite. Each device keeps a running total
+// of the fish it has earned (game.earn[device id], only ever growing); merging keeps the larger total
+// for each device, and spending is the price of everything owned. So fish earned on a phone and a
+// laptop at the same time always add up, and nothing can be bought twice.
+const PRICES = new Map([...OUTFITS, ...THEMES].map((x) => [x.id, x.price]));
+export const spentOn = (owned) => (owned || []).reduce((a, id) => a + (PRICES.get(id) || 0), 0);
+
+// The earnings table; saves from before the shared wallet get one "legacy" entry worth what they had.
+function earnOf(g) {
+  if (g && g.earn && typeof g.earn === 'object' && !Array.isArray(g.earn)) {
+    const out = {};
+    for (const [k, v] of Object.entries(g.earn)) if (Number.isFinite(v) && v > 0) out[k] = Math.round(v);
+    return out;
+  }
+  const had = Math.max(0, Math.round(Number(g && g.fish) || 0)) + spentOn(g && g.owned);
+  return had > 0 ? { legacy: had } : {};
+}
+
+export function fishBalance(g) {
+  const earned = Object.values(earnOf(g)).reduce((a, v) => a + v, 0);
+  return Math.max(0, earned - spentOn(g.owned));
+}
+
+// This device's id in the earnings table (kept on the device; never synced or put in backups).
+export function deviceId(st) {
+  if (!st.meta.deviceId) st.meta.deviceId = `d${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+  return st.meta.deviceId;
+}
+
+export function earnFish(st, n) {
+  const g = st.game;
+  n = Math.max(0, Math.round(n));
+  g.earn = earnOf(g);
+  if (n) { const d = deviceId(st); g.earn[d] = (g.earn[d] || 0) + n; }
+  g.fish = fishBalance(g);
+  return n;
+}
+
+// ---- Word Splash records (merged so a daily word started on one device can finish on another) ----
+const WORD_DAYS_KEPT = 400;
+export function mergeWords(a, b) {
+  const x = a || {}, y = b || {};
+  const out = { days: { ...(x.days || {}) }, stats: {}, best: Math.max(x.best || 0, y.best || 0) };
+  // each day: the copy that got further (finished beats unfinished, then more guesses, then newer)
+  for (const [d, r] of Object.entries(y.days || {})) {
+    out.days[d] = out.days[d] ? winner(out.days[d], r, (z) => [z.done ? 1 : 0, (z.g || []).length, z.ts || 0]) : r;
+  }
+  const keep = Object.keys(out.days).sort().slice(-WORD_DAYS_KEPT);
+  out.days = Object.fromEntries(keep.map((k) => [k, out.days[k]]));
+  // stats are counted per device (like fish), so games played on two devices add up
+  for (const dev of new Set([...Object.keys(x.stats || {}), ...Object.keys(y.stats || {})])) {
+    const p = (x.stats || {})[dev] || {}, q = (y.stats || {})[dev] || {};
+    out.stats[dev] = { p: Math.max(p.p || 0, q.p || 0), w: Math.max(p.w || 0, q.w || 0), d: [0, 1, 2, 3, 4, 5].map((i) => Math.max((p.d || [])[i] || 0, (q.d || [])[i] || 0)) };
+  }
+  // a practice word in progress: the newer one
+  const pr = winner(x.practice || { ts: 0 }, y.practice || { ts: 0 }, (z) => [z.ts || 0]);
+  if (pr && pr.ts) out.practice = pr;
+  return out;
+}
 
 // Merge flat fields of `theirs` into `mine` (in place). For each field: a filled-in value beats a
 // blank one, then the more recent change wins, then (exact tie) the content decides, so both
@@ -329,7 +398,8 @@ export function createStore({ storage, key = STORAGE_KEY, now = () => Date.now()
       return true;
     },
     exportData() {
-      return JSON.stringify({ app: APP_ID, schema: SCHEMA_VERSION, exportedAt: new Date(now()).toISOString(), data: st }, null, 1);
+      const data = { ...st, meta: { ...st.meta, deviceId: undefined } }; // a backup restored elsewhere is a different device
+      return JSON.stringify({ app: APP_ID, schema: SCHEMA_VERSION, exportedAt: new Date(now()).toISOString(), data }, null, 1);
     },
     importData(text, { mode = 'replace' } = {}) {
       let obj;
@@ -339,6 +409,7 @@ export function createStore({ storage, key = STORAGE_KEY, now = () => Date.now()
       let incoming;
       try { incoming = migrate(JSON.parse(JSON.stringify(obj.app === APP_ID ? obj.data : obj)), now()); } catch (e) { return { ok: false, error: e.message }; }
       const cloudUid = st.meta.cloudUid;
+      const device = st.meta.deviceId;
       if (mode === 'merge') {
         st = mergeStates(st, incoming);
       } else {
@@ -346,6 +417,7 @@ export function createStore({ storage, key = STORAGE_KEY, now = () => Date.now()
         st.meta.epoch = now(); // "Replace" also replaces the cloud copy when signed in
       }
       st.meta.cloudUid = cloudUid; // which account this device syncs with doesn't come from the file
+      st.meta.deviceId = device; // nor which device this is (its fish earnings are counted separately)
       st.updatedAt = now();
       save();
       listeners.forEach((l) => l(st));
@@ -413,7 +485,7 @@ export function noteMistake(s, { ref, skill, ok, ts }) {
 
 export function defaultGame() {
   return {
-    fish: 0, owned: ['bay', 'natural'], outfit: 'natural', theme: 'bay',
+    fish: 0, earn: {}, owned: ['bay', 'natural'], outfit: 'natural', theme: 'bay', words: { days: {}, stats: {}, best: 0 },
     best: 0, bestByDeck: {}, runs: 0, answered: 0, correct: 0,
     speed: 'normal', sound: true, haptics: true, lastDeck: 'foundations',
   };

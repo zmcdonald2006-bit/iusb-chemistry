@@ -75,6 +75,14 @@ export const sfx = {
   streak() { [784, 988, 1175, 1568].forEach((f, i) => tone(f, 0.12, { type: 'square', vol: 0.06, at: i * 0.06 })); },
   over() { [523, 440, 349, 262].forEach((f, i) => tone(f, 0.22, { type: 'triangle', vol: 0.14, at: i * 0.14 })); },
   best() { [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, 0.16, { type: 'triangle', vol: 0.14, at: i * 0.09 })); },
+  // Word Splash
+  key() { tone(1200, 0.035, { type: 'sine', vol: 0.05 }); },
+  del() { tone(700, 0.04, { type: 'sine', vol: 0.04 }); },
+  reveal(mark, i = 0) {
+    const f = mark === 'hit' ? 880 : mark === 'near' ? 660 : 330;
+    tone(f, 0.09, { type: 'triangle', vol: mark === 'miss' ? 0.05 : 0.09, at: i * 0.18 });
+  },
+  nope() { tone(220, 0.12, { type: 'square', vol: 0.05 }); tone(196, 0.14, { type: 'square', vol: 0.05, at: 0.1 }); },
 };
 
 const isIOS = typeof navigator !== 'undefined' && (/iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));

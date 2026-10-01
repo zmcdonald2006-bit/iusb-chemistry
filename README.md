@@ -13,6 +13,11 @@ It's a static web app with no build step and no dependencies. It works offline, 
   - Unlimited auto-generated questions for naming, drawing, reactions, chirality, pH, boiling-point order and more. The generated questions come from a built-in chemistry engine, so every answer is computed, not typed by hand.
   - Wrong answers go to a **Mistakes** notebook. A mistake leaves the notebook after she gets that question right twice.
 - **Flashcards** with spaced repetition (Again / Hard / Good / Easy).
+- **Games** (More → Games), two study games that share one **fish wallet**. Fish buy outfits and oceans in the wardrobe. Each device counts what it earns and the totals are combined, so fish earned on a phone and a laptop always add up.
+- **Word Splash**, a Wordle-style game with chemistry words from Lectures 1–10:
+  - A new **daily word** (the same for everyone), with a streak, plus unlimited **practice** words that can be filtered by lecture.
+  - An optional clue (solving without it pays more). After each word: what it means, its structure, and a link to the notes.
+  - Pays 15–40 fish per word, plus bonuses for no clue, the daily word and streaks. A daily word started on one device can be finished on another.
 - **Sea Lion Splash**, a study game in the style of a lane-runner:
   - A sea lion swims down three lanes, and each question arrives as three life rings, one per answer. She swipes up or down (or taps a lane) and swims through the right one.
   - If she knows the answer, she can swipe right or tap **Dash** to rush the rings in for bonus points.
@@ -115,7 +120,7 @@ New lectures, more questions, fixed typos: see **[docs/CONTENT_GUIDE.md](docs/CO
 4. Run `ruby tools/build-sw.rb` to refresh the offline file list. CI also does this when it deploys, and `ruby tools/build-sw.rb --check` tells you whether it's stale.
 5. Commit and push.
 
-**Personal touches:** the encouragement messages, milestone notes and an optional signature are in [content/messages.js](content/messages.js). The game's name, outfit and ocean names, prices in fish, and sea lion messages are in [content/game.js](content/game.js). Edit them freely, but keep the `id`s, because purchases are saved by id.
+**Personal touches:** the encouragement messages, milestone notes and an optional signature are in [content/messages.js](content/messages.js). The game's name, outfit and ocean names, prices in fish, and sea lion messages are in [content/game.js](content/game.js). Word Splash's words and clues are in [content/words.js](content/words.js). Edit them freely, but keep the `id`s, because purchases are saved by id.
 
 ## How it's built
 
@@ -129,7 +134,7 @@ js/views/             one file per screen
 js/ui/                DOM helper, shared components, the question widget
 js/quiz/              answer checkers, question bank, session planner, generators (gen/)
 js/state/             store (save/migrate/backup/merge), spaced repetition, progress, milestones, game wallet
-js/game/              Sea Lion Splash: rules (engine.js, no drawing — fully tested), decks, canvas art, sounds
+js/game/              Sea Lion Splash (engine.js: rules, no drawing, fully tested), Word Splash rules (words.js), decks, art, sounds
 js/cloud/             Sign in with Google: config.js (Firebase settings), sync engine, Firebase connection
 js/chem/              chemistry engine: SMILES parser, ring finder, 2D layout, SVG renderer,
                       IUPAC namer, name parser + checker, reactions, molecule generator

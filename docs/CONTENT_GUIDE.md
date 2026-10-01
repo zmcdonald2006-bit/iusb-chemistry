@@ -176,7 +176,10 @@ Generators live in `js/quiz/gen/*.js` and are registered in `js/quiz/generators.
 - [content/nursing.js](../content/nursing.js): **Nursing connection** notes. Each one is shown at the end of the lesson section it names, and all together under **Reference → Nursing**. Keep them short (the tests allow 420 characters) and accurate. They're marked as extra, beyond the slides.
 - [content/bootcamp.js](../content/bootcamp.js): the Foundations Bootcamp steps.
 - [content/messages.js](../content/messages.js): encouragement and milestone notes.
-- [content/game.js](../content/game.js): Sea Lion Splash outfits, oceans, prices and messages.
+- [content/game.js](../content/game.js): Sea Lion Splash outfits, oceans, prices and messages. The wardrobe is shared by both games.
+- [content/words.js](../content/words.js): Word Splash words.
+  - Each has 4–9 letters, a lecture and section (for the **Notes** button), a clue (which must not contain the word), and optionally a structure.
+  - When you add a lecture, add its key terms here too. Adding words changes which word comes up on future days, never a day already played.
 
 ## Adding new lectures to the game
 

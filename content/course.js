@@ -19,12 +19,21 @@ export const COURSE = {
   school: 'IU South Bend',
   textbook: 'Smith, General, Organic & Biological Chemistry',
   // Bump when content changes so the app can show "what's new".
-  contentVersion: '2026.10.01.2',
+  contentVersion: '2026.10.01.3',
   lectures: LECTURES,
 };
 
 // Shown on the "What's new" screen after an update. Newest first.
 export const CHANGELOG = [
+  {
+    version: '2026.10.01.3',
+    title: 'New game: Word Splash 🟩🟨',
+    items: [
+      'Guess the chemistry word in 6 tries: a new daily word, plus unlimited practice by lecture',
+      'Each word shows what it means, its structure, and a link to the notes',
+      'One fish wallet for both games (More → Games), and fish earned on two devices always add up',
+    ],
+  },
   {
     version: '2026.10.01.2',
     title: 'Your progress, always saved to your Google account',

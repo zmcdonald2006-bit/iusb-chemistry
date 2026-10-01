@@ -3,6 +3,7 @@ import { ring, sectionTitle } from '../ui/components.js';
 import { recommendations, streak, todayStats, upcomingExams, lectureProgress } from '../state/progress.js';
 import { dayKey } from '../state/store.js';
 import { paintScene } from './game.js';
+import { dailyRecord } from '../state/words.js';
 import { googleButton } from '../ui/account.js';
 
 function greeting() {
@@ -87,14 +88,17 @@ export default function home({ app, main }) {
   }
   main.appendChild(list);
 
-  // The game
+  // Games: today's word and the sea lion
   const gs = st.game || {};
+  const daily = dailyRecord(st, dayKey());
   const thumb = h('canvas', { class: 'g-home-thumb', 'aria-hidden': 'true' });
-  main.appendChild(h('a', { class: 'card card-link g-home', href: '#/game' },
+  main.appendChild(h('a', { class: 'card card-link g-home', href: daily.done ? '#/games' : '#/words' },
     thumb,
     h('div', { class: 'grow' },
-      h('div', { class: 'li-title' }, 'Sea Lion Splash'),
-      h('div', { class: 'muted small' }, gs.runs ? `Best ${(gs.best || 0).toLocaleString()} · ${gs.fish || 0} fish to spend` : 'A quick game: swim through the right answers')),
+      h('div', { class: 'li-title' }, daily.done ? 'Games' : 'Today\'s Word Splash'),
+      h('div', { class: 'muted small' }, daily.done
+        ? `${daily.won ? `Today's word solved in ${daily.g.length} ✓` : 'Today\'s word is done'} · ${gs.fish || 0} fish to spend`
+        : `Guess today's chemistry word in 6 tries · ${gs.fish || 0} fish`)),
     h('span', { class: 'chev' }, icon('chevRight'))));
   requestAnimationFrame(() => paintScene(thumb, gs.theme || 'bay', gs.outfit || 'natural', 1.3, false, true));
 

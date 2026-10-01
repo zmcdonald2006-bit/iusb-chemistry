@@ -19,6 +19,8 @@ import more from './views/more.js';
 import notFound from './views/notfound.js';
 import gameHub from './views/game.js';
 import gamePlay from './views/gameplay.js';
+import gamesHub from './views/games.js';
+import wordsView from './views/words.js';
 
 export const ROUTES = [
   { path: '/', view: home, title: '' },
@@ -44,6 +46,9 @@ export const ROUTES = [
   { path: '/settings', view: settings, title: 'Settings' },
   { path: '/about', view: about, title: "What's new" },
   { path: '/more', view: more, title: 'More' },
+  { path: '/games', view: gamesHub, title: 'Games' },
+  { path: '/words', view: wordsView, title: 'Word Splash' },
+  { path: '/words/:mode', view: wordsView, title: 'Word Splash' },
   { path: '/game', view: gameHub, title: 'Sea Lion Splash' },
   { path: '/game/play/:deck', view: gamePlay, title: 'Sea Lion Splash' },
   { path: '*', view: notFound, title: 'Not found' },

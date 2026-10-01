@@ -10,7 +10,7 @@ import { lectureById } from '../../content/course.js';
 
 const SPEED_LABELS = [['chill', 'Chill', 'Lots of time to think'], ['normal', 'Normal', 'The classic'], ['fast', 'Fast', 'Exam pressure']];
 
-export default function gameHub({ app, main }) {
+export default function gameHub({ app, main, query = {} }) {
   const st = app.state;
   const g = gameState(st);
   const rec = recommendedDeck(st);
@@ -18,6 +18,7 @@ export default function gameHub({ app, main }) {
   let raf = 0;
   const live = [];
 
+  main.appendChild(h('a', { class: 'back-link', href: '#/games' }, icon('chevLeft'), 'Games'));
   // Hero: the sea lion swimming in her chosen ocean
   const hero = h('canvas', { class: 'g-hero-canvas', 'aria-hidden': 'true' });
   const fishCount = h('span', {}, String(g.fish));
@@ -62,8 +63,11 @@ export default function gameHub({ app, main }) {
   main.appendChild(grid);
 
   // Wardrobe
-  main.appendChild(sectionTitle('Wardrobe'));
-  main.appendChild(h('p', { class: 'muted small', style: { margin: '-4px 0 10px' } }, 'Catch fish in the game to unlock outfits. Every right answer is worth 3 fish too.'));
+  const wardrobeTitle = sectionTitle('Wardrobe');
+  wardrobeTitle.id = 'wardrobe';
+  wardrobeTitle.style.scrollMarginTop = '70px';
+  main.appendChild(wardrobeTitle);
+  main.appendChild(h('p', { class: 'muted small', style: { margin: '-4px 0 10px' } }, 'Spend fish from both games here: catch fish and answer right in Sea Lion Splash, or solve words in Word Splash.'));
   const wardrobe = h('div', { class: 'grid tiles g-shop' });
   main.appendChild(wardrobe);
   const oceans = h('div', { class: 'grid tiles g-shop' });
@@ -126,6 +130,8 @@ export default function gameHub({ app, main }) {
     h('li', {}, 'Wrong ring = bonk. You have ', h('b', {}, '3 lives'), ', and every miss shows the explanation and goes to your Mistakes list.'),
     h('li', {}, 'Answer in a row for a ', h('b', {}, 'combo multiplier'), '. Catch fish between questions.'),
     h('li', {}, 'Grab a ', h('b', {}, 'bubble'), ' to survive one bonk, or a ', h('b', {}, 'magnet'), ' to pull in fish.'))));
+
+  if (query.to === 'wardrobe') requestAnimationFrame(() => wardrobeTitle.scrollIntoView({ block: 'start' }));
 
   // Animate the hero only (shop previews are still images)
   const loop = () => { for (const f of live) f(); raf = requestAnimationFrame(loop); };
