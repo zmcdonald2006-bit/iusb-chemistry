@@ -1,0 +1,10 @@
+{
+  "name": "chem-companion",
+  "private": true,
+  "type": "module",
+  "description": "C102 study guide (static web app, no dependencies)",
+  "scripts": {
+    "test": "node tests/run.js",
+    "build:sw": "ruby tools/build-sw.rb"
+  }
+}

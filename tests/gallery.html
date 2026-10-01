@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Structure gallery (dev)</title>
+<style>
+  body{font-family:system-ui;margin:12px;background:#fff;color:#1d2433}
+  .grid{display:flex;flex-wrap:wrap;gap:10px}
+  .cell{border:1px solid #ddd;border-radius:8px;padding:6px;min-width:120px}
+  .cell h4{margin:0 0 4px;font-size:12px;font-weight:600}
+  .mol-svg .bond{stroke:currentColor}.mol-svg .atom{fill:currentColor;font-weight:500}
+  .mol-svg .el-O{fill:#d6336c}.mol-svg .el-N{fill:#1c7ed6}.mol-svg .el-S{fill:#e67700}.mol-svg .el-Cl,.mol-svg .el-F{fill:#2b8a3e}.mol-svg .el-Br{fill:#a61e4d}.mol-svg .el-I{fill:#7048e8}
+  .mol-svg .locant{fill:#7048e8;font-weight:700}.mol-svg .hl{fill:#fcc419;opacity:.45}.mol-svg .wedge{fill:currentColor}.mol-svg .hash{stroke:currentColor}.mol-svg .lp{fill:currentColor}
+  .mol-svg text{font-family:ui-sans-serif,system-ui,-apple-system,Helvetica,Arial}
+</style></head>
+<body><h2>Gallery</h2><div id="g" class="grid"></div>
+<script type="module">
+import { renderMolecule, renderTetrahedral } from '../js/chem/render.js';
+import { nameCompound } from '../js/chem/namer.js';
+import { NAME_CASES } from './chem.test.js';
+const g = document.getElementById('g');
+const extra = [['c1ccccc1C=O','benzaldehyde'],['CC(C)Cc1ccc(cc1)C(C)C(=O)O','ibuprofen'],['NC(Cc1ccc(O)cc1)C(=O)O','tyrosine'],['CC(=O)OCCC(C)C','isoamyl acetate'],['OCC(O)C(O)C(O)C(O)C=O','glucose'],['CCCCCCCC/C=C\\CCCCCCCC(=O)O','oleic acid (cis)'],['CCCCCCCC/C=C/CCCCCCCC(=O)O','elaidic (trans)'],['c1ccc2ccccc2c1','naphthalene'],['OC(=O)c1ccccc1OC(C)=O','aspirin'],['C1CO1','epoxide']];
+const all = [...NAME_CASES.map(([s,n])=>[s,n]), ...extra];
+for (const [s,n] of all) {
+  const d = document.createElement('div'); d.className='cell';
+  const r = nameCompound(s);
+  const nums = r && r.numbering ? Object.fromEntries(r.numbering.map((a,i)=>[a,i+1])) : null;
+  d.innerHTML = `<h4>${n}</h4>` + renderMolecule(s, {numbers: new URLSearchParams(location.search).has('num') ? nums : null, mode: new URLSearchParams(location.search).get('mode')||'skeletal'});
+  g.appendChild(d);
+}
+const t = document.createElement('div'); t.className='cell'; t.innerHTML = '<h4>tetra</h4>' + renderTetrahedral(['OH','CH3','H','CH2CH3']) + renderTetrahedral(['OH','CH3','H','CH2CH3'],{mirror:true}); g.appendChild(t);
+</script></body></html>

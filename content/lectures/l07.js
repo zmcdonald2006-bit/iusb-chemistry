@@ -1,0 +1,162 @@
+// Lecture 7 — Chirality & Enantiomers (Smith Ch. 15.1–15.5)
+export default {
+  id: 'l07',
+  number: 7,
+  title: 'Chirality & Enantiomers',
+  subtitle: 'Mirror images, chirality centers & chiral drugs',
+  chapter: 'Ch. 15.1–15.5',
+  tested: false,
+  summary: 'Some molecules are "handed" like your hands. Find chirality centers (a carbon with four different groups), draw enantiomers with wedges and dashes, and see why it matters for drugs.',
+  skills: [
+    { id: 'l07.isomer-types', title: 'Types of isomers', desc: 'Constitutional isomers vs stereoisomers (cis/trans, enantiomers).' },
+    { id: 'l07.chiral-achiral', title: 'Chiral vs achiral', desc: 'Superimposable or not on its mirror image.' },
+    { id: 'l07.find-centers', title: 'Finding chirality centers', desc: 'A tetrahedral carbon with four different groups — in chains and rings.' },
+    { id: 'l07.enantiomers', title: 'Drawing enantiomers', desc: 'Wedge/dash drawings; mirror image or swap two groups.' },
+    { id: 'l07.drugs', title: 'Chiral drugs', desc: 'Thalidomide, racemic mixtures, ibuprofen and naproxen.' },
+  ],
+  sections: [
+    {
+      id: 'review',
+      title: 'Isomers — a review',
+      minutes: 5,
+      blocks: [
+        { t: 'p', text: '**Isomers** are different compounds with the **same molecular formula**.' },
+        {
+          t: 'table', head: ['Type', 'What differs', 'Example'],
+          rows: [
+            ['**Constitutional isomers**', 'which atoms are connected to which', 'butane vs isobutane; ethanol vs dimethyl ether'],
+            ['**Stereoisomers**', 'only the **3-D arrangement** (same connections, same functional groups)', 'cis- vs trans-2-butene; a pair of enantiomers'],
+          ],
+        },
+        { t: 'mols', items: [{ smiles: 'CCCO', caption: '1-propanol' }, { smiles: 'CC(C)O', caption: '2-propanol (constitutional isomer, same FG)' }, { smiles: 'CCOC', caption: 'ethyl methyl ether (constitutional isomer, different FG)' }] },
+        { t: 'callout', kind: 'tip', title: 'A quick decision tree', text: '1. Same formula? No → not isomers.\n2. Same connections? No → **constitutional isomers**.\n3. Same connections but different 3-D arrangement → **stereoisomers** (cis/trans or enantiomers).' },
+      ],
+    },
+    {
+      id: 'chiral',
+      title: 'Chiral and achiral',
+      minutes: 6,
+      blocks: [
+        { t: 'p', text: 'Your left and right hands are **mirror images**, but you can\'t stack one perfectly on the other — they are **nonsuperimposable**. A pair of socks, on the other hand, are mirror images that **are** superimposable.' },
+        {
+          t: 'compare', items: [
+            { title: 'Chiral (like hands)', text: 'A molecule that is **not superimposable** on its mirror image.' },
+            { title: 'Achiral (like socks)', text: 'A molecule that **is superimposable** on its mirror image.' },
+          ],
+        },
+        { t: 'steps', title: 'Testing a molecule', items: ['Draw the molecule in 3-D.', 'Draw its mirror image.', 'Try to line up all bonds and atoms. You may **rotate** freely but may **not break bonds**.'] },
+        { t: 'tetra', items: [{ groups: ['Cl', 'Br', 'H', 'F'], caption: 'CHBrClF' }, { groups: ['Cl', 'Br', 'H', 'F'], mirror: true, caption: 'its mirror image' }], caption: 'CHBrClF has four different groups on C → its two mirror images can\'t be superimposed: chiral.' },
+        { t: 'tetra', items: [{ groups: ['Cl', 'Br', 'H', 'H'], caption: 'CH₂BrCl' }, { groups: ['Cl', 'Br', 'H', 'H'], mirror: true, caption: 'its mirror image' }], caption: 'CH₂BrCl has two identical H\'s → rotate the mirror image and it lines up: achiral.' },
+        { t: 'callout', kind: 'key', title: 'Definitions', text: '**Enantiomers**: a pair of mirror images that are **not superimposable**.\n**Chirality center**: a carbon bonded to **four different groups**.' },
+      ],
+    },
+    {
+      id: 'centers',
+      title: 'Finding chirality centers',
+      minutes: 9,
+      blocks: [
+        { t: 'p', text: 'Check every **tetrahedral** carbon. It is a chirality center only if its **four groups are all different** — and a "group" means the **whole** thing attached, not just the first atom.' },
+        {
+          t: 'example', title: 'Example', prompt: 'Find the chirality center in $CH_3CH_2CHBrCH_2CH_2CH_3$.',
+          mol: { smiles: 'CCC(Br)CCC', toggleH: true, highlight: [2] },
+          steps: ['The CHBr carbon has: **H**, **Br**, **$CH_2CH_3$** (ethyl), and **$CH_2CH_2CH_3$** (propyl).', 'Ethyl ≠ propyl — look past the first carbon!', 'Four different groups → chirality center.'],
+          answer: 'The carbon bonded to Br (C3).',
+        },
+        { t: 'callout', kind: 'key', title: 'Shortcuts: these are NEVER chirality centers', text: '- **$CH_3$ and $CH_2$** carbons (two or more identical H\'s).\n- Carbons in a **double or triple bond** (only three or two groups).' },
+        { t: 'mols', items: [{ smiles: 'CC(O)CC', caption: '2-butanol: 1 center', highlight: [1] }, { smiles: 'CCC(O)CC', caption: '3-pentanol: none (two ethyls)' }, { smiles: 'CC(N)C(=O)O', caption: 'alanine: 1 center', highlight: [1] }] },
+        { t: 'h', text: 'Chirality centers in rings' },
+        { t: 'p', text: 'For a ring carbon, walk around the ring **both ways** from it. If the two paths are different, they count as two different groups.' },
+        { t: 'mols', items: [{ smiles: 'CC1CCCCC1', caption: 'methylcyclohexane: C1 is NOT a center (both ring paths identical)' }, { smiles: 'CC1CCCC(C)C1', caption: '1,3-dimethylcyclohexane: C1 and C3 are centers', highlight: [1, 5] }] },
+        {
+          t: 'check', q: {
+            id: 'l07-c-center', skill: 'l07.find-centers', type: 'atoms', prompt: 'Tap every chirality center in 1-chloro-2-methylcyclohexane.',
+            figure: { smiles: 'CC1CCCCC1Cl', toggleH: true }, selectable: [0, 1, 2, 3, 4, 5, 6], answer: [1, 6],
+            explain: 'The carbon with Cl and the carbon with CH₃ each have H + a substituent + two **different** ring paths → **2 chirality centers**.',
+          },
+        },
+      ],
+    },
+    {
+      id: 'drawing',
+      title: 'Drawing a pair of enantiomers',
+      minutes: 6,
+      blocks: [
+        {
+          t: 'steps', title: 'HOW TO draw two enantiomers (e.g. 2-butanol)', items: [
+            'Find the chirality center and its four groups: OH, CH₃, H, CH₂CH₃.',
+            'Draw a tetrahedral carbon: two bonds in the plane, one **wedge**, one **dash**. Put the four groups on it in any arrangement.',
+            'Draw a mirror line and draw the **reflection** of the first molecule.',
+          ],
+        },
+        { t: 'tetra', items: [{ groups: ['OH', 'CH3', 'H', 'CH2CH3'], caption: 'enantiomer A' }, { groups: ['OH', 'CH3', 'H', 'CH2CH3'], mirror: true, caption: 'enantiomer B (mirror image)' }] },
+        { t: 'callout', kind: 'key', title: 'The shortcut', text: 'To draw the enantiomer: **swap any two groups** and keep everything else the same. (Swap twice → you\'re back to the original molecule!)' },
+        { t: 'tetra', items: [{ groups: ['OH', 'CH3', 'H', 'CH2CH3'], caption: 'A' }, { groups: ['OH', 'CH3', 'CH2CH3', 'H'], caption: 'A with H and ethyl swapped = B' }] },
+      ],
+    },
+    {
+      id: 'drugs',
+      title: 'Focus on health: chiral drugs',
+      minutes: 6,
+      blocks: [
+        { t: 'p', text: 'Many biologically active molecules have chirality centers, and our bodies\' receptors are chiral too — like a hand fitting a glove. So the two enantiomers of a drug can act very differently.' },
+        { t: 'callout', kind: 'warn', title: 'Thalidomide', text: 'In the early 1960s, the anti-nausea drug **thalidomide** was given to pregnant women as a **mixture of both enantiomers**. One enantiomer prevented nausea; the other caused catastrophic **birth defects** (phocomelia).' },
+        { t: 'p', text: 'A **racemic mixture** is an **equal (50:50) mixture of two enantiomers**. If the "other" enantiomer is simply inactive, a drug is often sold as a racemic mixture.' },
+        {
+          t: 'mols', items: [
+            { smiles: 'CC(C)Cc1ccc(cc1)C(C)C(=O)O', caption: 'ibuprofen: one enantiomer is active, the other inactive → sold as a racemic mixture', highlight: [10] },
+            { smiles: 'COc1ccc2cc(ccc2c1)C(C)C(=O)O', caption: 'naproxen (Aleve): the other enantiomer is toxic → only the active one is sold' },
+          ],
+        },
+        { t: 'callout', kind: 'exam', title: 'Question from class', text: 'A drug has two enantiomers: one therapeutic, one toxic. What should be done? → **Only the therapeutic enantiomer should be given.** (A racemic mixture would include the toxic one, and enantiomers are NOT geometrically identical.)' },
+      ],
+    },
+    {
+      id: 'summary',
+      title: 'Summary',
+      minutes: 2,
+      blocks: [
+        { t: 'list', items: ['Chirality center = tetrahedral C with **4 different groups**.', '$CH_3$ and $CH_2$ carbons are never chirality centers; neither are C=C or C≡C carbons.', 'Draw a chirality center with two in-plane bonds, a **wedge** and a **dash**.', 'To draw the enantiomer, **swap two groups** (or reflect the whole drawing).'] },
+      ],
+    },
+  ],
+  questions: [
+    { id: 'l07-q01', skill: 'l07.isomer-types', type: 'mc', prompt: 'Cis- and trans-2-butene are…', choices: ['stereoisomers', 'constitutional isomers', 'enantiomers', 'identical'], answer: 0, explain: 'Same connections, different 3-D arrangement → **stereoisomers** (cis/trans type; they are not mirror images).' },
+    { id: 'l07-q02', skill: 'l07.isomer-types', type: 'mc', prompt: '1-propanol and 2-propanol are…', choices: ['constitutional isomers', 'stereoisomers', 'enantiomers', 'not isomers'], answer: 0, explain: 'Both $C_3H_8O$ with the OH on different carbons → **constitutional isomers**.' },
+    { id: 'l07-q03', skill: 'l07.isomer-types', type: 'tf', prompt: 'True or false: stereoisomers always have the same functional groups.', answer: true, explain: '**True.** Stereoisomers have identical connectivity — only the 3-D arrangement differs.' },
+    { id: 'l07-q04', skill: 'l07.chiral-achiral', type: 'mc', prompt: 'A molecule that is **not** superimposable on its mirror image is…', choices: ['chiral', 'achiral', 'racemic', 'symmetric'], answer: 0, explain: 'Like hands → **chiral**.' },
+    { id: 'l07-q05', skill: 'l07.chiral-achiral', type: 'mc', prompt: 'Which molecule is chiral?', choices: ['CHBrClF', 'CH₂BrCl', 'H₂O', 'CH₄'], answer: 0, explain: '**CHBrClF** has a carbon with four different groups (H, Br, Cl, F).' },
+    { id: 'l07-q06', skill: 'l07.find-centers', type: 'mc', prompt: 'Which carbon type can **never** be a chirality center?', choices: ['a $CH_2$ carbon', 'a CH carbon with three different groups', 'a C bonded to OH, H, CH₃ and C₂H₅', 'a carbon in a ring'], answer: 0, explain: 'A $CH_2$ carbon has **two identical H\'s**. (Ring carbons *can* be centers.)' },
+    { id: 'l07-q07', skill: 'l07.find-centers', type: 'num', prompt: 'How many chirality centers does 2-bromopentane have?', figure: { smiles: 'CC(Br)CCC' }, answer: 1, tol: 0, explain: 'C2 has H, Br, CH₃ and CH₂CH₂CH₃ → **1**.' },
+    { id: 'l07-q08', skill: 'l07.find-centers', type: 'tf', prompt: 'True or false: 3-bromopentane has a chirality center.', figure: { smiles: 'CCC(Br)CC' }, answer: false, explain: '**False.** C3 has H, Br and **two identical ethyl groups**.' },
+    { id: 'l07-q09', skill: 'l07.find-centers', type: 'mc', prompt: 'Is C1 of methylcyclohexane a chirality center?', figure: { smiles: 'CC1CCCCC1' }, choices: ['No — the two ring paths from C1 are identical', 'Yes — it has four bonds', 'Yes — it holds a methyl group', 'No — ring carbons can never be chiral'], answer: 0, explain: 'Walking around the ring either way from C1 gives the same path, so two of its groups are identical.' },
+    { id: 'l07-q10', skill: 'l07.enantiomers', type: 'mc', prompt: 'What is the quickest way to draw the enantiomer of a chirality center?', choices: ['Swap any two groups', 'Swap all four groups', 'Rotate the drawing 180°', 'Change the wedge to a plain line'], answer: 0, explain: 'Swapping **two** groups gives the mirror-image configuration. Rotating gives the same molecule.' },
+    { id: 'l07-q11', skill: 'l07.enantiomers', type: 'mc', prompt: 'In a wedge-and-dash drawing, the dashed bond points…', choices: ['behind the page (away from you)', 'toward you', 'in the plane of the page', 'to a hydrogen'], answer: 0, explain: 'Dash = **away**, wedge = **toward** you.' },
+    { id: 'l07-q12', skill: 'l07.drugs', type: 'mc', prompt: 'A **racemic mixture** is…', choices: ['an equal mixture of two enantiomers', 'a mixture of cis and trans isomers', 'a pure single enantiomer', 'any mixture of drugs'], answer: 0, explain: '**50:50 mixture of enantiomers**.' },
+    { id: 'l07-q13', skill: 'l07.drugs', type: 'mc', prompt: 'A drug has two enantiomers: one therapeutic, the other toxic. Which statement is true?', choices: ['Only the therapeutic enantiomer should be administered', 'A racemic mixture is acceptable for treatment', 'Both enantiomers are geometrically identical', 'The doctor should prescribe candy bars instead'], answer: 0, explain: 'Giving the racemic mixture would also give the toxic enantiomer — like **thalidomide**. (Candy bars: tempting, but no.)' },
+    { id: 'l07-q14', skill: 'l07.drugs', type: 'mc', prompt: 'Why is ibuprofen sold as a racemic mixture?', choices: ['Its other enantiomer is inactive (not harmful)', 'Both enantiomers are toxic', 'It has no chirality center', 'Racemic mixtures are always safer'], answer: 0, explain: 'The inactive enantiomer does no harm, so separating them isn\'t necessary. Naproxen\'s other enantiomer **is** toxic, so it isn\'t sold racemic.' },
+    { id: 'l07-q15', skill: 'l07.drugs', type: 'mc', prompt: 'Why can two enantiomers of a drug act differently in the body?', choices: ['They must fit chiral receptors, like a hand in a glove', 'They have different formulas', 'One is always ionic', 'They have different functional groups'], answer: 0, explain: 'Receptors are chiral; only one "hand" fits properly.' },
+  ],
+  cards: [
+    { id: 'l07-k01', front: 'Isomers', back: 'Different compounds, **same molecular formula**.' },
+    { id: 'l07-k02', front: 'Constitutional isomers vs stereoisomers', back: 'Constitutional: **different connections**. Stereo: same connections, **different 3-D arrangement**.' },
+    { id: 'l07-k03', front: 'Chiral', back: '**Not superimposable** on its mirror image (like hands).' },
+    { id: 'l07-k04', front: 'Achiral', back: '**Superimposable** on its mirror image (like socks).' },
+    { id: 'l07-k05', front: 'Enantiomers', back: 'Mirror images that are **not superimposable**.' },
+    { id: 'l07-k06', front: 'Chirality center', back: 'A tetrahedral carbon bonded to **four different groups**.' },
+    { id: 'l07-k07', front: 'Never chirality centers', back: '**CH₃ and CH₂** carbons; carbons in **C=C or C≡C**.' },
+    { id: 'l07-k08', front: 'Chirality center in a ring?', back: 'Compare the two paths around the ring — if they differ, they count as different groups.' },
+    { id: 'l07-k09', front: 'Drawing the enantiomer', back: 'Reflect in a mirror, or **swap any two groups**.' },
+    { id: 'l07-k10', front: 'Racemic mixture', back: 'An **equal mixture of two enantiomers**.' },
+    { id: 'l07-k11', front: 'Thalidomide', back: 'Sold as both enantiomers (1960s): one treated nausea, the other caused **birth defects**.' },
+    { id: 'l07-k12', front: 'Ibuprofen vs naproxen', back: 'Ibuprofen: other enantiomer inactive → sold **racemic**. Naproxen: other enantiomer **toxic** → single enantiomer.' },
+    { id: 'l07-k13', front: 'How many chirality centers?', mol: 'CC(O)C(=O)O', back: '**1** — lactic acid\'s C2 has H, OH, CH₃ and COOH.' },
+  ],
+  keyTerms: [
+    { term: 'stereoisomers', def: 'Isomers that differ only in the 3-D arrangement of atoms.' },
+    { term: 'chiral', def: 'Not superimposable on its mirror image.' },
+    { term: 'achiral', def: 'Superimposable on its mirror image.' },
+    { term: 'enantiomers', def: 'Nonsuperimposable mirror images.' },
+    { term: 'chirality center', def: 'A carbon bonded to four different groups.' },
+    { term: 'racemic mixture', def: 'An equal mixture of two enantiomers.' },
+  ],
+};

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tests</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; margin: 16px; background: #fff; color: #111; }
+  .pass { color: #16874b; } .fail { color: #cf3b3b; white-space: pre-wrap; }
+  h1 { font-family: system-ui; }
+</style>
+</head>
+<body>
+<h1>Chem Companion — test suite</h1>
+<p>Runs the same tests as <code>node tests/run.js</code>, in this browser. Dev tools: <a href="gallery.html">structure gallery</a> · <a href="questions.html">question gallery</a> · <a href="sw-check.html?cleanup=1">offline check</a> · <a href="seed.html">seed demo data</a> (overwrites progress!)</p>
+<div id="out">Running…</div>
+<script type="module">
+import { run } from './harness.js';
+import './chem.test.js';
+import './chem2.test.js';
+import './state.test.js';
+import './quiz.test.js';
+import './content.test.js';
+import './app.test.js';
+const out = document.getElementById('out');
+out.textContent = '';
+const lines = [];
+const res = await run((s) => lines.push(s));
+for (const l of lines) {
+  const div = document.createElement('div');
+  div.className = l.startsWith('✗') ? 'fail' : 'pass';
+  div.textContent = l;
+  out.appendChild(div);
+}
+document.title = res.fail ? `✗ ${res.fail} failing` : `✓ ${res.pass} passing`;
+</script>
+</body>
+</html>

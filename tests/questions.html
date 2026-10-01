@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Question gallery (dev)</title>
+<link rel="stylesheet" href="../css/app.css">
+<style> body { padding: 12px; } .g-head { font: 600 12px var(--mono); color: var(--text-3); margin: 18px 0 6px; } </style>
+</head>
+<body>
+<h1>Question gallery</h1>
+<p class="muted">Dev tool: every generator (or ?gen=id) rendered with a correct (?wrong=1: wrong) answer so feedback can be reviewed visually. ?seed=… changes the samples.</p>
+<div id="out"></div>
+<script type="module">
+import { GENERATORS, makeGenerated } from '../js/quiz/generators.js';
+import { authoredQuestions } from '../js/quiz/bank.js';
+import { questionView } from '../js/ui/question.js';
+import { checkAnswer } from '../js/quiz/checkers.js';
+
+const p = new URLSearchParams(location.search);
+const seed = p.get('seed') || 'gallery';
+const wrong = p.get('wrong') === '1';
+const only = p.get('gen');
+const authored = p.get('authored');
+const out = document.getElementById('out');
+
+function perfect(q) {
+  switch (q.type) {
+    case 'num': return String(q.answer);
+    case 'name': return wrong ? '2-methylhexane' : q.name.name;
+    case 'text': case 'formula': return wrong ? 'C2H6' : q.answer;
+    case 'mc': case 'struct': return wrong ? (q.answer + 1) % q.choices.length : q.answer;
+    case 'tf': return wrong ? !q.answer : q.answer;
+    case 'multi': return wrong ? [0] : q.answer;
+    case 'atoms': return wrong ? [0] : q.answer;
+    default: return q.answer;
+  }
+}
+
+let list;
+if (authored) list = authoredQuestions().filter((q) => q.lecture === authored);
+else list = GENERATORS.filter((g) => !only || g.id === only).map((g) => makeGenerated(g.id, `${seed}:${g.id}`)).filter(Boolean);
+for (const q of list) {
+  const r = perfect(q);
+  out.appendChild(Object.assign(document.createElement('div'), { className: 'g-head', textContent: `${q.id} · ${q.type}` }));
+  const v = questionView(q, { mode: 'review', review: { response: r, result: checkAnswer(q, r) } });
+  out.appendChild(v.el);
+}
+</script>
+</body>
+</html>

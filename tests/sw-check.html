@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SW check</title>
+<style>
+  body { font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; margin: 16px; background: #fff; color: #111; }
+  .pass { color: #16874b; } .fail { color: #cf3b3b; white-space: pre-wrap; }
+  h1 { font-family: system-ui; }
+</style>
+</head>
+<body>
+<h1>Service worker check</h1>
+<p>Installs <code>sw.js</code>, then verifies every precached file is in the cache and served by the worker.
+Add <code>?cleanup=1</code> to unregister and delete the caches afterwards (recommended on localhost).</p>
+<div id="out">Running…</div>
+<script type="module">
+const out = document.getElementById('out');
+out.textContent = '';
+let fails = 0;
+const log = (ok, msg) => {
+  if (!ok) fails++;
+  const d = document.createElement('div');
+  d.className = ok ? 'pass' : 'fail';
+  d.textContent = `${ok ? '✓' : '✗'} ${msg}`;
+  out.appendChild(d);
+};
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+try {
+  // What the worker should cache, read from sw.js itself.
+  const src = await (await fetch('../sw.js', { cache: 'no-store' })).text();
+  const version = src.match(/CACHE_VERSION = '([^']+)'/)[1];
+  const expected = [...src.match(/const PRECACHE = \[([\s\S]*?)\];/)[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+  log(expected.length > 10, `sw.js lists ${expected.length} files under ${version}`);
+
+  const reg = await navigator.serviceWorker.register('../sw.js', { scope: '../' });
+  for (let i = 0; i < 100 && !(reg.active && reg.active.state === 'activated'); i++) await sleep(200);
+  log(reg.active && reg.active.state === 'activated', `worker activated (scope ${reg.scope})`);
+
+  const keys = await caches.keys();
+  log(keys.includes(version), `cache ${version} exists`);
+  const cache = await caches.open(version);
+  const base = new URL('../', location.href);
+  const missing = [];
+  for (const f of expected) {
+    const hit = await cache.match(new URL(f, base).href);
+    if (!hit || !hit.ok) missing.push(f);
+  }
+  log(!missing.length, missing.length ? `missing from cache: ${missing.join(', ')}` : `all ${expected.length} files cached`);
+
+  // The worker claims open pages, so this page's fetches now go through it.
+  for (let i = 0; i < 25 && !navigator.serviceWorker.controller; i++) await sleep(200);
+  log(!!navigator.serviceWorker.controller, 'page is controlled by the worker');
+  const shell = await cache.match(new URL('index.html', base).href);
+  log(shell && (await shell.text()).includes('js/app.js'), 'cached app shell loads the app');
+} catch (e) {
+  log(false, `error: ${e && e.stack || e}`);
+}
+
+if (new URLSearchParams(location.search).has('cleanup')) {
+  for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
+  for (const k of await caches.keys()) if (k.startsWith('cc-')) await caches.delete(k);
+  log(true, 'cleaned up (unregistered + caches deleted)');
+}
+// The title doubles as a machine-readable result for headless runs.
+const lines = [...out.children].map((d) => d.textContent);
+document.title = fails ? `✗ ${fails} failing: ${lines.filter((l) => l.startsWith('✗')).join(' | ')}` : `✓ SW OK: ${lines.join(' | ')}`;
+</script>
+</body>
+</html>

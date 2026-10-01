@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Seed demo data (dev)</title></head>
+<body>
+<p>Dev tool: fills this browser with realistic demo progress, then opens the app. <b>Overwrites local progress.</b></p>
+<script type="module">
+import { defaultState, recordAttempt, markSectionRead, dayKey, addDays, STORAGE_KEY } from '../js/state/store.js';
+import { schedule } from '../js/state/srs.js';
+import { LECTURES, allCards } from '../content/course.js';
+import { makeRng } from '../js/lib/random.js';
+
+const params = new URLSearchParams(location.search);
+if (params.get('clear') === '1') {
+  localStorage.removeItem(STORAGE_KEY);
+  location.replace(`../index.html${params.get('to') || ''}`);
+} else {
+  const now = Date.now();
+  const r = makeRng('demo');
+  const st = defaultState(now - 20 * 86400000);
+  st.profile.name = params.get('name') || 'Demo';
+  st.profile.onboarded = true;
+  st.meta.lastSeenVersion = '2026.09.29';
+  st.meta.lastBackupAt = now;
+  if (params.get('theme')) st.profile.theme = params.get('theme');
+  // 12 days of study, strongest on early lectures
+  for (let d = 12; d >= 0; d--) {
+    if (d === 5) continue;
+    const ts = now - d * 86400000;
+    for (const l of LECTURES.slice(0, 8)) {
+      for (const s of l.skills) {
+        const skill = r.int(0, 3) === 0 ? 0 : 1;
+        if (!skill) continue;
+        const acc = l.number <= 4 ? 0.55 + r.next() * 0.35 : 0.7 + r.next() * 0.3;
+        for (let k = 0; k < r.int(0, 2); k++) recordAttempt(st, { skill: s.id, ok: r.next() < acc, ts: ts + k * 1000, ms: 30000 });
+      }
+    }
+    st.activity[dayKey(ts)].secs = r.int(600, 2400);
+  }
+  for (const l of LECTURES.slice(0, 7)) for (const s of l.sections.slice(0, l.number <= 5 ? l.sections.length : 3)) markSectionRead(st, l.id, s.id, now - 86400000);
+  const today = dayKey(now);
+  allCards().slice(0, 60).forEach((c, i) => { st.cards[c.id] = schedule(null, 2, addDays(today, -(i % 4))); });
+  st.exams.push({ id: 'e1', title: 'Exam 2', date: addDays(today, 9), lectures: ['l05', 'l06', 'l07', 'l08'], updatedAt: now });
+  st.sessions.push({ id: 's1', mode: 'practice', title: 'Lecture 3: Alkanes', startedAt: now - 3600000, endedAt: now - 3000000, lectures: ['l03'], total: 10, correct: 8, secs: 400, results: [] });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(st));
+  location.replace(`../index.html${params.get('to') || ''}`);
+}
+</script>
+</body></html>

@@ -1,0 +1,267 @@
+// Lecture 1 — Introduction to Organic Chemistry (Smith Ch. 11.1–11.4)
+export default {
+  id: 'l01',
+  number: 1,
+  title: 'Intro to Organic Chemistry',
+  subtitle: 'Bonding rules, shapes & drawing molecules',
+  chapter: 'Ch. 11.1–11.4',
+  tested: true,
+  summary: 'The ground rules every later lecture builds on: how many bonds each atom makes, what shape molecules take, and how to read condensed and skeletal drawings.',
+  skills: [
+    { id: 'l01.bonding', title: 'Bonds & lone pairs', desc: 'HONC 1-2-3-4: how many bonds and lone pairs each atom has.' },
+    { id: 'l01.skeletal', title: 'Reading skeletal structures', desc: 'Find the hidden carbons and hydrogens; write the molecular formula.' },
+    { id: 'l01.shapes', title: 'Shapes & bond angles', desc: 'Tetrahedral, trigonal planar, linear, bent, trigonal pyramidal.' },
+    { id: 'l01.condensed', title: 'Condensed structures', desc: 'Translate CH₃CH(CH₃)CH₂OH-style formulas to drawings and back.' },
+  ],
+  sections: [
+    {
+      id: 'what',
+      title: 'What is organic chemistry?',
+      minutes: 3,
+      blocks: [
+        { t: 'p', text: '**Organic chemistry** is the study of compounds that contain **carbon**. Clothes, food, medicines, gasoline, soaps and plastics are almost all organic compounds.' },
+        { t: 'p', text: 'Some come straight from nature (cotton, wool, silk); others are made in labs (nylon, polyester). Either way, the same bonding rules apply.' },
+        {
+          t: 'mols', items: [
+            { smiles: 'C', caption: 'methane — natural gas' },
+            { smiles: 'CCO', caption: 'ethanol — in alcoholic drinks' },
+            { smiles: 'COc1cc(CNC(=O)CCCC/C=C/C(C)C)ccc1O', caption: 'capsaicin — makes peppers spicy' },
+          ],
+        },
+        { t: 'callout', kind: 'key', title: 'The big idea', text: 'All organic compounds contain carbon, and most contain hydrogen. **Carbon always forms four bonds.**' },
+      ],
+    },
+    {
+      id: 'bonding',
+      title: 'Bonding rules: HONC 1-2-3-4',
+      minutes: 7,
+      blocks: [
+        { t: 'p', text: 'Every structure you will ever draw in this class follows these counts. If an atom breaks its rule, the structure is wrong.' },
+        {
+          t: 'table', head: ['Atom', 'Bonds', 'Lone pairs', 'Example'],
+          rows: [
+            ['H', '1', '0', '$CH_4$'],
+            ['C', '4', '0', '$CH_4$, $C_2H_6$'],
+            ['N', '3', '1', '$NH_3$, $CH_3NH_2$'],
+            ['O', '2', '2', '$H_2O$, $CH_3OH$'],
+            ['F, Cl, Br, I (halogens)', '1', '3', '$CH_3Cl$'],
+          ],
+        },
+        { t: 'callout', kind: 'memory', title: 'Memory trick: HONC 1-2-3-4', text: '**H**ONC = **H** 1 bond, **O** 2, **N** 3, **C** 4. (Say it like "honk"!) Lone pairs fill the rest of the octet: O has 2, N has 1, halogens have 3.' },
+        { t: 'h', text: 'Single, double and triple bonds' },
+        { t: 'p', text: 'Carbon can use its four bonds in different ways, but the **total is always 4**. A double bond counts as 2, a triple bond as 3.' },
+        {
+          t: 'mols', items: [
+            { smiles: 'CC', caption: 'ethane: C–C (each C has 3 H)', mode: 'full' },
+            { smiles: 'C=C', caption: 'ethylene: C=C (each C has 2 H)', mode: 'full' },
+            { smiles: 'C#C', caption: 'acetylene: C≡C (each C has 1 H)', mode: 'full' },
+          ],
+        },
+        { t: 'p', text: 'Carbon atoms can link into **chains** or close into **rings**.' },
+        { t: 'h', text: 'Heteroatoms' },
+        { t: 'p', text: 'Any atom that is **not C or H** is a **heteroatom** — commonly N, O, F, Cl, Br and I. Heteroatoms carry **lone pairs** (nonbonding electrons). Oxygen can make **two single bonds** (as in alcohols) or **one double bond** (as in C=O).' },
+        {
+          t: 'mols', items: [
+            { smiles: 'CO', caption: 'methanol: O with 2 single bonds + 2 lone pairs', mode: 'full' },
+            { smiles: 'C=O', caption: 'formaldehyde: O with 1 double bond + 2 lone pairs', mode: 'full' },
+            { smiles: 'CN', caption: 'methylamine: N with 3 bonds + 1 lone pair', mode: 'full' },
+          ],
+        },
+        {
+          t: 'example', title: 'Draw in the hydrogens', prompt: 'The carbon skeleton C–C–C–C has only the carbons drawn. Add hydrogens so every carbon has 4 bonds. What is the formula?',
+          steps: [
+            'The two **end** carbons each have 1 bond to carbon → they need **3 H** each.',
+            'The two **middle** carbons each have 2 bonds to carbon → they need **2 H** each.',
+            'Total H = 3 + 2 + 2 + 3 = 10.',
+          ],
+          answer: '$C_4H_{10}$ (butane)',
+          mol: { smiles: 'CCCC', mode: 'full' },
+        },
+        {
+          t: 'example', title: 'Now with a double bond', prompt: 'Add hydrogens to C=C–C–C.',
+          steps: [
+            'C1 has a double bond (2 bonds used) → **2 H**.',
+            'C2 has a double bond + a single bond (3 used) → **1 H**.',
+            'C3 has 2 single bonds → **2 H**; C4 has 1 → **3 H**.',
+          ],
+          answer: '$C_4H_8$ — notice the double bond costs 2 hydrogens.',
+          mol: { smiles: 'C=CCC', mode: 'full' },
+        },
+        { t: 'callout', kind: 'warn', title: 'Where students lose points', text: '- Giving carbon **5 bonds** (count the double bond as 2!).\n- Forgetting that O and N keep their **own H\'s** (–OH, –NH₂).\n- Forgetting lone pairs on O (2) and N (1) when asked about shape.' },
+      ],
+    },
+    {
+      id: 'shapes',
+      title: 'Shapes of molecules (VSEPR)',
+      minutes: 8,
+      blocks: [
+        { t: 'p', text: '**VSEPR theory:** the groups around a central atom spread out as **far apart as possible**. A "group" is either a **bonded atom** or a **lone pair**. (A double or triple bond counts as ONE group.)' },
+        {
+          t: 'table', head: ['Groups around the atom', 'Arrangement', 'Bond angle', 'Example'],
+          rows: [
+            ['2', 'linear', '180°', 'each C in $HC≡CH$; C in $CO_2$'],
+            ['3', 'trigonal planar', '120°', 'each C in $H_2C=CH_2$; C in C=O'],
+            ['4', 'tetrahedral', '109.5°', 'C in $CH_4$; any C with 4 single bonds'],
+          ],
+        },
+        { t: 'callout', kind: 'tip', title: 'Fast rule for carbon', text: '4 single bonds → **tetrahedral, 109.5°** · has a double bond → **trigonal planar, 120°** · has a triple bond → **linear, 180°**' },
+        { t: 'h', text: 'When lone pairs are present' },
+        { t: 'p', text: 'Lone pairs take up space but are "invisible" in the name of the shape. The **shape** describes only where the atoms are.' },
+        {
+          t: 'table', head: ['Atom', 'Atoms bonded', 'Lone pairs', 'Shape', 'Angle (as taught in class)'],
+          rows: [
+            ['N in $NH_3$', '3', '1', 'trigonal pyramidal', '~109.5°'],
+            ['O in $H_2O$', '2', '2', 'bent', '~109.5°'],
+            ['O in an alcohol or ether', '2', '2', 'bent', '~109.5°'],
+          ],
+        },
+        { t: 'callout', kind: 'exam', title: 'Match your professor', text: 'On the slides, NH₃ and H₂O are both given as **109.5°** (all four groups point to tetrahedral corners). Real measured angles are a bit smaller (~107° and ~104.5°), but use **109.5°** on your exams.' },
+        {
+          t: 'mols', items: [
+            { smiles: 'C', caption: 'CH₄: tetrahedral', mode: 'full' },
+            { smiles: 'N', caption: 'NH₃: trigonal pyramidal', mode: 'full' },
+            { smiles: 'O', caption: 'H₂O: bent', mode: 'full' },
+            { smiles: 'O=C=O', caption: 'CO₂: linear', mode: 'full' },
+          ],
+        },
+        { t: 'h', text: 'Drawing 3-D: wedges and dashes' },
+        { t: 'p', text: 'To show a tetrahedral carbon on flat paper: a **solid line** is a bond in the plane of the page, a **wedge** comes **toward** you, and a **dashed** bond goes **behind** the page.' },
+        { t: 'tetra', items: [{ groups: ['H', 'H', 'H', 'H'], caption: 'methane in 3-D' }] },
+        {
+          t: 'check', q: {
+            id: 'l01-c-shape', skill: 'l01.shapes', type: 'mc', prompt: 'What is the shape of $CO_2$?',
+            choices: ['linear', 'bent', 'trigonal planar', 'tetrahedral'], answer: 0,
+            explain: 'C in CO₂ has two groups (two C=O double bonds) and no lone pairs → **linear, 180°**.',
+          },
+        },
+      ],
+    },
+    {
+      id: 'condensed',
+      title: 'Condensed structures',
+      minutes: 7,
+      blocks: [
+        { t: 'p', text: 'In a **condensed structure**, every atom is written, but the bond lines (and lone pairs) are left out. Each carbon is written together with its hydrogens.' },
+        { t: 'list', items: ['a carbon with 3 H → $CH_3$', 'a carbon with 2 H → $CH_2$', 'a carbon with 1 H → $CH$', 'a carbon with no H → $C$'] },
+        {
+          t: 'example', title: 'Full structure → condensed', prompt: 'Condense this structure.',
+          mol: { smiles: 'CCC(C)CO', mode: 'full' },
+          steps: [
+            'Walk along the longest chain from left to right.',
+            'Write each carbon with its hydrogens: $CH_3$, then $CH_2$, then $CH$…',
+            'A branch goes in **parentheses right after** the carbon it is attached to: $CH(CH_3)$.',
+            'Finish with the $CH_2OH$ end.',
+          ],
+          answer: '$CH_3CH_2CH(CH_3)CH_2OH$',
+        },
+        { t: 'h', text: 'Shortcuts' },
+        { t: 'list', items: ['**Repeated $CH_2$ groups** can be grouped: $CH_3CH_2CH_2CH_2CH_2CH_3$ = $CH_3(CH_2)_4CH_3$', '**Identical groups** on one carbon: $(CH_3)_2CH$– means two methyls on one CH', 'Some bonds may be drawn in for emphasis, e.g. $CH_2=CHCH_3$ shows the double bond'] },
+        { t: 'callout', kind: 'tip', title: 'C=O in condensed formulas', text: '$CH_3CHO$ = an aldehyde (C=O at the end) · $CH_3COCH_3$ = a ketone (C=O in the middle) · $CH_3COOH$ = a carboxylic acid · $CH_3CH_2OH$ = an alcohol. You will meet these families in Lecture 2.' },
+        {
+          t: 'check', q: {
+            id: 'l01-c-cond', skill: 'l01.condensed', type: 'mc', prompt: 'How many carbons are in $CH_3(CH_2)_5CH_3$?',
+            choices: ['5', '7', '8', '6'], answer: 1,
+            explain: 'One $CH_3$ + five $CH_2$ + one $CH_3$ = **7 carbons** (heptane).',
+          },
+        },
+      ],
+    },
+    {
+      id: 'skeletal',
+      title: 'Skeletal (line) structures',
+      minutes: 8,
+      blocks: [
+        { t: 'p', text: 'Skeletal structures are the fastest way to draw organic molecules — and the way most exam questions are drawn.' },
+        {
+          t: 'steps', title: 'How to read a skeletal structure', items: [
+            'There is a **carbon at every corner** (junction of two lines) and at **every line end**.',
+            'Each carbon has **enough hydrogens to make 4 bonds** (they are not drawn).',
+            '**Heteroatoms are always drawn**, along with any H\'s attached to them (OH, NH₂, SH).',
+          ],
+        },
+        {
+          t: 'mols', items: [
+            { smiles: 'CCCCCC', caption: 'hexane: 6 carbons (count corners + ends)', numbers: 'auto' },
+            { smiles: 'CCCCCC', caption: 'the same molecule with its hidden H shown', mode: 'condensed' },
+          ],
+        },
+        {
+          t: 'example', title: 'Draw the skeletal structure', prompt: 'Draw $CH_3CH_2CH_2CH_2CH_2CH_2OH$ as a skeletal structure.',
+          steps: [
+            'Count the carbons: **6**.',
+            'Draw a zig-zag with 6 points (each carbon is a point, each bond a line).',
+            'Hydrogens on carbons are omitted.',
+            'The O is a heteroatom: draw it, **with its H** (–OH), at the end.',
+          ],
+          mol: { smiles: 'CCCCCCO', numbers: 'auto' },
+          answer: 'A 6-carbon zig-zag ending in OH (1-hexanol).',
+        },
+        { t: 'callout', kind: 'warn', title: 'Common mistakes', text: '- Not counting the **line ends** as carbons.\n- Drawing a straight line instead of a zig-zag (a straight line looks like one long bond).\n- Leaving off the **H on OH** — "O" alone would mean an O with a missing bond.' },
+        { t: 'callout', kind: 'life', title: 'Why this matters later', text: 'Every naming question in Lectures 3–10 starts with finding and counting carbons in a skeletal drawing. If this feels slow, drill "Hidden hydrogens" in Practice until it is automatic.' },
+        {
+          t: 'check', q: {
+            id: 'l01-c-skel', skill: 'l01.skeletal', type: 'num', prompt: 'How many carbon atoms are in this molecule?',
+            figure: { smiles: 'CC(C)CC(O)CC' }, answer: 7, tol: 0,
+            explain: 'Count every corner and every line end: **7 carbons**. (The O is drawn separately.)',
+          },
+        },
+      ],
+    },
+    {
+      id: 'recap',
+      title: 'Recap & test yourself',
+      minutes: 3,
+      blocks: [
+        { t: 'list', items: ['**HONC 1-2-3-4**: H 1 bond, O 2, N 3, C 4. Lone pairs: O 2, N 1, halogen 3.', 'Count groups (atoms + lone pairs): 2 → linear 180°, 3 → trigonal planar 120°, 4 → tetrahedral 109.5°.', 'N with 3 atoms + 1 lone pair → trigonal pyramidal; O with 2 atoms + 2 lone pairs → bent.', 'Condensed: write every atom, skip the lines. Skeletal: C at every corner/end, H on C hidden, heteroatoms shown.'] },
+        { t: 'link', text: 'Practice Lecture 1 →', href: '#/practice/lecture/l01' },
+      ],
+    },
+  ],
+  questions: [
+    { id: 'l01-q01', skill: 'l01.bonding', type: 'mc', prompt: 'How many covalent bonds does a neutral **nitrogen** atom form in organic molecules?', choices: ['1', '2', '3', '4'], answer: 2, shuffle: false, explain: 'HONC 1-2-3-4: N forms **3 bonds** and keeps **1 lone pair**.' },
+    { id: 'l01-q02', skill: 'l01.bonding', type: 'mc', prompt: 'How many **lone pairs** does the oxygen in an alcohol ($R–OH$) have?', choices: ['0', '1', '2', '3'], answer: 2, shuffle: false, explain: 'Oxygen makes 2 bonds and has **2 lone pairs** (8 electrons total).' },
+    { id: 'l01-q03', skill: 'l01.bonding', type: 'tf', prompt: 'True or false: a carbon atom with one double bond can also make two single bonds.', answer: true, explain: '**True.** Double bond (2) + two single bonds (2) = 4 bonds total — like the carbons in ethylene.' },
+    { id: 'l01-q04', skill: 'l01.bonding', type: 'mc', prompt: 'Which of these is a **heteroatom**?', choices: ['Cl', 'C', 'H', 'None of these'], answer: 0, explain: 'A heteroatom is any atom other than C or H — **Cl** is one (so are N, O, S, F, Br, I).' },
+    { id: 'l01-q05', skill: 'l01.bonding', type: 'mc', prompt: 'Which structure breaks a bonding rule?', choices: ['$CH_3–CH_2–OH$', '$CH_3–CH_3$', '$CH_2=CH–CH_3$', '$CH_3–CH_2=CH_2$'], answer: 3, explain: 'In $CH_3–CH_2=CH_2$ the middle carbon has 2 H + 1 single bond + a double bond (2) = **5 bonds** — impossible. It should be $CH_3–CH=CH_2$.' },
+    { id: 'l01-q06', skill: 'l01.bonding', type: 'formula', prompt: 'Add hydrogens to the skeleton C–C–C–C (all single bonds). What is the molecular formula?', answer: 'C4H10', explain: 'End carbons get 3 H, middle carbons get 2 H: 3+2+2+3 = 10 → **$C_4H_{10}$**.' },
+    { id: 'l01-q07', skill: 'l01.bonding', type: 'formula', prompt: 'Add hydrogens to the skeleton C=C–C–C. What is the molecular formula?', answer: 'C4H8', explain: '2 + 1 + 2 + 3 = 8 H → **$C_4H_8$**. The double bond "costs" two hydrogens compared with butane.' },
+    { id: 'l01-q08', skill: 'l01.shapes', type: 'mc', prompt: 'What is the shape of methane, $CH_4$?', choices: ['tetrahedral', 'trigonal planar', 'linear', 'bent'], answer: 0, shuffle: false, explain: 'Four bonded atoms, no lone pairs → **tetrahedral**, 109.5°.' },
+    { id: 'l01-q09', skill: 'l01.shapes', type: 'mc', prompt: 'What is the shape of ammonia, $NH_3$?', choices: ['tetrahedral', 'trigonal planar', 'trigonal pyramidal', 'bent'], answer: 2, shuffle: false, explain: 'N has 3 atoms + 1 lone pair = 4 groups (tetrahedral arrangement), but the **shape** of the atoms is **trigonal pyramidal**.' },
+    { id: 'l01-q10', skill: 'l01.shapes', type: 'mc', prompt: 'What is the shape of water, $H_2O$?', choices: ['linear', 'bent', 'trigonal pyramidal', 'trigonal planar'], answer: 1, shuffle: false, explain: 'O has 2 atoms + 2 lone pairs → **bent** (not linear, because the lone pairs push the H\'s down).' },
+    { id: 'l01-q11', skill: 'l01.shapes', type: 'mc', prompt: 'In a skeletal drawing, a **wedge** bond means the bond…', choices: ['points toward you (out of the page)', 'points away from you (behind the page)', 'lies in the plane of the page', 'is a double bond'], answer: 0, explain: 'Wedge = toward you; dash = away from you; plain line = in the plane.' },
+    { id: 'l01-q12', skill: 'l01.shapes', type: 'mc', prompt: 'What bond angle surrounds a carbon that has **four single bonds**?', choices: ['109.5°', '120°', '180°', '90°'], answer: 0, shuffle: false, explain: 'Any carbon with four single bonds is **tetrahedral: 109.5°**.' },
+    { id: 'l01-q13', skill: 'l01.condensed', type: 'mc', prompt: 'Which condensed formula is the same compound as $CH_3CH_2CH_2CH_2CH_3$?', choices: ['$CH_3(CH_2)_3CH_3$', '$CH_3(CH_2)_5CH_3$', '$(CH_3)_2CHCH_3$', '$CH_3(CH_2)_2CH_3$'], answer: 0, explain: 'There are **three** $CH_2$ groups between the two $CH_3$ groups → $CH_3(CH_2)_3CH_3$ (pentane).' },
+    { id: 'l01-q14', skill: 'l01.condensed', type: 'mc', prompt: 'In $CH_3CH(CH_3)CH_2OH$, what is attached to the second carbon?', choices: ['a methyl group ($CH_3$) branch', 'an OH group', 'a double bond', 'nothing extra'], answer: 0, explain: 'Parentheses show a branch on the carbon right before them: the CH carries a **$CH_3$ branch**.' },
+    { id: 'l01-q15', skill: 'l01.skeletal', type: 'tf', prompt: 'True or false: in a skeletal structure, the hydrogens on an oxygen (like the H in –OH) are drawn in.', answer: true, explain: '**True.** Only H\'s on **carbon** are hidden. Heteroatoms and their H\'s are always shown.' },
+    { id: 'l01-q16', skill: 'l01.skeletal', type: 'formula', prompt: 'What is the molecular formula of this compound?', figure: { smiles: 'CC(C)CO' }, answer: 'C4H10O', explain: '4 carbons, 9 H on carbons + 1 H on O = 10 H, 1 O → **$C_4H_{10}O$**.' },
+  ],
+  cards: [
+    { id: 'l01-k01', front: 'HONC 1-2-3-4', back: 'Number of bonds: **H** 1, **O** 2, **N** 3, **C** 4.' },
+    { id: 'l01-k02', front: 'Organic chemistry', back: 'The study of compounds that contain **carbon**.' },
+    { id: 'l01-k03', front: 'Heteroatom', back: 'Any atom that is **not C or H** (N, O, S, F, Cl, Br, I). Heteroatoms have lone pairs.' },
+    { id: 'l01-k04', front: 'Lone pairs on N, O and halogens', back: 'N: **1** · O: **2** · F/Cl/Br/I: **3**' },
+    { id: 'l01-k05', front: 'VSEPR theory', back: 'Groups (atoms + lone pairs) around a central atom arrange themselves **as far apart as possible**.' },
+    { id: 'l01-k06', front: '2 groups around an atom', back: '**Linear**, 180° (e.g. a C with a triple bond, or CO₂).' },
+    { id: 'l01-k07', front: '3 groups around an atom', back: '**Trigonal planar**, 120° (e.g. a C with a double bond).' },
+    { id: 'l01-k08', front: '4 groups around an atom', back: '**Tetrahedral**, 109.5° (e.g. a C with four single bonds).' },
+    { id: 'l01-k09', front: 'Shape of NH₃', back: '**Trigonal pyramidal** (3 atoms + 1 lone pair), ~109.5° in class.' },
+    { id: 'l01-k10', front: 'Shape of H₂O (and the O in alcohols/ethers)', back: '**Bent** (2 atoms + 2 lone pairs), ~109.5° in class.' },
+    { id: 'l01-k11', front: 'Wedge vs dash', back: '**Wedge** = toward you (in front of the page). **Dash** = away from you (behind the page). Plain line = in the plane.' },
+    { id: 'l01-k12', front: 'Condensed structure', back: 'All atoms written, bond lines and lone pairs left out: e.g. $CH_3CH_2OH$. Branches go in parentheses after their carbon.' },
+    { id: 'l01-k13', front: 'Skeletal structure rules', back: 'C at every corner and line end · H\'s on C not drawn · heteroatoms and their H\'s drawn.' },
+    { id: 'l01-k14', front: 'What is this?', mol: 'CCO', back: '**Ethanol**, $CH_3CH_2OH$ ($C_2H_6O$) — the alcohol in alcoholic drinks.' },
+    { id: 'l01-k15', front: 'Methane', back: '$CH_4$ — the main component of **natural gas**; the simplest organic compound.' },
+    { id: 'l01-k16', front: 'What does $(CH_2)_4$ mean in a condensed formula?', back: 'Four $CH_2$ groups in a row: $CH_2CH_2CH_2CH_2$.' },
+  ],
+  keyTerms: [
+    { term: 'organic chemistry', def: 'The study of carbon-containing compounds.' },
+    { term: 'heteroatom', def: 'Any atom other than carbon or hydrogen (N, O, S, halogens).' },
+    { term: 'lone pair', def: 'A pair of nonbonding valence electrons.' },
+    { term: 'VSEPR theory', def: 'Groups around a central atom spread as far apart as possible, which sets the shape.' },
+    { term: 'tetrahedral', def: 'Four groups around an atom, 109.5° apart.' },
+    { term: 'trigonal planar', def: 'Three groups around an atom in a flat triangle, 120° apart.' },
+    { term: 'linear', def: 'Two groups on opposite sides of an atom, 180° apart.' },
+    { term: 'condensed structure', def: 'A structure with all atoms written but bond lines omitted, like CH₃CH₂OH.' },
+    { term: 'skeletal structure', def: 'A line drawing where each corner and line end is a carbon and H\'s on carbon are omitted.' },
+  ],
+};
