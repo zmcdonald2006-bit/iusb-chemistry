@@ -44,7 +44,10 @@ It's a static web app with no build step and no dependencies. It works offline, 
 - This is set up with a free Firebase project, about 10 minutes, in **[docs/GOOGLE_SIGN_IN.md](docs/GOOGLE_SIGN_IN.md)**.
 - Signed-in people get their progress on every device. Changes sync live, and nothing is lost if they clear their browser or lose their phone.
 - Each person can only read and write their own data.
-- Signing in is optional. Until you paste the Firebase settings into `js/cloud/config.js`, the sign-in buttons simply don't appear.
+- **Signing in is required** once sign-in is set up. When the app opens and nobody is signed in, it shows a "Sign in with Google" screen. After that, she stays signed in on that device; it only asks again after signing out.
+- It never locks anyone out of studying: offline, it offers **Continue offline**, and if a sign-in attempt fails or is cancelled, it offers **Not now** (until the app is next opened).
+- A cloud icon in the top bar shows the save status: a green check means everything is saved to the account. Tap it for details.
+- Without Firebase settings in `js/cloud/config.js`, there's no sign-in at all and progress is saved on the device.
 
 Without signing in:
 

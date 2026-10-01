@@ -19,12 +19,21 @@ export const COURSE = {
   school: 'IU South Bend',
   textbook: 'Smith, General, Organic & Biological Chemistry',
   // Bump when content changes so the app can show "what's new".
-  contentVersion: '2026.10.01',
+  contentVersion: '2026.10.01.2',
   lectures: LECTURES,
 };
 
 // Shown on the "What's new" screen after an update. Newest first.
 export const CHANGELOG = [
+  {
+    version: '2026.10.01.2',
+    title: 'Your progress, always saved to your Google account',
+    items: [
+      'Sign in with Google when you open the app, and you stay signed in',
+      'The cloud at the top shows your progress is saved (green check = saved to your account)',
+      'Updates now install by themselves when you open the app',
+    ],
+  },
   {
     version: '2026.10.01',
     title: 'A clearer reaction map, nursing connections, and a "This confused me" button',

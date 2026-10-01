@@ -59,7 +59,7 @@ export function runOnboarding(app) {
 
   function draw() {
     clear(body);
-    for (const el of steps[step]()) body.appendChild(el);
+    for (const el of steps[step]()) if (el) body.appendChild(el);
     body.appendChild(h('div', { class: 'dots', 'aria-hidden': 'true' }, steps.map((_, i) => h('span', { class: i === step ? 'on' : '' }))));
     const foot = h('div', { style: { marginTop: '16px' } }, next, step > 0 ? back : null);
     next.textContent = step === steps.length - 1 ? 'Let\'s go!' : 'Next';

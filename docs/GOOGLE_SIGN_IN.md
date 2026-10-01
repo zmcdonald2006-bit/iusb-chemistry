@@ -5,7 +5,8 @@ When this is set up, anyone using the app can sign in with their Google account,
 - **Any device:** progress follows them to every phone or computer they sign in on, and syncs live between them.
 - **Safe:** nothing is lost if they clear their browser or lose their phone.
 - **Offline:** the app still works offline. Changes sync when it's back online.
-- **Optional:** people who don't sign in keep progress on their device, as before.
+- **Required, once:** when the app opens and nobody is signed in, it asks them to sign in with Google. They stay signed in on that device afterwards. If they're offline, or sign-in doesn't work, they can still study, and progress is kept on the device until they sign in.
+- **Visible:** a cloud icon in the top bar shows whether everything is saved to the account (green check).
 
 It uses **Firebase** (Google's app backend) on the free **Spark** plan, so **there's no cost and no credit card**. The free limits are 50,000 reads and 20,000 writes a day and 1 GB of storage. Each person uses a few dozen writes a day, so even a whole class stays far below that. The paid **Blaze** plan includes the same free amount each day and only charges above it, so this app costs nothing on Blaze too.
 

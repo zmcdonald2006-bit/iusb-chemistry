@@ -3,6 +3,7 @@ import { createStore, memoryStorage, recordAttempt, mergeStates, defaultState, m
 import { createSync, syncMerge, friendlyError } from '../js/cloud/sync.js';
 import { createFakeCloud } from '../js/cloud/fake.js';
 import { fingerprint, encodeState, decodeState, cloudCopy } from '../js/cloud/codec.js';
+import { gateMode, gateSettled } from '../js/cloud/gate.js';
 import { makeRng } from '../js/lib/random.js';
 
 const T0 = new Date(2026, 9, 1, 12).getTime();
@@ -362,3 +363,43 @@ function storeWith(state) {
   storage.setItem('chem-companion:v1', JSON.stringify(state));
   return createStore({ storage, debounceMs: 0, now });
 }
+
+describe('Sign-in is required', () => {
+  const v = (o) => ({ enabled: true, status: 'signed-out', user: null, authReady: true, error: null, ...o });
+  it('asks only once Google has said nobody is signed in', () => {
+    expect(gateMode(v({ authReady: false }))).toBe('none'); // still checking: never flash the screen
+    expect(gateMode(v({}))).toBe('signin');
+    expect(gateMode(v({ status: 'signing-in' }))).toBe('signin');
+    expect(gateMode(v({ user: ANA, status: 'syncing' }))).toBe('none');
+    expect(gateMode(v({ enabled: false }))).toBe('none'); // sign-in not set up
+  });
+  it('never locks her out', () => {
+    expect(gateMode(v({}), { online: false })).toBe('offline'); // offers "Continue offline"
+    expect(gateMode(v({}), { skipped: true })).toBe('none');
+    expect(gateMode(v({ authReady: false, status: 'error', error: 'Couldn\'t load Google sign-in.' }))).toBe('none');
+  });
+  it('first-run screens wait for a returning user\'s progress', () => {
+    expect(gateSettled(v({}))).toBe(false);
+    expect(gateSettled(v({ user: ANA, status: 'syncing' }))).toBe(false);
+    expect(gateSettled(v({ user: ANA, status: 'synced' }))).toBe(true);
+    expect(gateSettled(v({ user: ANA, status: 'offline' }))).toBe(true);
+    expect(gateSettled(v({}), { skipped: true })).toBe(true);
+    expect(gateSettled(v({ authReady: false, status: 'error' }))).toBe(true);
+  });
+  it('the sync engine reports when the sign-in state is known', async () => {
+    const cloud = createFakeCloud();
+    const out = device(cloud, ANA);
+    expect(out.sync.state.authReady).toBe(false);
+    await settle(out);
+    expect(out.sync.state.authReady).toBe(true);
+    expect(out.sync.state.status).toBe('signed-out');
+    const inn = device(cloud, ANA, { signedIn: true });
+    const seen = [];
+    inn.sync.subscribe((s) => seen.push(`${s.authReady}:${s.status}`));
+    await settle(inn);
+    expect(inn.sync.state.authReady).toBe(true);
+    expect(inn.sync.state.status).toBe('synced');
+    // a signed-in device never reports "known and signed out" on the way in
+    expect(seen.includes('true:signed-out')).toBe(false);
+  });
+});

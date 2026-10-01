@@ -13,7 +13,7 @@ export function googleButton(app, { label = 'Sign in with Google', block = false
   return btn;
 }
 
-function ago(ts) {
+export function ago(ts) {
   if (!ts) return '';
   const s = Math.round((Date.now() - ts) / 1000);
   if (s < 45) return 'just now';

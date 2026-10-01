@@ -73,7 +73,8 @@ const isUserCancel = (e) => ['auth/popup-closed-by-user', 'auth/cancelled-popup-
 
 // onRemote(): called after progress from the cloud (another device) was merged in.
 export function createSync({ store, adapter, now = () => Date.now(), debounceMs = 3000, schedule, cancel, onRemote } = {}) {
-  const st = { status: 'signed-out', user: null, lastSyncAt: 0, error: null };
+  // authReady: the sign-in state is known (until then, "signed-out" may just mean "still checking").
+  const st = { status: 'signed-out', user: null, lastSyncAt: 0, error: null, authReady: false };
   const listeners = new Set();
   const later = schedule || ((fn, ms) => setTimeout(fn, ms));
   const clearT = cancel || ((t) => clearTimeout(t));
@@ -207,9 +208,13 @@ export function createSync({ store, adapter, now = () => Date.now(), debounceMs 
   }
 
   async function onUser(user) {
+    const first = !st.authReady;
     // Auth can report the same sign-in more than once; only real changes matter.
-    if (user && st.user && st.user.uid === user.uid) return;
-    if (!user && !st.user && st.status === 'signed-out') return;
+    if ((user && st.user && st.user.uid === user.uid) || (!user && !st.user && st.status === 'signed-out')) {
+      if (first) set({ authReady: true });
+      return;
+    }
+    if (first) st.authReady = true;
     generation++;
     stopWatching();
     if (timer) { clearT(timer); timer = null; }

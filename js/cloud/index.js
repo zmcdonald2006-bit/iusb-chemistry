@@ -12,7 +12,7 @@ export function fakeMode() {
 
 export function initCloud({ store, toast, onRemote }) {
   const enabled = !!FIREBASE_CONFIG || fakeMode();
-  let view = { enabled, status: enabled ? 'loading' : 'off', user: null, lastSyncAt: 0, error: null };
+  let view = { enabled, status: enabled ? 'loading' : 'off', user: null, lastSyncAt: 0, error: null, authReady: false };
   const listeners = new Set();
   const emit = () => { for (const fn of listeners) { try { fn(view); } catch { /* ignore */ } } };
   let sync = null;

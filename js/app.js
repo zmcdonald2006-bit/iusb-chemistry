@@ -14,6 +14,8 @@ import { ROUTES } from './routes.js';
 import { initCloud } from './cloud/index.js';
 import { createFeedback } from './state/feedback.js';
 import { setFeedbackService } from './ui/confused.js';
+import { signInGate } from './ui/gate.js';
+import { ago } from './ui/account.js';
 
 const store = createStore();
 const cards = allCards();
@@ -64,9 +66,11 @@ const NAV_SIDE = [
 const root = document.getElementById('app');
 clear(root);
 const titleEl = h('div', { class: 'title' });
+const syncInd = h('button', { type: 'button', class: 'icon-btn sync-ind hidden' }); // save status (see "Sign in with Google" below)
 const topbar = h('header', { class: 'topbar' },
   h('a', { class: 'brand', href: '#/', 'aria-label': 'Home' }, h('span', { class: 'brand-mark', html: brandSvg() })),
   titleEl,
+  syncInd,
   h('a', { class: 'icon-btn', href: '#/progress', 'aria-label': 'Progress', title: 'Progress' }, icon('chart')),
   h('a', { class: 'icon-btn', href: '#/settings', 'aria-label': 'Settings', title: 'Settings' }, icon('settings')));
 const side = h('aside', { class: 'sidenav', 'aria-label': 'Main navigation' },
@@ -240,6 +244,30 @@ if (app.cloud.enabled) {
   setFeedbackService({ add: (r) => app.feedback.add(r), signedIn: () => !!app.cloud.state.user });
   app.cloud.subscribe((s) => { if (s.user && s.status === 'synced' && app.feedback.pending) app.feedback.flush(); });
 }
+
+// Save status in the top bar: a cloud with a check when everything is saved to the account.
+if (app.cloud.enabled) {
+  const SAVE = {
+    synced: ['cloudCheck', 'ok', (v) => `Saved to your Google account · ${ago(v.lastSyncAt)}`],
+    syncing: ['cloudUp', 'busy', () => 'Saving to your Google account…'],
+    offline: ['cloudOff', 'warn', () => 'Offline. Progress is saved on this device and goes to your account when you\'re back online.'],
+    error: ['cloudWarn', 'bad', (v) => v.error || 'Not syncing right now. Progress is saved on this device.'],
+    'signed-out': ['cloudOff', 'warn', () => 'Not signed in: progress is saved on this device only.'],
+  };
+  const showSave = (v) => {
+    const [ic, cls, text] = (v.user || v.authReady) && SAVE[v.status] ? SAVE[v.status] : ['cloud', 'busy', () => 'Connecting to your account…'];
+    syncInd.className = `icon-btn sync-ind ${cls}`;
+    syncInd.replaceChildren(icon(ic));
+    syncInd.setAttribute('aria-label', text(v));
+    syncInd.title = text(v);
+  };
+  app.cloud.subscribe(showSave);
+  syncInd.addEventListener('click', () => {
+    const v = app.cloud.state;
+    showSave(v);
+    toast(syncInd.title, { action: v.user ? 'Account' : 'Sign in', onAction: () => (v.user ? router.navigate('#/settings') : app.cloud.signIn()) });
+  });
+}
 window.addEventListener('storage', (e) => { if (e.key === STORAGE_KEY || e.key === null) pickUpOtherTabs(); });
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) store.flush();
@@ -249,10 +277,13 @@ window.addEventListener('pageshow', (e) => { if (e.persisted) pickUpOtherTabs();
 
 // ---- First run, what's new, storage ------------------------------------------------------------------
 async function afterStart() {
-  const st = store.get();
   if (!store.storageOk) {
     toast('Heads up: this browser is blocking storage (private mode?). Progress won\'t be saved.', { timeout: 9000 });
   }
+  // Sign in with Google first (when it's set up), so a returning user's progress arrives before the
+  // welcome screens decide whether to show.
+  await signInGate(app);
+  const st = store.get();
   if (!st.profile.onboarded) {
     const { runOnboarding } = await import('./views/onboarding.js');
     runOnboarding(app);
@@ -290,6 +321,10 @@ function registerSW() {
   if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !localStorage.getItem('cc-sw-dev')) return; // keep dev reloads simple
   navigator.serviceWorker.register('./sw.js').then((reg) => {
     const promptUpdate = (worker) => {
+      // Found right after opening, and not in the middle of something: just switch to the new version.
+      const justOpened = performance.now() < 15000;
+      const busy = !PASSIVE_ROUTE.test(currentPath) || document.querySelector('.modal-backdrop:not(.gate-backdrop)');
+      if (justOpened && !busy) { worker.postMessage({ type: 'SKIP_WAITING' }); return; }
       toast('A new version is ready.', { action: 'Refresh', onAction: () => worker.postMessage({ type: 'SKIP_WAITING' }), timeout: 0 });
     };
     if (reg.waiting && navigator.serviceWorker.controller) promptUpdate(reg.waiting);

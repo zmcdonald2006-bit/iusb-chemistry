@@ -811,3 +811,13 @@ textarea.input { resize: vertical; min-height: 76px; font: inherit; }
 .rxn-card.flash { animation: rm-flash 1.4s ease; }
 @keyframes rm-flash { 0%, 40% { box-shadow: 0 0 0 3px var(--accent); } 100% { box-shadow: var(--shadow); } }
 @media (prefers-reduced-motion: reduce) { .rxn-card.flash { animation: none; outline: 3px solid var(--accent); } }
+
+/* Save status (top bar) */
+.sync-ind { position: relative; }
+.sync-ind.ok { color: var(--ok); }
+.sync-ind.warn { color: var(--warn); }
+.sync-ind.bad { color: var(--bad); }
+.sync-ind.busy svg { animation: sync-pulse 1.2s ease-in-out infinite; }
+@keyframes sync-pulse { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .sync-ind.busy svg { animation: none; opacity: .6; } }
+.gate .btn-google { margin: 0 auto; }
