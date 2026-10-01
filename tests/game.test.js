@@ -220,6 +220,18 @@ describe('Game engine', () => {
     const evs = play(run, 5, null);
     expect(evs.some((e) => e.type === 'over')).toBe(true);
   });
+  it('Slow gives the most time, and stays slow on a long streak', () => {
+    const runs = ['slow', 'chill', 'normal'].map((speed) => createRun({ rng: makeRng(11), next: fakeNext(), speed }));
+    runs.forEach((r) => play(r, 2, null));
+    expect(runs[0].gate.time).toBeGreaterThan(runs[1].gate.time);
+    expect(runs[1].gate.time).toBeGreaterThan(runs[2].gate.time);
+    const slow = createRun({ rng: makeRng(12), next: fakeNext(), speed: 'slow' });
+    const normal = createRun({ rng: makeRng(12), next: fakeNext(), speed: 'normal' });
+    play(slow, 300, perfect); play(normal, 300, perfect); // long runs of right answers
+    expect(slow.correct).toBeGreaterThan(10);
+    expect(slow.pace).toBe(0.85); // barely speeds up…
+    expect(normal.pace).toBeLessThan(0.6); // …while Normal gets much faster
+  });
   it('slower speed setting gives more time per question', () => {
     const chill = createRun({ rng: makeRng(11), next: fakeNext(), speed: 'chill' });
     const fast = createRun({ rng: makeRng(11), next: fakeNext(), speed: 'fast' });

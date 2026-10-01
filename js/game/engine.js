@@ -9,7 +9,9 @@ export const PLAYER_X = 0.24;
 export const SPAWN_X = 1.08;
 export const CRUISE = 1.5; // seconds of fish-collecting between questions
 export const MAX_LIVES = 3;
-export const SPEEDS = { chill: 1.5, normal: 1, fast: 0.72 };
+export const SPEEDS = { slow: 2.2, chill: 1.5, normal: 1, fast: 0.72 };
+// How much a run can speed up as she answers right (1 = never). Slow stays relaxed.
+const PACE_FLOOR = { slow: 0.85 };
 
 const CATCH = 0.045; // how close (in x) a fish must be to be caught
 const MIN_TIME = 2.6; // fastest a question can arrive, in seconds
@@ -19,6 +21,7 @@ export function createRun({ rng, next, speed = 'normal', lives = MAX_LIVES }) {
   const run = {
     rng, next,
     speedMul: SPEEDS[speed] || 1,
+    paceFloor: PACE_FLOOR[speed] || 0.5,
     phase: 'play', // play | crash | over
     t: 0,
     lane: 1,
@@ -149,7 +152,7 @@ function decide(run, ev) {
     const bonus = g.dashed ? Math.round(g.bonusFrac * 100) : 0;
     const points = 100 * mult + bonus;
     run.score += points;
-    run.pace = Math.max(0.5, run.pace * 0.955);
+    run.pace = Math.max(run.paceFloor, run.pace * 0.955);
     run.lastResult = { ok: true, gate: g, choice };
     ev.push({ type: 'correct', gate: g, points, mult, bonus, streak: run.streak });
     spawnCruise(run);

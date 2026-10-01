@@ -618,7 +618,7 @@ hr.sep { border: 0; border-top: 1px solid var(--border); margin: 18px 0; }
 .g-hero-body { padding: 16px 16px 18px; }
 .g-hero-body h1 { margin: 0 0 4px; }
 .g-hero-body p { margin: 0; }
-.g-seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.g-seg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .g-seg button { display: flex; flex-direction: column; gap: 2px; align-items: center; padding: 10px 6px; border-radius: 13px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); font: inherit; cursor: pointer; }
 .g-seg button small { color: var(--text-3); font-size: .72rem; line-height: 1.2; }
 .g-seg button.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }

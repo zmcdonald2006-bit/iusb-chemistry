@@ -25,7 +25,7 @@ It's a static web app with no build step and no dependencies. It works offline, 
   - Fish caught along the way unlock outfits and oceans.
   - There are 11 decks, from Foundations (Lectures 1–4) to reactions and acids, all drawn from the same question generators as Practice.
   - A whole run counts toward mastery as one result per skill, scored by accuracy. Fast game answers count, but they can't outweigh careful quiz answers.
-  - Chill / Normal / Fast speeds. Sound effects and vibration can be turned off in the game menu. Android phones vibrate fully; iPhones allow only a light tap, on iOS 18 or newer.
+  - Slow / Chill / Normal / Fast speeds. Slow gives about twice the normal time and barely speeds up. Sound effects and vibration can be turned off in the game menu. Android phones vibrate fully; iPhones allow only a light tap, on iOS 18 or newer.
 - **Name Lab**: type any compound name from class and see the structure it describes, the correct IUPAC name, the formula and the chirality centers. If a name is wrong, it explains why.
 - **Reaction map**:
   - A tappable map of how the families connect, color-coded by reaction type, that fits a phone screen.

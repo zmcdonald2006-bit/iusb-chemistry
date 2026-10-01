@@ -8,7 +8,7 @@ import { PLAYER_X } from '../game/engine.js';
 import { gameState, buyItem, equipItem } from '../state/game.js';
 import { lectureById } from '../../content/course.js';
 
-const SPEED_LABELS = [['chill', 'Chill', 'Lots of time to think'], ['normal', 'Normal', 'The classic'], ['fast', 'Fast', 'Exam pressure']];
+const SPEED_LABELS = [['slow', 'Slow', 'All the time you need'], ['chill', 'Chill', 'Lots of time to think'], ['normal', 'Normal', 'The classic'], ['fast', 'Fast', 'Exam pressure']];
 
 export default function gameHub({ app, main, query = {} }) {
   const st = app.state;
