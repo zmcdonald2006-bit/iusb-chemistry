@@ -5,6 +5,26 @@
 const VERSION = '12.19.0';
 const CDN = `https://www.gstatic.com/firebasejs/${VERSION}`;
 
+const coded = (code, message) => Object.assign(new Error(message), { code });
+
+const ua = () => (typeof navigator === 'undefined' ? '' : navigator.userAgent || '');
+const isStandalone = () => typeof window !== 'undefined' && (window.navigator.standalone === true || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches));
+const isMobile = () => /iPhone|iPad|iPod|Android/i.test(ua()) || (typeof navigator !== 'undefined' && navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+// Apps that open links in their own browser (Instagram, Facebook, Messenger, Snapchat, TikTok…): Google blocks sign-in there.
+const isInAppBrowser = () => /FBAN|FBAV|FB_IAB|Instagram|Snapchat|TikTok|musical_ly|Line\/|LinkedInApp|Twitter|MicroMessenger/i.test(ua());
+
+// Google sign-in runs on the auth domain (Firebase's sign-in page). When the app is served from that
+// same site (Firebase Hosting), a full-page redirect is the most reliable, so phones and home-screen
+// apps use it. From any other site (GitHub Pages) the redirect can't work on iPhones and newer
+// browsers (they keep the two sites' storage apart, which shows "missing initial state"), so only
+// the pop-up is used there.
+export function signInPlan(authDomain, { host = typeof location !== 'undefined' ? location.hostname : '', mobile = isMobile(), standalone = isStandalone(), inApp = isInAppBrowser() } = {}) {
+  if (inApp) return 'in-app';
+  const sameSite = host === authDomain;
+  if (sameSite && (mobile || standalone)) return 'redirect';
+  return sameSite ? 'popup-or-redirect' : 'popup';
+}
+
 export async function createFirebaseAdapter({ databaseId, ...config }) {
   const [appMod, authMod, fsMod] = await Promise.all([
     import(`${CDN}/firebase-app.js`),
@@ -26,15 +46,18 @@ export async function createFirebaseAdapter({ databaseId, ...config }) {
     onAuth(cb) {
       return authMod.onAuthStateChanged(auth, (u) => cb(u ? { uid: u.uid, name: u.displayName || '', email: u.email || '', photo: u.photoURL || '' } : null));
     },
+    // How sign-in opens depends on where the app is running (see signInPlan above).
     async signIn() {
+      const plan = signInPlan(config.authDomain);
+      if (plan === 'in-app') throw coded('cc/in-app-browser', 'Google doesn\'t allow signing in inside this app\'s built-in browser. Tap ⋯ (or the share button) and choose "Open in Safari" or "Open in Chrome", then sign in there.');
+      if (plan === 'redirect') { await authMod.signInWithRedirect(auth, provider); return; }
       try {
         await authMod.signInWithPopup(auth, provider);
       } catch (e) {
-        // Some browsers and installed apps can't open pop-ups: go to Google and come back instead.
-        if (e && (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment')) {
-          await authMod.signInWithRedirect(auth, provider);
-          return;
-        }
+        const blocked = e && (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment');
+        if (blocked && plan === 'popup-or-redirect') { await authMod.signInWithRedirect(auth, provider); return; }
+        if (blocked && isStandalone()) throw coded('cc/standalone', 'Google sign-in can\'t open from this home-screen app. Open the site in Safari (or Chrome) and sign in there.');
+        if (blocked) throw coded('cc/popup-blocked', 'The Google sign-in window was blocked. Tap "Sign in with Google" again, or allow pop-ups for this site.');
         throw e;
       }
     },

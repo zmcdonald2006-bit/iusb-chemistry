@@ -1,5 +1,8 @@
 # Runs the full test suite on every push and pull request. On pushes to main, and only
-# if the tests pass, it regenerates the service worker and publishes the site to GitHub Pages.
+# if the tests pass, it regenerates the service worker and publishes the site:
+#   - to GitHub Pages (https://<you>.github.io/<repo>/)
+#   - to Firebase Hosting (https://iusb-chem.firebaseapp.com), once the FIREBASE_SERVICE_ACCOUNT_IUSB_CHEM
+#     secret exists. That address is where Google sign-in works on iPhones; see docs/GOOGLE_SIGN_IN.md.
 #
 # One-time setup: repo Settings → Pages → Build and deployment → Source: "GitHub Actions".
 name: Test & deploy
@@ -54,3 +57,32 @@ jobs:
           path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  deploy-firebase:
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      FIREBASE_SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_IUSB_CHEM }}
+    steps:
+      - name: Firebase Hosting key not added yet
+        if: env.FIREBASE_SA == ''
+        run: echo "No FIREBASE_SERVICE_ACCOUNT_IUSB_CHEM secret yet, so Firebase Hosting is skipped. See docs/GOOGLE_SIGN_IN.md."
+      - uses: actions/checkout@v4
+        if: env.FIREBASE_SA != ''
+      - uses: ruby/setup-ruby@v1
+        if: env.FIREBASE_SA != ''
+        with:
+          ruby-version: '3.3'
+      - name: Build service worker and assemble site
+        if: env.FIREBASE_SA != ''
+        run: |
+          ruby tools/build-sw.rb
+          mkdir -p _site
+          cp -r index.html manifest.webmanifest sw.js css js content assets _site/
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        if: env.FIREBASE_SA != ''
+        with:
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_IUSB_CHEM }}
+          projectId: iusb-chem
+          channelId: live

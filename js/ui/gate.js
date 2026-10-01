@@ -5,6 +5,7 @@ import { h, md, clear } from './dom.js';
 import { modal } from './components.js';
 import { googleButton } from './account.js';
 import { gateMode, gateSettled } from '../cloud/gate.js';
+import { FIREBASE_CONFIG } from '../cloud/config.js';
 
 const BRAND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 2.8 20 7.4v9.2l-8 4.6-8-4.6V7.4Z"/><path d="M12 7.2v4.8M12 12l4.2 2.4M12 12l-4.2 2.4" stroke-linecap="round"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg>';
 
@@ -40,8 +41,23 @@ export function signInGate(app) {
         if (v.error) body.append(h('p', { class: 'acct-error small' }, v.error));
         if (tried || v.error) body.append(h('button', { type: 'button', class: 'btn ghost block', style: { marginTop: '4px' }, onclick: skip }, 'Not now: study without saving to my account'));
       }
+      if (betterSite) body.append(h('div', { class: 'callout tip', style: { marginTop: '12px', textAlign: 'left' } },
+        md(`**On a phone?** Google sign-in works best at **${betterSite.host}** (the same app, on Firebase's own address). Open it in Safari or Chrome, and add that one to your Home Screen.`),
+        h('a', { class: 'btn small', href: betterSite.href, style: { marginTop: '8px' } }, 'Open the app there')));
       body.append(h('p', { class: 'hint', style: { marginTop: '12px' } }, 'You\'ll stay signed in on this device. Only your study progress is saved, nothing else from your Google account.'));
     };
+
+    // On phones, sign-in can't finish from a site other than Firebase's own address (iPhones keep the
+    // two sites' storage apart). If the app is also published there, point to it.
+    let betterSite = null;
+    const authHost = FIREBASE_CONFIG && FIREBASE_CONFIG.authDomain;
+    const phone = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (authHost && location.hostname !== authHost && phone) {
+      const href = `https://${authHost}/`;
+      fetch(`${href}manifest.webmanifest`, { cache: 'no-store' })
+        .then((r) => { if (r.ok) { betterSite = { host: authHost, href }; if (dlg) update(app.cloud.state); } })
+        .catch(() => {}); // not published there (yet)
+    }
 
     function skip() {
       skipped = true;

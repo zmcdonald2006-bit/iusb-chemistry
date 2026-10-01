@@ -79,6 +79,33 @@ The message under **Settings → Account** says what's wrong:
 - **"The cloud database refused to save"**: publish the rules from step 3.
 - **No sign-in button at all**: `js/cloud/config.js` is still `null`, or the new version hasn't been pushed yet.
 
+## Phones: also publish to Firebase's own address
+
+On iPhones (and other newer browsers), Google sign-in only works smoothly when the app runs on the **same site as Firebase's sign-in page**, `https://<project>.firebaseapp.com`. From GitHub Pages, sign-in has to use a pop-up, which doesn't work in the iPhone home-screen app. The full-page redirect fails there too, with *"Unable to process request due to missing initial state"*, so the app no longer tries it.
+
+So the deploy workflow also publishes the app to **Firebase Hosting**. It's free at this size, and updates automatically on every push, like GitHub Pages. It needs a key once (about 10 minutes):
+
+1. Open <https://console.cloud.google.com/iam-admin/serviceaccounts?project=iusb-chem>, signed in to the account that owns the Firebase project.
+2. Click **+ Create service account**. Name it `github-deploy`, then **Create and continue**.
+3. Add these four roles (**+ Add another role** between them): **Firebase Hosting Admin**, **Firebase Authentication Admin**, **Cloud Run Viewer**, **API Keys Viewer**. Click **Continue**, then **Done**.
+4. Click the new account, open the **Keys** tab, choose **Add key → Create new key → JSON**, then **Create**. A `.json` file downloads. **It works like a password: never send it to anyone.**
+5. Open the repo on GitHub: **Settings → Secrets and variables → Actions → New repository secret**.
+   - **Name:** `FIREBASE_SERVICE_ACCOUNT_IUSB_CHEM`
+   - **Secret:** open the `.json` file in TextEdit and paste in everything.
+   - Click **Add secret**.
+6. Delete the downloaded `.json` file and empty the Trash.
+7. Push any commit, or on GitHub open **Actions → Test & deploy → Run workflow**. A few minutes later the app is live at `https://iusb-chem.firebaseapp.com`.
+
+On phones, use that address: open it in Safari or Chrome, sign in, then **Share → Add to Home Screen**, and delete any old home-screen icon. On the GitHub Pages copy, phones see a link to it on the sign-in screen once it's live.
+
+Progress saved on the old address without signing in stays on that address. To bring it over, use **Settings → Backup & sync** there, then restore the file on the new address. Anything saved to the Google account comes over automatically.
+
+## If sign-in shows an error
+
+- **"Unable to process request due to missing initial state":** this came from an older version that used a full-page redirect from GitHub Pages. Update the app, and on a phone use the Firebase address above.
+- **"…inside this app's built-in browser":** the link was opened inside Instagram, Messenger, Snapchat and the like. Google blocks sign-in there. Open the link in Safari or Chrome.
+- **"The Google sign-in window was blocked":** tap the button again, or allow pop-ups for the site.
+
 ## Reading "This confused me" reports
 
 Every question, lesson page, flashcard and reaction has a **This confused me** button. A report says what was confusing (four choices plus an optional note), where it happened, and for questions, the question, her answer and the correct answer. For auto-generated questions, it also includes the generator and seed, so the exact question can be rebuilt (`tests/questions.html?gen=<generator>&seed=<seed>`).

@@ -73,6 +73,7 @@ Saved data carries a schema version, so future updates migrate old data instead 
    ```
 3. On GitHub, open **Settings → Pages** and set **Source** to **GitHub Actions**.
 4. The workflow in [.github/workflows/deploy.yml](.github/workflows/deploy.yml) runs the tests on every push. On `main` it also builds the offline cache and publishes. The site goes live at `https://<you>.github.io/c102-study-guide/`.
+5. For Google sign-in on phones, the same workflow can also publish to Firebase Hosting (`https://<project>.firebaseapp.com`), once a key is added. See [docs/GOOGLE_SIGN_IN.md](docs/GOOGLE_SIGN_IN.md#phones-also-publish-to-firebases-own-address).
 
 If the tests fail, nothing is published, so a broken update never reaches her phone.
 

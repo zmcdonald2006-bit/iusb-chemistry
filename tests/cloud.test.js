@@ -4,6 +4,7 @@ import { createSync, syncMerge, friendlyError } from '../js/cloud/sync.js';
 import { createFakeCloud } from '../js/cloud/fake.js';
 import { fingerprint, encodeState, decodeState, cloudCopy } from '../js/cloud/codec.js';
 import { gateMode, gateSettled } from '../js/cloud/gate.js';
+import { signInPlan } from '../js/cloud/firebase.js';
 import { makeRng } from '../js/lib/random.js';
 
 const T0 = new Date(2026, 9, 1, 12).getTime();
@@ -402,5 +403,24 @@ describe('Sign-in is required', () => {
     expect(inn.sync.state.status).toBe('synced');
     // a signed-in device never reports "known and signed out" on the way in
     expect(seen.includes('true:signed-out')).toBe(false);
+  });
+});
+
+describe('How Google sign-in opens', () => {
+  const AUTH = 'iusb-chem.firebaseapp.com';
+  const plan = (o) => signInPlan(AUTH, { host: 'x.github.io', mobile: false, standalone: false, inApp: false, ...o });
+  it('never uses the cross-site redirect that fails on iPhones ("missing initial state")', () => {
+    expect(plan({})).toBe('popup');
+    expect(plan({ mobile: true })).toBe('popup');
+    expect(plan({ mobile: true, standalone: true })).toBe('popup');
+  });
+  it('on Firebase\'s own address, phones and home-screen apps use the full-page redirect', () => {
+    expect(plan({ host: AUTH, mobile: true })).toBe('redirect');
+    expect(plan({ host: AUTH, standalone: true })).toBe('redirect');
+    expect(plan({ host: AUTH })).toBe('popup-or-redirect');
+  });
+  it('in Instagram/Facebook/Snapchat browsers, says to open the page in Safari or Chrome', () => {
+    expect(plan({ inApp: true })).toBe('in-app');
+    expect(plan({ host: AUTH, inApp: true, mobile: true })).toBe('in-app');
   });
 });

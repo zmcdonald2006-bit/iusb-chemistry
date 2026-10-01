@@ -30,6 +30,8 @@ self.addEventListener('fetch', (event) => {
   // signed-in app still opens offline. Everything else (e.g. the database) goes straight out.
   const firebaseSdk = url.hostname === 'www.gstatic.com' && url.pathname.startsWith('/firebasejs/');
   if (url.origin !== self.location.origin && !firebaseSdk) return;
+  // Firebase's own sign-in pages (/__/auth/…) on Firebase Hosting must always come from the network.
+  if (url.pathname.startsWith('/__/')) return;
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_VERSION);
     if (req.mode === 'navigate') {
