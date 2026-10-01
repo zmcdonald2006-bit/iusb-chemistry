@@ -37,6 +37,7 @@ export function defaultState(now = Date.now()) {
     active: null,
     lastResult: null,
     unlocked: {},
+    game: defaultGame(),
     meta: { lastBackupAt: 0, lastSeenVersion: '', persistAsked: false, installDismissed: false },
   };
 }
@@ -86,6 +87,8 @@ export function migrate(data, now = Date.now()) {
   }
   s.profile = { ...base.profile, ...(s.profile || {}) };
   s.meta = { ...base.meta, ...(s.meta || {}) };
+  s.game = { ...base.game, ...(s.game || {}) };
+  s.game.owned = [...new Set([...base.game.owned, ...(Array.isArray(s.game.owned) ? s.game.owned : [])])];
   if (!Array.isArray(s.sessions)) s.sessions = [];
   if (!Array.isArray(s.exams)) s.exams = [];
   return s;
@@ -160,6 +163,15 @@ export function mergeStates(a, b) {
   out.sessions = [...sessions.values()].sort((x, y) => (x.startedAt || 0) - (y.startedAt || 0)).slice(-SESSION_LIMIT);
   for (const [k, v] of Object.entries(b.unlocked || {})) if (!out.unlocked[k]) out.unlocked[k] = v;
   out.meta.lastBackupAt = Math.max(out.meta.lastBackupAt || 0, (b.meta && b.meta.lastBackupAt) || 0);
+  // game: keep the bigger wallet and records, and everything bought on either device
+  const ga = out.game || defaultGame();
+  const gb = b.game || {};
+  ga.fish = Math.max(ga.fish || 0, gb.fish || 0);
+  for (const k of ['best', 'runs', 'answered', 'correct']) ga[k] = Math.max(ga[k] || 0, gb[k] || 0);
+  ga.bestByDeck = { ...(ga.bestByDeck || {}) };
+  for (const [d, v] of Object.entries(gb.bestByDeck || {})) ga.bestByDeck[d] = Math.max(ga.bestByDeck[d] || 0, v);
+  ga.owned = [...new Set([...(ga.owned || []), ...(gb.owned || [])])];
+  out.game = ga;
   out.createdAt = Math.min(out.createdAt || Infinity, b.createdAt || Infinity);
   return out;
 }
@@ -304,17 +316,27 @@ export function recordAttempt(s, { skill, qid, ok, ts, ref, ms }) {
   act.q = (act.q || 0) + 1;
   if (ok) act.c = (act.c || 0) + 1;
   if (ms) act.secs = (act.secs || 0) + Math.min(Math.round(ms / 1000), 180);
-  // mistake notebook
-  if (ref) {
-    const key = ref.key;
-    const m = s.mistakes[key];
-    if (!ok) {
-      s.mistakes[key] = { ref, skill, count: (m ? m.count : 0) + 1, lastWrong: ts, streak: 0, cleared: false };
-    } else if (m && !m.cleared) {
-      m.streak = (m.streak || 0) + 1;
-      if (m.streak >= 2) { m.cleared = true; m.clearedAt = ts; }
-    }
+  if (ref) noteMistake(s, { ref, skill, ok, ts });
+}
+
+// Mistake notebook: a miss is added; two correct answers in a row clear it.
+export function noteMistake(s, { ref, skill, ok, ts }) {
+  const key = ref.key;
+  const m = s.mistakes[key];
+  if (!ok) {
+    s.mistakes[key] = { ref, skill, count: (m ? m.count : 0) + 1, lastWrong: ts, streak: 0, cleared: false };
+  } else if (m && !m.cleared) {
+    m.streak = (m.streak || 0) + 1;
+    if (m.streak >= 2) { m.cleared = true; m.clearedAt = ts; }
   }
+}
+
+export function defaultGame() {
+  return {
+    fish: 0, owned: ['natural', 'bay'], outfit: 'natural', theme: 'bay',
+    best: 0, bestByDeck: {}, runs: 0, answered: 0, correct: 0,
+    speed: 'normal', sound: true, haptics: true, lastDeck: 'foundations',
+  };
 }
 
 // The student says a typed answer that was marked wrong is actually right.

@@ -40,6 +40,7 @@ if (params.get('clear') === '1') {
   allCards().slice(0, 60).forEach((c, i) => { st.cards[c.id] = schedule(null, 2, addDays(today, -(i % 4))); });
   st.exams.push({ id: 'e1', title: 'Exam 2', date: addDays(today, 9), lectures: ['l05', 'l06', 'l07', 'l08'], updatedAt: now });
   st.sessions.push({ id: 's1', mode: 'practice', title: 'Lecture 3: Alkanes', startedAt: now - 3600000, endedAt: now - 3000000, lectures: ['l03'], total: 10, correct: 8, secs: 400, results: [] });
+  Object.assign(st.game, { fish: 640, owned: ['natural', 'bay', 'goggles', 'bow', 'sunset'], outfit: params.get('outfit') || 'goggles', theme: params.get('ocean') || 'bay', best: 3120, bestByDeck: { foundations: 3120, families: 1450 }, runs: 9, answered: 140, correct: 112 });
   localStorage.setItem(STORAGE_KEY, JSON.stringify(st));
   location.replace(`../index.html${params.get('to') || ''}`);
 }

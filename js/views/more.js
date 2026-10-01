@@ -12,6 +12,7 @@ export default function more({ app, main }) {
     h('span', { class: 'chev' }, icon('chevRight')));
   main.appendChild(h('div', { class: 'card list' },
     item('#/bootcamp', 'spark', 'Foundations Bootcamp', 'Rebuild Lectures 1–4'),
+    item('#/game', 'wave', 'Sea Lion Splash', 'The study game'),
     item('#/mistakes', 'redo', 'Mistake notebook', 'Questions you missed', n),
     item('#/reactions', 'map', 'Reaction map', 'Every reaction in one place'),
     item('#/lab', 'lab', 'Name Lab', 'Type a name, see the structure'),

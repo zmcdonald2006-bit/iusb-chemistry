@@ -19,12 +19,22 @@ export const COURSE = {
   school: 'IU South Bend',
   textbook: 'Smith, General, Organic & Biological Chemistry',
   // Bump when content changes so the app can show "what's new".
-  contentVersion: '2026.09.29',
+  contentVersion: '2026.09.30',
   lectures: LECTURES,
 };
 
 // Shown on the "What's new" screen after an update. Newest first.
 export const CHANGELOG = [
+  {
+    version: '2026.09.30',
+    title: 'New: Sea Lion Splash 🌊',
+    items: [
+      'A study game: swim your sea lion through the ring with the right answer',
+      '11 decks, from Foundations (Lectures 1–4) to reactions and acids',
+      'Catch fish to unlock outfits and oceans',
+      'Misses go to your Mistakes list, and game answers count toward your mastery',
+    ],
+  },
   {
     version: '2026.09.29',
     title: 'Welcome!',

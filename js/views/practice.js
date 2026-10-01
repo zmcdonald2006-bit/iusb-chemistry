@@ -20,6 +20,7 @@ export function practiceHub({ app, main }) {
     quick('#/practice/mistakes', 'redo', 'Fix mistakes', mistakes ? `${mistakes} to review — get each right twice` : 'No open mistakes 🎉', 'mistakes'),
     quick('#/practice/exam', 'target', 'Practice exam', 'Timed, no hints, results at the end', 'exam'),
     quick('#/bootcamp', 'spark', 'Foundations Bootcamp', 'Rebuild Lectures 1–4', 'bootcamp'),
+    quick('#/game', 'wave', 'Sea Lion Splash', 'Practice as a game: swim through the right answers', 'game'),
     quick('#/lab', 'lab', 'Name Lab', 'Check any name by drawing it', 'read')));
 
   main.appendChild(sectionTitle('By lecture'));

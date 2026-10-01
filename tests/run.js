@@ -8,6 +8,7 @@ import './state.test.js';
 import './quiz.test.js';
 import './content.test.js';
 import './app.test.js';
+import './game.test.js';
 
 const result = await run();
 if (result.fail) {

@@ -2,6 +2,7 @@ import { h, icon } from '../ui/dom.js';
 import { ring, sectionTitle } from '../ui/components.js';
 import { recommendations, streak, todayStats, upcomingExams, lectureProgress } from '../state/progress.js';
 import { dayKey } from '../state/store.js';
+import { paintScene } from './game.js';
 
 function greeting() {
   const hr = new Date().getHours();
@@ -67,6 +68,17 @@ export default function home({ app, main }) {
       h('span', { class: 'chev' }, icon('chevRight'))));
   }
   main.appendChild(list);
+
+  // The game
+  const gs = st.game || {};
+  const thumb = h('canvas', { class: 'g-home-thumb', 'aria-hidden': 'true' });
+  main.appendChild(h('a', { class: 'card card-link g-home', href: '#/game' },
+    thumb,
+    h('div', { class: 'grow' },
+      h('div', { class: 'li-title' }, 'Sea Lion Splash'),
+      h('div', { class: 'muted small' }, gs.runs ? `Best ${(gs.best || 0).toLocaleString()} · ${gs.fish || 0} fish to spend` : 'A quick game: swim through the right answers')),
+    h('span', { class: 'chev' }, icon('chevRight'))));
+  requestAnimationFrame(() => paintScene(thumb, gs.theme || 'bay', gs.outfit || 'natural', 1.3, false, true));
 
   // Lectures at a glance
   main.appendChild(sectionTitle('Lectures', { href: '#/learn', label: 'See all' }));

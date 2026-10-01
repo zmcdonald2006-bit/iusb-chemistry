@@ -171,6 +171,18 @@ Generators live in `js/quiz/gen/*.js` and are registered in `js/quiz/generators.
 - [content/reactions.js](../content/reactions.js): the Reaction map. Add new families and reactions here; the tests check each example against the reaction engine.
 - [content/bootcamp.js](../content/bootcamp.js): the Foundations Bootcamp steps.
 - [content/messages.js](../content/messages.js): encouragement and milestone notes.
+- [content/game.js](../content/game.js): Sea Lion Splash outfits, oceans, prices and messages.
+
+## Adding new lectures to the game
+
+Game decks are lists of generator ids in [js/game/decks.js](../js/game/decks.js). The game only uses generators whose questions are `mc`, `struct` or `tf`, trimmed to 2–3 short answers (44 characters max). To put a new lecture in the game:
+
+1. Write a generator for it (see "Generators" above) that returns `mc` / `struct` / `tf` questions.
+2. Add its id to an existing deck, or add a new deck: `{ id, name, desc, lectures: [11], gens: [...] }`.
+3. Add it to the **Open Ocean** deck too.
+4. Run the tests. They play every deck 60 times and check each question can be answered and rebuilt in the Mistakes notebook.
+
+Keep deck ids unchanged once released, because best scores are saved by deck id.
 
 ## Checklist before pushing
 

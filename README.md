@@ -13,6 +13,14 @@ It's a static web app with no build step and no dependencies. It works offline, 
   - Unlimited auto-generated questions for naming, drawing, reactions, chirality, pH, boiling-point order and more. The generated questions come from a built-in chemistry engine, so every answer is computed, not typed by hand.
   - Wrong answers go to a **Mistakes** notebook. A mistake leaves the notebook after she gets that question right twice.
 - **Flashcards** with spaced repetition (Again / Hard / Good / Easy).
+- **Sea Lion Splash**, a study game in the style of a lane-runner:
+  - A sea lion swims down three lanes, and each question arrives as three life rings, one per answer. She swipes up or down (or taps a lane) and swims through the right one.
+  - If she knows the answer, she can swipe right or tap **Dash** to rush the rings in for bonus points.
+  - Each run has 3 lives. Misses show the explanation and go to the Mistakes notebook.
+  - Fish caught along the way unlock outfits and oceans.
+  - There are 11 decks, from Foundations (Lectures 1–4) to reactions and acids, all drawn from the same question generators as Practice.
+  - A whole run counts toward mastery as one result per skill, scored by accuracy. Fast game answers count, but they can't outweigh careful quiz answers.
+  - Chill / Normal / Fast speeds. Sound effects and vibration can be turned off in the game menu. Android phones vibrate fully; iPhones allow only a light tap, on iOS 18 or newer.
 - **Name Lab**: type any compound name from class and see the structure it describes, the correct IUPAC name, the formula and the chirality centers. If a name is wrong, it explains why.
 - **Reaction map**: every reaction in the course on one page, each with a Practice button.
 - **Reference**: functional groups, naming rules, properties, shapes, acid–base, glossary and a pH calculator.
@@ -76,6 +84,9 @@ Dev pages under `tests/`:
 | `questions.html` | Sample questions from every generator, with answers. Add `?gen=<id>`, `?seed=`, `?authored=l03` or `?wrong=1` (shows the feedback for a wrong answer). |
 | `seed.html` | Fills the app with demo progress. **Overwrites your local progress.** |
 | `sw-check.html?cleanup=1` | Installs the offline service worker, checks that every file got cached, then removes it. |
+| `sealion.html` | Game art sheet: every outfit and ocean, a game frame and sample answer signs. |
+
+In the browser console during a game, `__app.game.run()` shows the live game state.
 
 The service worker is turned off on localhost by default, so reloads stay simple. To test offline mode locally, run `localStorage.setItem('cc-sw-dev','1')` in the browser console.
 
@@ -89,7 +100,7 @@ New lectures, more questions, fixed typos: see **[docs/CONTENT_GUIDE.md](docs/CO
 4. Run `ruby tools/build-sw.rb` to refresh the offline file list. CI also does this when it deploys, and `ruby tools/build-sw.rb --check` tells you whether it's stale.
 5. Commit and push.
 
-**Personal touches:** the encouragement messages, milestone notes and an optional signature are in [content/messages.js](content/messages.js). Edit them freely.
+**Personal touches:** the encouragement messages, milestone notes and an optional signature are in [content/messages.js](content/messages.js). The game's name, outfit and ocean names, prices in fish, and sea lion messages are in [content/game.js](content/game.js). Edit them freely, but keep the `id`s, because purchases are saved by id.
 
 ## How it's built
 
@@ -102,7 +113,8 @@ js/routes.js          route table → views
 js/views/             one file per screen
 js/ui/                DOM helper, shared components, the question widget
 js/quiz/              answer checkers, question bank, session planner, generators (gen/)
-js/state/             store (save/migrate/backup/merge), spaced repetition, progress, milestones
+js/state/             store (save/migrate/backup/merge), spaced repetition, progress, milestones, game wallet
+js/game/              Sea Lion Splash: rules (engine.js, no drawing — fully tested), decks, canvas art, sounds
 js/chem/              chemistry engine: SMILES parser, ring finder, 2D layout, SVG renderer,
                       IUPAC namer, name parser + checker, reactions, molecule generator
 js/lib/               seeded random numbers, safe text markup
