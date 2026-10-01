@@ -26,7 +26,7 @@ Setup takes about 10 minutes, all in the browser. Do it while signed in to the G
 ## 3. Create the database
 
 1. In the left menu, open **Databases & Storage → Firestore** (older layouts: **Build → Firestore Database**) and click **Create database**.
-2. If asked for an edition, choose **Standard**. Pick a location near you (for example `nam5 (United States)`). It can't be changed later.
+2. Leave the database ID as `(default)`. If you give it a name, add `databaseId: '<that name>'` to the config in step 4. If asked for an edition, choose **Standard**. Pick a location near you (for example `nam5 (United States)`). It can't be changed later.
 3. Choose **Start in production mode** and click **Create**.
 4. Open the **Rules** tab and replace everything with the contents of [`firestore.rules`](../firestore.rules) from this project. Click **Publish**.
 
@@ -71,7 +71,7 @@ The message under **Settings → Account** says what's wrong:
 
 - **"The cloud database isn't set up yet"**: Firebase has no Firestore database named `(default)`.
   - Open **Databases & Storage → Firestore** and click **Create database**. (*Data Connect*, *Realtime Database* and *Storage* are different products. The app doesn't use them.)
-  - Leave the **Database ID** as `(default)` and choose the **Standard** edition.
+  - Leave the **Database ID** as `(default)` and choose the **Standard** edition. If the database already has another name (shown at the top of the Firestore page), put that name in `js/cloud/config.js` as `databaseId: '…'` instead. Its rules are set separately, on its own **Rules** tab.
   - To see which Firestore databases exist, go to <https://console.cloud.google.com/firestore/databases> and pick the project.
   - Sign-in still works meanwhile, and progress stays on the device. It syncs by itself once the database exists (within about 5 minutes, or straight away after a reload).
 - **"Google sign-in isn't set up for this web address yet"**: add the site's domain under **Authentication → Settings → Authorized domains** (step 2).

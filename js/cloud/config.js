@@ -9,6 +9,9 @@ export const FIREBASE_CONFIG = {
   authDomain: 'iusb-chem.firebaseapp.com',
   projectId: 'iusb-chem',
   messagingSenderId: '545751128625',
+  // The Firestore database's name (Firebase → Firestore, shown at the top). Leave this out if the
+  // database is called "(default)".
+  databaseId: 'chemcomp',
   // Google sign-in and the database need only the values above. (storageBucket and appId are
   // for other Firebase products; they can be added here too, but aren't required.)
 };

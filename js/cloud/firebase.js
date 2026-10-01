@@ -5,7 +5,7 @@
 const VERSION = '12.19.0';
 const CDN = `https://www.gstatic.com/firebasejs/${VERSION}`;
 
-export async function createFirebaseAdapter(config) {
+export async function createFirebaseAdapter({ databaseId, ...config }) {
   const [appMod, authMod, fsMod] = await Promise.all([
     import(`${CDN}/firebase-app.js`),
     import(`${CDN}/firebase-auth.js`),
@@ -13,7 +13,7 @@ export async function createFirebaseAdapter(config) {
   ]);
   const app = appMod.getApps().length ? appMod.getApps()[0] : appMod.initializeApp(config);
   const auth = authMod.getAuth(app);
-  const db = fsMod.getFirestore(app);
+  const db = databaseId ? fsMod.getFirestore(app, databaseId) : fsMod.getFirestore(app);
   const provider = new authMod.GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
   const ref = (uid) => fsMod.doc(db, 'users', uid);
