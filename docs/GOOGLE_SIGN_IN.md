@@ -19,13 +19,13 @@ Setup takes about 10 minutes, all in the browser. Do it while signed in to the G
 
 ## 2. Turn on Google sign-in
 
-1. In the left menu, open **Build → Authentication** and click **Get started**.
+1. In the left menu, open **Security → Authentication** and click **Get started**. (Older layouts call this **Build → Authentication**. You can also type "Authentication" in the search box at the top.)
 2. On the **Sign-in method** tab, choose **Google**, switch it **on**, pick your email as the *support email*, and click **Save**.
 3. Open the **Settings** tab → **Authorized domains** → **Add domain**, and add the site's address *without* `https://` or a path, for example `your-github-username.github.io`. (`localhost` is already there for testing.)
 
 ## 3. Create the database
 
-1. In the left menu, open **Build → Firestore Database** and click **Create database**.
+1. In the left menu, open **Databases & Storage → Firestore** (older layouts: **Build → Firestore Database**) and click **Create database**.
 2. If asked for an edition, choose **Standard**. Pick a location near you (for example `nam5 (United States)`). It can't be changed later.
 3. Choose **Start in production mode** and click **Create**.
 4. Open the **Rules** tab and replace everything with the contents of [`firestore.rules`](../firestore.rules) from this project. Click **Publish**.
