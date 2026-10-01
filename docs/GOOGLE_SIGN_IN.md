@@ -78,6 +78,15 @@ The message under **Settings → Account** says what's wrong:
 - **"The cloud database refused to save"**: publish the rules from step 3.
 - **No sign-in button at all**: `js/cloud/config.js` is still `null`, or the new version hasn't been pushed yet.
 
+## Reading "This confused me" reports
+
+Every question, lesson page, flashcard and reaction has a **This confused me** button. A report says what was confusing (four choices plus an optional note), where it happened, and for questions, the question, her answer and the correct answer. For auto-generated questions, it also includes the generator and seed, so the exact question can be rebuilt (`tests/questions.html?gen=<generator>&seed=<seed>`).
+
+- **Where to read them:** Firebase → **Firestore** → your database → the **feedback** collection. Each report is one document. `who` is the name she gave the app, and `uid` matches **Authentication → Users**.
+- **Signed out or offline:** the report is kept on the device and sent automatically after she signs in.
+- **Who can read them:** only you, in the console. The app can't read, change or delete reports, not even the person who sent them.
+- **Rules:** reports need the `feedback` part of [`firestore.rules`](../firestore.rules). If you published the rules before October 2026, paste them in and **Publish** again.
+
 ## Good to know
 
 - **What's saved:** one document per person in the database (`users/<their account id>`), containing only their study progress. The app never reads their email, contacts or anything else from Google. It only shows their name, email and picture in Settings so they know which account they're using.

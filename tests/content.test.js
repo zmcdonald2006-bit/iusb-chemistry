@@ -1,8 +1,10 @@
 // Content integrity: every lecture, question, card and structure is checked.
 import { describe, it, expect } from './harness.js';
 import { validateQuestion } from './helpers.js';
-import { LECTURES, allAuthoredQuestions, allCards, glossary, CHANGELOG, COURSE } from '../content/course.js';
-import { FAMILIES, REACTIONS } from '../content/reactions.js';
+import { LECTURES, allAuthoredQuestions, allCards, glossary, CHANGELOG, COURSE, lectureById, skillById } from '../content/course.js';
+import { EDGES } from '../js/views/reactions.js';
+import { FAMILIES, REACTIONS, TYPES, REAGENTS } from '../content/reactions.js';
+import { NURSING } from '../content/nursing.js';
 import * as messages from '../content/messages.js';
 import { parseSmiles } from '../js/chem/smiles.js';
 import { sameMolecule } from '../js/chem/analyze.js';
@@ -180,7 +182,21 @@ describe('Reaction map', () => {
       if (!getGenerator(r.practice)) throw new Error(`${r.id}: no generator ${r.practice}`);
       checkSmiles(r.example[0], r.id);
       if (r.example[1]) checkSmiles(r.example[1], r.id);
+      if (!TYPES[r.type]) throw new Error(`${r.id}: unknown type ${r.type}`);
+      if (!skillById(r.skill)) throw new Error(`${r.id}: unknown skill ${r.skill}`);
+      const lec = lectureById(r.lecture);
+      if (!lec || !lec.sections.some((x) => x.id === r.section)) throw new Error(`${r.id}: no section ${r.lecture}/${r.section}`);
+      if (!r.rule || !r.steps || !r.steps.length || !r.trap) throw new Error(`${r.id}: needs a rule, steps and a trap`);
+      for (const t of [r.rule, ...r.steps, r.trap, r.body || '']) markup(t);
     }
+    const ids = new Set(REACTIONS.map((r) => r.id));
+    if (ids.size !== REACTIONS.length) throw new Error('duplicate reaction id');
+    for (const g of REAGENTS) for (const id of g.ids) if (!ids.has(id)) throw new Error(`reagent decoder: unknown reaction ${id}`);
+  });
+  it('every reaction is on the map', () => {
+    const onMap = new Set([...EDGES.map((e) => e[0]), 'ket-ox']);
+    for (const r of REACTIONS) if (!onMap.has(r.id)) throw new Error(`${r.id} has no arrow on the map`);
+    for (const e of EDGES) if (!REACTIONS.some((r) => r.id === e[0])) throw new Error(`map arrow for unknown reaction ${e[0]}`);
   });
   it('examples match the reaction engine', () => {
     const byId = Object.fromEntries(REACTIONS.map((r) => [r.id, r]));
@@ -198,6 +214,24 @@ describe('Reaction map', () => {
     same('red-ket', rx.reduceCarbonyl(byId['red-ket'].example[0]));
     same('neutralize', rx.neutralizeAcid(byId.neutralize.example[0]));
     same('thiol-ox', rx.oxidizeThiol(byId['thiol-ox'].example[0]));
+    expect(rx.oxidizeAldehyde(byId['ket-ox'].example[0])).toBeNull();
+    // disulfide reduction is thiol oxidation backwards
+    if (!sameMolecule(rx.oxidizeThiol(byId['disulfide-red'].example[1]), byId['disulfide-red'].example[0])) throw new Error('disulfide-red example');
+  });
+});
+
+describe('Nursing connections', () => {
+  it('point at real lesson sections and use valid markup', () => {
+    const ids = new Set();
+    for (const n of NURSING) {
+      if (ids.has(n.id)) throw new Error(`duplicate ${n.id}`);
+      ids.add(n.id);
+      const lec = lectureById(n.lecture);
+      if (!lec || !lec.sections.some((x) => x.id === n.section)) throw new Error(`${n.id}: no section ${n.lecture}/${n.section}`);
+      if (!n.title || !n.text || n.text.length > 420) throw new Error(`${n.id}: needs a title and a short text`);
+      markup(n.title); markup(n.text);
+    }
+    for (const l of LECTURES) if (!NURSING.some((n) => n.lecture === l.id)) throw new Error(`no nursing connection for ${l.id}`);
   });
 });
 

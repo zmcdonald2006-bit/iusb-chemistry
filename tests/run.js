@@ -10,6 +10,7 @@ import './content.test.js';
 import './app.test.js';
 import './game.test.js';
 import './cloud.test.js';
+import './feedback.test.js';
 
 const result = await run();
 if (result.fail) {

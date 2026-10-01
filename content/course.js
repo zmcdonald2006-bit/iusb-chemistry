@@ -19,12 +19,21 @@ export const COURSE = {
   school: 'IU South Bend',
   textbook: 'Smith, General, Organic & Biological Chemistry',
   // Bump when content changes so the app can show "what's new".
-  contentVersion: '2026.09.30',
+  contentVersion: '2026.10.01',
   lectures: LECTURES,
 };
 
 // Shown on the "What's new" screen after an update. Newest first.
 export const CHANGELOG = [
+  {
+    version: '2026.10.01',
+    title: 'A clearer reaction map, nursing connections, and a "This confused me" button',
+    items: [
+      'Reaction map: a tappable map that fits your phone, a reagent decoder, how to draw each product, common traps, and a "Quiz me" mode',
+      'Nursing connections: how each topic shows up in nursing (in the notes, and all together under Reference → Nursing)',
+      'Stuck on something? Tap "This confused me" on any question, note, flashcard or reaction, so it can be explained better',
+    ],
+  },
   {
     version: '2026.09.30',
     title: 'New: Sea Lion Splash 🌊',

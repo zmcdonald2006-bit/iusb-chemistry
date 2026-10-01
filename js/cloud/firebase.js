@@ -54,5 +54,6 @@ export async function createFirebaseAdapter({ databaseId, ...config }) {
       }, onError);
     },
     remove: (uid) => fsMod.deleteDoc(ref(uid)),
+    addFeedback: (uid, report) => fsMod.addDoc(fsMod.collection(db, 'feedback'), { ...report, uid, createdAt: fsMod.serverTimestamp() }),
   };
 }

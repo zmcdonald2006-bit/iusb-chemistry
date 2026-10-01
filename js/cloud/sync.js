@@ -11,6 +11,7 @@
 //                                   when not null and resolves to fn's result
 //   subscribe(uid, cb, onError)     cb(doc | null) when the cloud copy changes → unsubscribe
 //   remove(uid)                     deletes the cloud copy
+//   addFeedback(uid, report)        stores a "This confused me" report (feedback collection)
 // A cloud doc looks like { data, enc, rev, schema, app }; rev goes up by one on every write.
 import { mergeStates, migrate, defaultState, SCHEMA_VERSION, APP_ID } from '../state/store.js';
 import { encodeState, decodeState, fingerprint, DEVICE_META } from './codec.js';
@@ -258,6 +259,14 @@ export function createSync({ store, adapter, now = () => Date.now(), debounceMs 
       await adapter.remove(uid);
       store.update((s) => { s.meta.cloudUid = null; });
       await adapter.signOut();
+    },
+    // Deliver a "This confused me" report. Resolves false when nobody is signed in (it's kept for later).
+    async sendFeedback(report) {
+      if (!st.user || !adapter.addFeedback) return false;
+      const { id, ...fields } = report;
+      void id;
+      await adapter.addFeedback(st.user.uid, { ...fields, uid: st.user.uid });
+      return true;
     },
     // Reset progress here and in the cloud, so every signed-in device starts fresh.
     async resetEverywhere() {

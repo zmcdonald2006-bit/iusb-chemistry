@@ -26,6 +26,12 @@ export function initCloud({ store, toast, onRemote }) {
     async signOut(opts) { await ready; if (sync) await sync.signOut(opts); },
     async syncNow() { await ready; if (sync) await sync.syncNow(); },
     async deleteCloudData() { await ready; if (sync) await sync.deleteCloudData(); },
+    // Deliver a "This confused me" report; false when not signed in (the caller keeps it for later).
+    async sendFeedback(report) {
+      await ready;
+      if (!sync) return false;
+      return sync.sendFeedback({ ...report, who: String(store.get().profile.name || '').slice(0, 60) });
+    },
     // Reset here, and in the cloud when signed in.
     async resetEverywhere() { await ready; if (sync && view.user) await sync.resetEverywhere(); else store.reset(); },
   };

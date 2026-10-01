@@ -1,9 +1,11 @@
 import { h, icon, md, mdi } from '../ui/dom.js';
-import { ring, bar, levelChip, molView, molsView, rxnView, tetraView, pageHead, sectionTitle, emptyState, autoNumbers } from '../ui/components.js';
+import { ring, bar, levelChip, molView, molsView, rxnView, tetraView, pageHead, sectionTitle, emptyState, autoNumbers, nursingNote } from '../ui/components.js';
 import { questionView } from '../ui/question.js';
 import { lectureProgress } from '../state/progress.js';
 import { markSectionRead, recordAttempt, overrideAttempt } from '../state/store.js';
 import { lectureById } from '../../content/course.js';
+import { nursingFor } from '../../content/nursing.js';
+import { confusedButton } from '../ui/confused.js';
 import { normalizeQuestion } from '../quiz/bank.js';
 
 // ---- Lecture list ---------------------------------------------------------------------------------
@@ -101,6 +103,9 @@ export function sectionReader({ app, main, params }) {
     const el = renderBlock(b, { app, lecture: l, views });
     if (el) art.appendChild(h('div', { class: 'blk' }, el));
   }
+  for (const n of nursingFor(l.id, s.id)) art.appendChild(h('div', { class: 'blk' }, nursingNote(n)));
+  const confused = confusedButton({ where: `Lecture ${l.number} › ${s.title}`, item: `${l.id}/${s.id}` }, { label: 'Something here confused me' });
+  if (confused) art.appendChild(h('div', { class: 'q-foot reader-foot' }, confused));
   const markRead = () => app.store.update((st) => markSectionRead(st, l.id, s.id, Date.now()), { silent: true });
   const prev = l.sections[idx - 1];
   const next = l.sections[idx + 1];

@@ -168,7 +168,12 @@ Generators live in `js/quiz/gen/*.js` and are registered in `js/quiz/generators.
 
 ## Other content files
 
-- [content/reactions.js](../content/reactions.js): the Reaction map. Add new families and reactions here; the tests check each example against the reaction engine.
+- [content/reactions.js](../content/reactions.js): the Reaction map.
+  - Each reaction has a `type` (addition, elimination, oxidation, reduction, acid–base), a `rule`, numbered `steps` for drawing the product, a `trap`, and optionally `body` (where it happens in the body or in health care).
+  - `section` links the **Notes** button to the lesson section, and `skill` sets what **Practice** drills.
+  - A new reaction also needs an arrow on the map: add it to `EDGES` in [js/views/reactions.js](../js/views/reactions.js), and a row in `REAGENTS` if it uses a new reagent.
+  - The tests check each example against the reaction engine, and that every reaction is on the map.
+- [content/nursing.js](../content/nursing.js): **Nursing connection** notes. Each one is shown at the end of the lesson section it names, and all together under **Reference → Nursing**. Keep them short (the tests allow 420 characters) and accurate. They're marked as extra, beyond the slides.
 - [content/bootcamp.js](../content/bootcamp.js): the Foundations Bootcamp steps.
 - [content/messages.js](../content/messages.js): encouragement and milestone notes.
 - [content/game.js](../content/game.js): Sea Lion Splash outfits, oceans, prices and messages.

@@ -6,6 +6,7 @@ import { renderMolecule } from '../chem/render.js';
 import { makeRng } from '../lib/random.js';
 import { skillById } from '../../content/course.js';
 import { formulaHtml } from '../chem/condensed.js';
+import { confusedButton } from './confused.js';
 
 const LETTERS = 'ABCDEFGHIJ';
 const TYPED = new Set(['num', 'text', 'formula', 'name']);
@@ -56,6 +57,18 @@ export function questionView(q, opts = {}) {
   card.appendChild(actions);
   const fbHost = h('div');
   card.appendChild(fbHost);
+  // "This confused me" (not during a timed practice exam: it's offered on the results page instead)
+  if (mode !== 'exam') {
+    const sk = q.skill ? skillById(q.skill) : null;
+    const btn = confusedButton(() => ({
+      where: `${sk ? `L${sk.lecture.number} · ${sk.title}` : 'Practice'}: question`,
+      item: q.ref && q.ref.gen ? `${q.ref.gen} (seed ${q.ref.seed})` : q.id,
+      question: questionText(q),
+      given: answered ? describeResponse(q, response) : '(not answered yet)',
+      answer: correctText(q),
+    }));
+    if (btn) card.appendChild(h('div', { class: 'q-foot' }, btn));
+  }
 
   const checkBtn = h('button', { type: 'button', class: 'btn grow-btn', disabled: true }, mode === 'exam' ? 'Save answer' : 'Check');
   const nextBtn = h('button', { type: 'button', class: 'btn grow-btn hidden' }, opts.nextLabel || 'Next', icon('arrowRight'));
@@ -366,6 +379,35 @@ export function questionView(q, opts = {}) {
     destroy() { document.removeEventListener('keydown', onKey); },
     get answered() { return answered; },
   };
+}
+
+// Plain-text versions of a question and answers, for "This confused me" reports.
+function choiceText(q, i) {
+  const c = q.choices && q.choices[i];
+  if (c == null) return '';
+  return typeof c === 'string' ? c : c.text || c.smiles || '';
+}
+function questionText(q) {
+  const f = q.figure;
+  const fig = !f ? '' : f.smiles ? ` [structure: ${f.smiles}]` : f.rxn ? ` [reaction: ${f.rxn.from} + ${f.rxn.reagent || ''}]` : '';
+  return `${q.prompt}${fig}`;
+}
+function describeResponse(q, r) {
+  if (r == null) return '(no answer)';
+  switch (q.type) {
+    case 'mc': case 'struct': return choiceText(q, r);
+    case 'multi': return r.map((i) => choiceText(q, i)).join(', ') || '(none selected)';
+    case 'tf': return r ? 'True' : 'False';
+    case 'order': return r.map((i) => q.items[i]).join(' < ');
+    case 'match': return q.left.map((l, i) => `${l} → ${q.right[r[i]] ?? '?'}`).join('; ');
+    case 'atoms': return r.length ? `atoms ${r.join(', ')}` : '(none selected)';
+    default: return String(r);
+  }
+}
+function correctText(q) {
+  if (q.type === 'struct') return choiceText(q, q.answer);
+  if (q.type === 'atoms') return q.answer.length ? `atoms ${q.answer.join(', ')}` : 'none';
+  try { return answerText(q); } catch { return ''; }
 }
 
 function initialResponse(q) {

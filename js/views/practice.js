@@ -2,6 +2,7 @@ import { h, icon } from '../ui/dom.js';
 import { pageHead, sectionTitle, emptyState } from '../ui/components.js';
 import { lectureProgress, weakSkills, openMistakes, upcomingExams } from '../state/progress.js';
 import { lectureById, skillById } from '../../content/course.js';
+import { REACTIONS } from '../../content/reactions.js';
 
 export function practiceHub({ app, main }) {
   const st = app.state;
@@ -70,6 +71,10 @@ export function practiceStart({ app, main, params, query }) {
     const sk = skillById(params.arg);
     if (!sk) return missing(main);
     begin({ mode: 'drill', title: sk.title, subtitle: `Lecture ${sk.lecture.number}`, skills: [sk.id], lectures: [sk.lecture.id], count: +(query.count || 8), origin: query.from || `#/learn/${sk.lecture.id}` });
+  } else if (mode === 'reactions') {
+    const skills = [...new Set(REACTIONS.map((r) => r.skill))];
+    const lectures = [...new Set(REACTIONS.map((r) => r.lecture))];
+    begin({ mode: 'practice', title: 'All reactions', subtitle: 'Predict the product', skills, lectures, count: +(query.count || 12), origin: '#/reactions' });
   } else if (mode === 'mixed') {
     const lecs = touchedLectures(st, app.course);
     begin({ mode: 'mixed', title: 'Mixed review', skills: lecs.flatMap((l) => l.skills.map((s) => s.id)), lectures: lecs.map((l) => l.id), count: +(query.count || 12) });

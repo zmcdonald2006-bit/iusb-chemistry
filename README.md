@@ -22,7 +22,13 @@ It's a static web app with no build step and no dependencies. It works offline, 
   - A whole run counts toward mastery as one result per skill, scored by accuracy. Fast game answers count, but they can't outweigh careful quiz answers.
   - Chill / Normal / Fast speeds. Sound effects and vibration can be turned off in the game menu. Android phones vibrate fully; iPhones allow only a light tap, on iOS 18 or newer.
 - **Name Lab**: type any compound name from class and see the structure it describes, the correct IUPAC name, the formula and the chirality centers. If a name is wrong, it explains why.
-- **Reaction map**: every reaction in the course on one page, each with a Practice button.
+- **Reaction map**:
+  - A tappable map of how the families connect, color-coded by reaction type, that fits a phone screen.
+  - A **reagent decoder** ("see this reagent, think this reaction").
+  - For every reaction: how to draw the product step by step, the classic trap, and where it happens in the body.
+  - **Quiz me** mode hides the products, and **Drill all reactions** practices them all.
+- **Nursing connections**: short notes on how each topic shows up in nursing (antidotes, ABGs, DKA, drug safety). They appear in the lessons and all together under **Reference → Nursing**, marked as extra (beyond the slides).
+- **This confused me**: a button on every question, lesson page, flashcard and reaction. Reports go to the cloud database so confusing spots can be fixed. See [docs/GOOGLE_SIGN_IN.md](docs/GOOGLE_SIGN_IN.md#reading-this-confused-me-reports).
 - **Reference**: functional groups, naming rules, properties, shapes, acid–base, glossary and a pH calculator.
 - **Progress**:
   - Mastery for every skill.
@@ -74,7 +80,7 @@ ruby tools/serve.rb
 
 Then open <http://localhost:8080>. The server disables caching, so edits show up on reload.
 
-Run the tests (~490 tests: chemistry engine, every question generator × 150 seeds, content integrity, state and migrations, router):
+Run the tests (~550 tests: chemistry engine, every question generator × 150 seeds, content integrity, state and migrations, router, cloud sync, feedback reports):
 
 ```bash
 /System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Helpers/jsc -m tests/run.js
@@ -121,7 +127,7 @@ js/ui/                DOM helper, shared components, the question widget
 js/quiz/              answer checkers, question bank, session planner, generators (gen/)
 js/state/             store (save/migrate/backup/merge), spaced repetition, progress, milestones, game wallet
 js/game/              Sea Lion Splash: rules (engine.js, no drawing — fully tested), decks, canvas art, sounds
-js/cloud/             Sign in with Google: config.js (paste Firebase settings), sync engine, Firebase connection
+js/cloud/             Sign in with Google: config.js (Firebase settings), sync engine, Firebase connection
 js/chem/              chemistry engine: SMILES parser, ring finder, 2D layout, SVG renderer,
                       IUPAC namer, name parser + checker, reactions, molecule generator
 js/lib/               seeded random numbers, safe text markup

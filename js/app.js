@@ -2,7 +2,7 @@
 import { h, icon, clear } from './ui/dom.js';
 import { toast, modal, confirmDialog, confetti } from './ui/components.js';
 import { createRouter } from './router.js';
-import { createStore, recordAttempt, overrideAttempt, addSession, recordStudyTime, dayKey, STORAGE_KEY } from './state/store.js';
+import { createStore, recordAttempt, overrideAttempt, addSession, recordStudyTime, dayKey, STORAGE_KEY, memoryStorage } from './state/store.js';
 import { deckCounts } from './state/srs.js';
 import { openMistakes } from './state/progress.js';
 import { newMilestones } from './state/milestones.js';
@@ -12,6 +12,8 @@ import * as messages from '../content/messages.js';
 import { APP_VERSION } from './version.js';
 import { ROUTES } from './routes.js';
 import { initCloud } from './cloud/index.js';
+import { createFeedback } from './state/feedback.js';
+import { setFeedbackService } from './ui/confused.js';
 
 const store = createStore();
 const cards = allCards();
@@ -229,6 +231,15 @@ app.cloud = initCloud({
   // progress arrived from another device: refresh overview pages (never a quiz in progress)
   onRemote: () => { viewStale = true; refreshStaleView(); applyTheme(); },
 });
+
+// "This confused me" reports: kept on the device, delivered to the database when signed in.
+if (app.cloud.enabled) {
+  let storage;
+  try { storage = window.localStorage; storage.getItem('x'); } catch { storage = memoryStorage(); }
+  app.feedback = createFeedback({ storage, send: (r) => app.cloud.sendFeedback(r) });
+  setFeedbackService({ add: (r) => app.feedback.add(r), signedIn: () => !!app.cloud.state.user });
+  app.cloud.subscribe((s) => { if (s.user && s.status === 'synced' && app.feedback.pending) app.feedback.flush(); });
+}
 window.addEventListener('storage', (e) => { if (e.key === STORAGE_KEY || e.key === null) pickUpOtherTabs(); });
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) store.flush();

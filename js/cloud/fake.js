@@ -20,6 +20,7 @@ export function createFakeCloud({ persistKey = null } = {}) {
     writes: 0,
     failNext: null, // set to an error object to make the next cloud call fail
     failWatch: null, // set to an error object to make the next live listener fail (it then stops)
+    feedback: [], // "This confused me" reports received
     // One "device": its own sign-in state, sharing this cloud.
     adapter(user, { signedIn = false, onSignedIn = null } = {}) {
       let current = signedIn ? user : null;
@@ -51,6 +52,11 @@ export function createFakeCloud({ persistKey = null } = {}) {
           return () => subs.get(uid).delete(cb);
         },
         async remove(uid) { maybeFail(); docs.delete(uid); persist(); notify(uid); },
+        async addFeedback(uid, report) {
+          maybeFail();
+          if (!current || current.uid !== uid || report.uid !== uid) throw Object.assign(new Error('Missing or insufficient permissions.'), { code: 'permission-denied' });
+          cloud.feedback.push(clone(report));
+        },
       };
     },
   };

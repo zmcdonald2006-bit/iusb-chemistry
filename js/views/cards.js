@@ -3,6 +3,7 @@ import { pageHead, bar, molView, emptyState, sectionTitle } from '../ui/componen
 import { buildQueue, deckCounts, schedule, previewIntervals } from '../state/srs.js';
 import { dayKey } from '../state/store.js';
 import { lectureById } from '../../content/course.js';
+import { confusedButton } from '../ui/confused.js';
 
 export function cardsHub({ app, main }) {
   const st = app.state;
@@ -99,18 +100,22 @@ export function cardsReview({ app, main, query }) {
       b.addEventListener('click', () => grade(g.id));
       grades.appendChild(b);
     });
+    const card = current;
+    const confused = confusedButton(() => ({ where: `Flashcard · Lecture ${lec ? lec.number : ''}`, item: card.id, question: `${card.front}${card.mol ? ` [structure: ${card.mol}]` : ''}`, answer: card.back }));
+    const foot = confused ? h('div', { class: 'q-foot hidden', style: { justifyContent: 'center' } }, confused) : null;
     const flip = () => {
       if (showing) return;
       showing = true;
       face.appendChild(back);
       reveal.classList.add('hidden');
       grades.classList.remove('hidden');
+      if (foot) foot.classList.remove('hidden');
       const first = grades.querySelector('.g2');
       if (first) first.focus({ preventScroll: true });
     };
     face.addEventListener('click', flip);
     reveal.addEventListener('click', flip);
-    host.append(face, reveal, grades, h('p', { class: 'hint center', style: { marginTop: '12px' } }, 'Keys: ', h('span', { class: 'kbd' }, 'Space'), ' flip · ', h('span', { class: 'kbd' }, '1'), '–', h('span', { class: 'kbd' }, '4'), ' grade'));
+    host.append(face, reveal, grades, ...(foot ? [foot] : []), h('p', { class: 'hint center', style: { marginTop: '12px' } }, 'Keys: ', h('span', { class: 'kbd' }, 'Space'), ' flip · ', h('span', { class: 'kbd' }, '1'), '–', h('span', { class: 'kbd' }, '4'), ' grade'));
     host.flip = flip;
   }
 

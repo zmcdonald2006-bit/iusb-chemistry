@@ -1,9 +1,10 @@
 import { h, icon, mdi, clear } from '../ui/dom.js';
-import { pageHead, molView } from '../ui/components.js';
-import { glossary } from '../../content/course.js';
+import { pageHead, molView, nursingNote } from '../ui/components.js';
+import { glossary, LECTURES } from '../../content/course.js';
+import { NURSING } from '../../content/nursing.js';
 
 const TABS = [
-  ['groups', 'Functional groups'], ['naming', 'Naming'], ['properties', 'Properties'], ['shapes', 'Shapes'], ['acidbase', 'Acids & bases'], ['glossary', 'Glossary'],
+  ['groups', 'Functional groups'], ['naming', 'Naming'], ['properties', 'Properties'], ['shapes', 'Shapes'], ['acidbase', 'Acids & bases'], ['nursing', 'Nursing'], ['glossary', 'Glossary'],
 ];
 
 const FAMILIES = [
@@ -26,10 +27,16 @@ const FAMILIES = [
 export default function reference({ app, main, params }) {
   const tab = params.tab && TABS.some((t) => t[0] === params.tab) ? params.tab : 'groups';
   main.appendChild(pageHead({ title: 'Reference', sub: 'Quick-look tables for everything you need to memorize.' }));
-  main.appendChild(h('div', { class: 'tabs', role: 'tablist' }, TABS.map(([id, label]) => h('a', { class: 'tab', role: 'tab', href: `#/reference/${id}`, 'aria-selected': String(id === tab) }, label))));
+  const tabs = h('div', { class: 'tabs', role: 'tablist' }, TABS.map(([id, label]) => h('a', { class: 'tab', role: 'tab', href: `#/reference/${id}`, 'aria-selected': String(id === tab) }, label)));
+  main.appendChild(tabs);
+  // keep the open tab visible when the row of tabs scrolls sideways (phones)
+  requestAnimationFrame(() => {
+    const cur = tabs.querySelector('[aria-selected="true"]');
+    if (cur) tabs.scrollLeft = Math.max(0, cur.offsetLeft - tabs.offsetLeft - (tabs.clientWidth - cur.offsetWidth) / 2);
+  });
   const body = h('div', { class: 'stack' });
   main.appendChild(body);
-  ({ groups, naming, properties, shapes, acidbase, glossary: glossaryTab })[tab](body, app);
+  ({ groups, naming, properties, shapes, acidbase, nursing, glossary: glossaryTab })[tab](body, app);
 }
 
 function table(head, rows) {
@@ -107,6 +114,19 @@ function acidbase(body) {
     ['Blood', 'pH 7.35–7.45; H₂CO₃/HCO₃⁻ buffer'],
   ]));
   body.appendChild(h('a', { class: 'btn secondary', href: '#/tools/ph' }, icon('flask'), 'Open the pH calculator'));
+}
+
+function nursing(body) {
+  body.appendChild(h('p', { class: 'muted', style: { margin: 0 } }, mdi('Where this class shows up in nursing school and on the job. These notes go **beyond the lecture slides**: they\'re here to show why it matters, not as exam material. For the exam, study the notes and practice.')));
+  for (const l of LECTURES) {
+    const notes = NURSING.filter((n) => n.lecture === l.id);
+    if (!notes.length) continue;
+    body.appendChild(h('h3', { style: { margin: '10px 0 0' } }, `Lecture ${l.number}: ${l.title}`));
+    for (const n of notes) {
+      const sec = l.sections.find((s) => s.id === n.section);
+      body.appendChild(nursingNote(n, { heading: null, link: { href: `#/learn/${l.id}/${n.section}`, label: `Read the notes: ${sec.title} →` } }));
+    }
+  }
 }
 
 function glossaryTab(body) {

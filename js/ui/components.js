@@ -212,6 +212,15 @@ export function pageHead({ eyebrow, title, sub, back }) {
     sub ? h('p', {}, sub) : null);
 }
 
+// A "Nursing connection" note (content/nursing.js): context beyond the lecture slides.
+export function nursingNote(n, { heading = 'Nursing connection', link = null } = {}) {
+  return h('div', { class: 'callout nurse' },
+    heading ? h('div', { class: 'co-eyebrow', title: 'Goes beyond the lecture slides' }, icon('nurse'), heading, h('span', { class: 'co-extra' }, '· extra')) : null,
+    h('div', { class: 'co-title' }, heading ? null : icon('nurse'), mdi(n.title)),
+    md(n.text),
+    link ? h('a', { class: 'small', href: link.href }, link.label) : null);
+}
+
 export function sectionTitle(title, link = null) {
   return h('div', { class: 'section-title' }, h('h2', {}, title), link ? h('a', { href: link.href }, link.label) : null);
 }
