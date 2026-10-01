@@ -1,8 +1,9 @@
-import { h, icon } from '../ui/dom.js';
+import { h, icon, clear } from '../ui/dom.js';
 import { ring, sectionTitle } from '../ui/components.js';
 import { recommendations, streak, todayStats, upcomingExams, lectureProgress } from '../state/progress.js';
 import { dayKey } from '../state/store.js';
 import { paintScene } from './game.js';
+import { googleButton } from '../ui/account.js';
 
 function greeting() {
   const hr = new Date().getHours();
@@ -57,6 +58,23 @@ export default function home({ app, main }) {
   }
   main.appendChild(grid);
 
+  // Signed out (and sign-in is set up)? Offer to save progress to Google, once she's started studying.
+  let offCloud = null;
+  if (app.cloud.enabled && !st.meta.nudgeDismissed && Object.values(st.activity).reduce((a, x) => a + (x.q || 0), 0) >= 5) {
+    const slot = h('div');
+    main.appendChild(slot);
+    offCloud = app.cloud.subscribe((s) => {
+      clear(slot);
+      if (s.status !== 'signed-out' || s.user) return;
+      slot.appendChild(h('div', { class: 'card acct-nudge' },
+        h('div', { class: 'grow' },
+          h('div', { class: 'li-title' }, 'Save your progress to your Google account'),
+          h('div', { class: 'muted small' }, 'So it\'s on any device, and safe if you lose your phone.'),
+          h('div', { style: { marginTop: '10px' } }, googleButton(app))),
+        h('button', { type: 'button', class: 'icon-btn', 'aria-label': 'Dismiss', onclick: () => { app.store.update((x) => { x.meta.nudgeDismissed = true; }); clear(slot); if (offCloud) offCloud(); } }, icon('x'))));
+    });
+  }
+
   // Today's plan
   main.appendChild(sectionTitle('Today\'s plan'));
   const recs = recommendations(st, app.course, app.cards, { today });
@@ -101,6 +119,7 @@ export default function home({ app, main }) {
   if (sk.current >= 2 || t.q >= goal) {
     main.appendChild(h('div', { class: 'card note-card', style: { marginTop: '18px' } }, icon('heart'), h('div', {}, app.cheer(true))));
   }
+  return () => { if (offCloud) offCloud(); };
 }
 
 function tile(href, ic, title, sub) {

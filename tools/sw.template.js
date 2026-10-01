@@ -26,7 +26,10 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.origin !== self.location.origin) return;
+  // Our own files, plus Google's sign-in library (versioned URLs that never change), so a
+  // signed-in app still opens offline. Everything else (e.g. the database) goes straight out.
+  const firebaseSdk = url.hostname === 'www.gstatic.com' && url.pathname.startsWith('/firebasejs/');
+  if (url.origin !== self.location.origin && !firebaseSdk) return;
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_VERSION);
     if (req.mode === 'navigate') {
@@ -42,7 +45,7 @@ self.addEventListener('fetch', (event) => {
     if (hit) return hit;
     try {
       const res = await fetch(req);
-      if (res.ok && res.type === 'basic') cache.put(req, res.clone());
+      if (res.ok && (res.type === 'basic' || (firebaseSdk && res.type === 'cors'))) cache.put(req, res.clone());
       return res;
     } catch {
       return Response.error();

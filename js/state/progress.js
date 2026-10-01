@@ -76,7 +76,7 @@ export function todayStats(state, today = dayKey()) {
 
 export function upcomingExams(state, today = dayKey()) {
   return state.exams
-    .filter((e) => e.date && daysBetween(today, e.date) >= 0 && !e.done)
+    .filter((e) => !e.deleted && e.date && daysBetween(today, e.date) >= 0 && !e.done)
     .map((e) => ({ ...e, daysLeft: daysBetween(today, e.date) }))
     .sort((a, b) => a.daysLeft - b.daysLeft);
 }

@@ -11,6 +11,7 @@ import { COURSE, CHANGELOG, allCards } from '../content/course.js';
 import * as messages from '../content/messages.js';
 import { APP_VERSION } from './version.js';
 import { ROUTES } from './routes.js';
+import { initCloud } from './cloud/index.js';
 
 const store = createStore();
 const cards = allCards();
@@ -212,11 +213,22 @@ const PASSIVE_ROUTE = /^\/(progress|learn(\/[^/]+)?|practice|mistakes|cards|boot
 let viewStale = false;
 function pickUpOtherTabs() {
   if (store.reload()) viewStale = true;
+  refreshStaleView();
+}
+function refreshStaleView() {
   if (viewStale && document.hidden === false && PASSIVE_ROUTE.test(currentPath) && !document.querySelector('.modal-backdrop')) {
     viewStale = false;
     router.start();
   }
 }
+
+// ---- Sign in with Google (cloud sync), when configured in js/cloud/config.js ----------------------
+app.cloud = initCloud({
+  store,
+  toast,
+  // progress arrived from another device: refresh overview pages (never a quiz in progress)
+  onRemote: () => { viewStale = true; refreshStaleView(); applyTheme(); },
+});
 window.addEventListener('storage', (e) => { if (e.key === STORAGE_KEY || e.key === null) pickUpOtherTabs(); });
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) store.flush();

@@ -2,12 +2,21 @@ import { h, icon, md, clear } from '../ui/dom.js';
 import { pageHead, sectionTitle, modal } from '../ui/components.js';
 import { dayKey } from '../state/store.js';
 import { APP_VERSION } from '../version.js';
+import { accountCard } from '../ui/account.js';
 
 const ACCENTS = [['violet', 'Violet', '#6c4ddb'], ['berry', 'Berry', '#c2255c'], ['teal', 'Teal', '#0b7f72'], ['ocean', 'Ocean', '#1c63c9'], ['crimson', 'IU Crimson', '#990000'], ['sunset', 'Sunset', '#c94a0c']];
 
 export default function settings({ app, main }) {
   const st = app.state;
   main.appendChild(pageHead({ title: 'Settings', sub: 'Make it yours, and keep your progress safe.' }));
+
+  // Google account (when sign-in is set up)
+  let account = null;
+  if (app.cloud.enabled) {
+    main.appendChild(sectionTitle('Account'));
+    account = accountCard(app);
+    main.appendChild(account.el);
+  }
 
   // Profile & appearance
   main.appendChild(sectionTitle('You'));
@@ -56,7 +65,9 @@ export default function settings({ app, main }) {
   });
   const canShare = !!(navigator.canShare && navigator.share && typeof File !== 'undefined');
   main.appendChild(h('div', { class: 'card' },
-    md(`Progress is saved **on this device** (in this browser). Back it up now and then — and use a backup to move progress to another phone or laptop. Last backup: **${last}**.`),
+    md(app.cloud.state.user
+      ? `Your progress syncs to your Google account automatically. A backup file is optional extra protection. Last backup: **${last}**.`
+      : `Progress is saved **on this device** (in this browser). Back it up now and then — and use a backup to move progress to another phone or laptop. Last backup: **${last}**.`),
     h('div', { class: 'btn-row' },
       h('button', { type: 'button', class: 'btn', onclick: () => exportBackup(app) }, icon('download'), 'Download backup'),
       canShare ? h('button', { type: 'button', class: 'btn secondary', onclick: () => shareBackup(app) }, icon('share'), 'Share backup') : null,
@@ -82,7 +93,8 @@ export default function settings({ app, main }) {
   main.appendChild(sectionTitle('About'));
   main.appendChild(h('div', { class: 'card list' },
     h('a', { class: 'list-item', href: '#/about' }, h('div', { class: 'li-icon' }, icon('sparkle')), h('div', { class: 'grow' }, h('div', { class: 'li-title' }, 'What\'s new'), h('div', { class: 'li-sub' }, `App v${APP_VERSION} · content ${app.course.contentVersion}`)), h('span', { class: 'chev' }, icon('chevRight'))),
-    h('button', { type: 'button', class: 'list-item', style: { background: 'none', border: 0, width: '100%', textAlign: 'left' }, onclick: () => resetFlow(app) }, h('div', { class: 'li-icon', style: { background: 'var(--bad-soft)', color: 'var(--bad)' } }, icon('trash')), h('div', { class: 'grow' }, h('div', { class: 'li-title' }, 'Reset all progress'), h('div', { class: 'li-sub' }, 'Starts completely fresh. Download a backup first!')))));
+    h('button', { type: 'button', class: 'list-item', style: { background: 'none', border: 0, width: '100%', textAlign: 'left' }, onclick: () => resetFlow(app) }, h('div', { class: 'li-icon', style: { background: 'var(--bad-soft)', color: 'var(--bad)' } }, icon('trash')), h('div', { class: 'grow' }, h('div', { class: 'li-title' }, 'Reset all progress'), h('div', { class: 'li-sub' }, app.cloud.state.user ? 'Starts fresh on every device signed in to this account.' : 'Starts completely fresh. Download a backup first!')))));
+  return () => { if (account) account.destroy(); };
 }
 
 function installHint() {
@@ -159,11 +171,19 @@ function resetFlow(app) {
   const input = h('input', { class: 'input', placeholder: 'Type RESET', 'aria-label': 'Type RESET to confirm' });
   modal({
     title: 'Reset everything?',
-    body: h('div', {}, md('This deletes **all** progress, flashcard schedules and settings on this device. It can\'t be undone (unless you have a backup).'), input),
+    body: h('div', {}, md(app.cloud.state.user
+      ? `This deletes **all** progress, flashcard schedules and settings, on this device **and on every device signed in to ${app.cloud.state.user.email || 'your account'}**. It can't be undone (unless you have a backup).`
+      : 'This deletes **all** progress, flashcard schedules and settings on this device. It can\'t be undone (unless you have a backup).'), input),
     actions: [
       { label: 'Cancel', kind: 'secondary', value: false },
       { label: 'Reset', kind: 'danger', onClick: () => (input.value.trim().toUpperCase() === 'RESET' ? true : (app.toast('Type RESET to confirm.'), false)) },
     ],
-    onClose: (ok) => { if (ok) { app.store.reset(); app.applyTheme(); location.hash = '#/'; location.reload(); } },
+    onClose: async (ok) => {
+      if (!ok) return;
+      await app.cloud.resetEverywhere(); // just this device when not signed in
+      app.applyTheme();
+      location.hash = '#/';
+      location.reload();
+    },
   });
 }

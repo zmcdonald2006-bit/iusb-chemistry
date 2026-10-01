@@ -31,16 +31,22 @@ It's a static web app with no build step and no dependencies. It works offline, 
 
 ## Where progress is saved
 
-Progress is stored **in the browser on each device** (localStorage), under the key `chem-companion:v1`. That means:
+**On the device, always.** Progress is stored in the browser (localStorage, key `chem-companion:v1`), so the app works offline and nothing is ever lost while waiting for the internet.
 
-- **Each person's data is private and separate.** Anyone who opens the link gets their own progress on their own phone or laptop. Nothing is mixed, and nothing is sent anywhere.
-- **Progress doesn't sync between devices on its own.** Use **Settings → Backup & sync** to:
-  - download or share a backup file;
-  - restore it on another device, choosing **Merge** (combine both devices) or **Replace**.
-- **Install it to the home screen** (Safari: Share → *Add to Home Screen*; Chrome: *Install app*). On iPhone this matters: Safari can clear a website's stored data after about 7 days of not visiting, but home-screen apps are exempt. The app also asks the browser for persistent storage, and it reminds you to back up every couple of weeks.
-- Saved data carries a schema version. Future updates migrate old data forward instead of wiping it (`migrate()` in [js/state/store.js](js/state/store.js)).
+**In the person's Google account, once "Sign in with Google" is turned on.**
 
-Cloud sync with accounts would need a small backend. See [Adding accounts / cloud sync](#adding-accounts--cloud-sync-later).
+- This is set up with a free Firebase project, about 10 minutes, in **[docs/GOOGLE_SIGN_IN.md](docs/GOOGLE_SIGN_IN.md)**.
+- Signed-in people get their progress on every device. Changes sync live, and nothing is lost if they clear their browser or lose their phone.
+- Each person can only read and write their own data.
+- Signing in is optional. Until you paste the Firebase settings into `js/cloud/config.js`, the sign-in buttons simply don't appear.
+
+Without signing in:
+
+- **Each person's data is private and separate.** Anyone who opens the link gets their own progress on their own phone or laptop.
+- **Settings → Backup & sync** can download or share a backup file, and restore it on another device with **Merge** (combine both) or **Replace**.
+- **Install it to the home screen** (Safari: Share → *Add to Home Screen*; Chrome: *Install app*). On iPhone, Safari can clear a website's data after about 7 days without a visit, but home-screen apps are exempt.
+
+Saved data carries a schema version, so future updates migrate old data instead of wiping it (`migrate()` in [js/state/store.js](js/state/store.js)).
 
 ## Putting it online (GitHub Pages, free)
 
@@ -115,6 +121,7 @@ js/ui/                DOM helper, shared components, the question widget
 js/quiz/              answer checkers, question bank, session planner, generators (gen/)
 js/state/             store (save/migrate/backup/merge), spaced repetition, progress, milestones, game wallet
 js/game/              Sea Lion Splash: rules (engine.js, no drawing — fully tested), decks, canvas art, sounds
+js/cloud/             Sign in with Google: config.js (paste Firebase settings), sync engine, Firebase connection
 js/chem/              chemistry engine: SMILES parser, ring finder, 2D layout, SVG renderer,
                       IUPAC namer, name parser + checker, reactions, molecule generator
 js/lib/               seeded random numbers, safe text markup
@@ -128,13 +135,21 @@ tools/                dev server, service-worker builder
 - **Mastery** is a recency-weighted accuracy per skill that fades if a skill isn't practiced. It drives the recommendations and the Bootcamp.
 - Markup in content is a small safe subset: `**bold**`, `*italic*`, `$H_2O$` formulas, `^sup^`, `~sub~`, and links to `#/…` or `https://`. Raw HTML is always escaped.
 
-## Adding accounts / cloud sync (later)
+## How sign-in and sync work
 
-If several people use the app and want their progress to follow them across devices, add sign-in plus a hosted database. Keep the site on GitHub Pages. A good fit is **Supabase** (free tier, email "magic link" sign-in, Postgres with row-level security, so each user can only read and write their own row).
+- [js/cloud/sync.js](js/cloud/sync.js) keeps the device and the account's cloud copy in step:
+  - each change is merged into the cloud copy within a few seconds, in a transaction;
+  - changes from other devices arrive live.
+- The cloud connection is pluggable. [js/cloud/firebase.js](js/cloud/firebase.js) is the real one; [js/cloud/fake.js](js/cloud/fake.js) is an in-memory version used by the tests and for trying the screens locally.
+- **Merging** uses `mergeStates()` in [js/state/store.js](js/state/store.js), designed so two devices always reach the same result:
+  - answer histories, sections read, exams and mistakes are combined;
+  - for each setting, the latest change wins;
+  - deleted exams stay deleted;
+  - a reset applies everywhere.
+- **Safety rules:**
+  - Progress on a device that belongs to one account is never merged into another account.
+  - An unfinished quiz stays on its own device.
+- `tests/cloud.test.js` simulates phones and laptops syncing:
+  - edits at the same time, going offline and coming back, switching accounts, resets, deleting;
+  - randomized checks that merging always settles.
 
-The app is already built for this:
-
-- All progress is one JSON document per person.
-- `mergeStates()` in [js/state/store.js](js/state/store.js) already combines two copies safely (it's what the backup **Merge** uses).
-- Sync then comes down to three steps: pull the person's row → merge it with local data → push the result.
-- The app keeps working offline from local data and syncs when it's back online.

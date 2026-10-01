@@ -61,6 +61,7 @@ export function buyItem(st, kind, id) {
   if (g.fish < item.price) return { ok: false, error: `You need ${item.price - g.fish} more fish.` };
   g.fish -= item.price;
   g.owned.push(id);
+  g.owned.sort();
   return { ok: true };
 }
 

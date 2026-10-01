@@ -2,6 +2,7 @@
 import { h, icon, md, clear } from '../ui/dom.js';
 import { modal } from '../ui/components.js';
 import { editExam } from './exams.js';
+import { googleButton } from '../ui/account.js';
 
 export function runOnboarding(app) {
   let step = 0;
@@ -10,6 +11,9 @@ export function runOnboarding(app) {
   const next = h('button', { type: 'button', class: 'btn block' });
   const back = h('button', { type: 'button', class: 'btn ghost block', style: { marginTop: '6px' } }, 'Back');
   const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const cloud = app.cloud.enabled;
+  const signedIn = () => (app.cloud.state.status === 'synced' ? app.cloud.state.user : null);
+  const signedInNote = () => h('div', { class: 'acct-status ok', style: { justifyContent: 'center' } }, icon('check'), `Signed in as ${signedIn().email}`);
 
   const steps = [
     () => [
@@ -17,6 +21,9 @@ export function runOnboarding(app) {
       h('h2', {}, 'Welcome to Chem Companion'),
       md('Your study guide for **C102: Elementary Chemistry II** — notes for every lecture, unlimited practice, flashcards and progress tracking.'),
       h('div', { class: 'field', style: { marginTop: '14px' } }, h('label', {}, 'What should I call you?'), nameIn),
+      cloud ? h('div', { class: 'onboard-signin' },
+        h('div', { class: 'muted small' }, 'Used Chem Companion before?'),
+        signedIn() ? signedInNote() : googleButton(app, { label: 'Sign in to get your progress back' })) : null,
     ],
     () => [
       h('div', { class: 'big-icon', html: svg('spark') }),
@@ -32,13 +39,22 @@ export function runOnboarding(app) {
         h('li', {}, md('**Cards**: a few minutes a day of spaced repetition.', 'span')),
         h('li', {}, md('**Name Lab**: type any name and see the structure it describes.', 'span'))),
     ],
-    () => [
+    () => (cloud ? [
+      h('div', { class: 'big-icon', html: svg('heart') }),
+      h('h2', {}, 'Keep your progress safe'),
+      signedIn()
+        ? h('div', {}, signedInNote(), md('Your progress is saved to your Google account, so it\'s on any phone or computer you sign in on.'))
+        : h('div', {},
+          md('Sign in with Google and your progress is saved to your account: it\'s on any phone or computer you sign in on, and safe if you lose your phone.'),
+          h('div', { style: { margin: '12px 0 6px' } }, googleButton(app, { block: true })),
+          h('div', { class: 'hint' }, 'Or skip this: progress is saved on this device, and you can sign in later in Settings.')),
+    ] : [
       h('div', { class: 'big-icon', html: svg('heart') }),
       h('h2', {}, 'Keep your progress safe'),
       md(ios
         ? 'Your progress is saved on this device. For the best experience, tap **Share → Add to Home Screen** in Safari — it works offline and keeps your data safer.\n\nYou can download a backup anytime in **Settings**.'
         : 'Your progress is saved on this device. Install the app (browser menu → **Install** / **Add to Home Screen**) so it works offline and keeps your data safer.\n\nYou can download a backup anytime in **Settings**.'),
-    ],
+    ]),
   ];
 
   function draw() {
@@ -52,10 +68,29 @@ export function runOnboarding(app) {
   }
 
   const dlg = modal({ body, dismissible: false, label: 'Welcome' });
+  // Signing in to an account that already has progress skips the rest of the welcome.
+  let offCloud = () => {};
+  if (cloud) {
+    let wasIn = !!signedIn();
+    offCloud = app.cloud.subscribe((s) => {
+      const nowIn = s.status === 'synced' && !!s.user;
+      if (nowIn === wasIn) return;
+      wasIn = nowIn;
+      if (nowIn && app.state.profile.onboarded) {
+        offCloud();
+        dlg.close();
+        app.navigate('#/', { replace: true }); // (the "signed in" message says the rest)
+        return;
+      }
+      if (nowIn && !nameIn.value.trim() && app.state.profile.name) nameIn.value = app.state.profile.name;
+      draw();
+    });
+  }
   next.addEventListener('click', () => {
     if (step === 0) app.store.update((s) => { s.profile.name = nameIn.value.trim().slice(0, 40); }, { silent: true });
     if (step < steps.length - 1) { step++; draw(); return; }
     app.store.update((s) => { s.profile.onboarded = true; s.meta.lastSeenVersion = app.course.contentVersion; });
+    offCloud();
     dlg.close();
     app.navigate('#/', { replace: true });
     setTimeout(() => {

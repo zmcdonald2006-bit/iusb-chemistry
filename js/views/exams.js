@@ -11,7 +11,7 @@ export default function exams({ app, main }) {
   main.appendChild(h('button', { type: 'button', class: 'btn', onclick: () => editExam(app, null) }, icon('plus'), 'Add an exam'));
 
   const up = upcomingExams(st, today);
-  const past = st.exams.filter((e) => !up.some((u) => u.id === e.id)).sort((a, b) => (a.date < b.date ? 1 : -1));
+  const past = st.exams.filter((e) => !e.deleted && !up.some((u) => u.id === e.id)).sort((a, b) => (a.date < b.date ? 1 : -1));
   main.appendChild(sectionTitle('Upcoming'));
   if (!up.length) main.appendChild(emptyState('calendar', 'No upcoming exams', 'Add one to get a countdown on your home screen.'));
   for (const e of up) main.appendChild(examCard(app, e, today));
@@ -70,7 +70,8 @@ export function editExam(app, exam) {
         });
         app.toast('Exam saved.');
       } else if (r === 'delete') {
-        app.store.update((s) => { s.exams = s.exams.filter((x) => x.id !== e.id); });
+        // Keep a deleted marker so other synced devices learn about the deletion.
+        app.store.update((s) => { const x = s.exams.find((y) => y.id === e.id); if (x) { x.deleted = true; x.updatedAt = Date.now(); } });
       } else return;
       if (location.hash.startsWith('#/exams')) app.navigate('#/exams', { replace: true });
     },
