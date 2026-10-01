@@ -19,6 +19,7 @@ export function createFakeCloud({ persistKey = null } = {}) {
     docs,
     writes: 0,
     failNext: null, // set to an error object to make the next cloud call fail
+    failWatch: null, // set to an error object to make the next live listener fail (it then stops)
     // One "device": its own sign-in state, sharing this cloud.
     adapter(user, { signedIn = false, onSignedIn = null } = {}) {
       let current = signedIn ? user : null;
@@ -41,7 +42,8 @@ export function createFakeCloud({ persistKey = null } = {}) {
           }
           throw Object.assign(new Error('Too much contention.'), { code: 'aborted' });
         },
-        subscribe(uid, cb) {
+        subscribe(uid, cb, onError) {
+          if (cloud.failWatch) { const e = cloud.failWatch; cloud.failWatch = null; later(() => onError && onError(e)); return () => {}; }
           if (!subs.has(uid)) subs.set(uid, new Set());
           subs.get(uid).add(cb);
           const d = docs.get(uid);

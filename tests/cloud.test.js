@@ -167,6 +167,38 @@ describe('Cloud sync: staying correct', () => {
     expect(a.sync.state.status).toBe('synced');
     expect((await cloudState(cloud, 'u-ana')).skills['l07.find-centers'].n).toBe(1);
   });
+  it('signing in before the database exists says so, then syncs live once it does', async () => {
+    const cloud = createFakeCloud();
+    const missing = () => Object.assign(new Error('The database (default) does not exist'), { code: 'not-found' });
+    const step = async (d) => { await micro(); await d.sync.idle(); await micro(); };
+    // b is already signed in: its sync works, but its live listener fails
+    cloud.failWatch = missing();
+    const b = device(cloud, ANA, { signedIn: true });
+    await step(b);
+    expect(b.sync.state.status).toBe('error');
+    expect(b.sync.state.error).toContain('Create database');
+    // a signs in while the database is missing
+    const a = device(cloud, ANA);
+    answer(a, 'l03.naming');
+    const signing = a.sync.signIn();
+    cloud.failNext = missing();
+    cloud.failWatch = missing();
+    await signing;
+    await step(a);
+    expect(a.sync.state.status).toBe('error');
+    expect(a.sync.state.error).toContain('isn\'t set up yet');
+    expect(a.store.get().skills['l03.naming'].n).toBe(1); // still saved on the device
+    await settle(a, b); // the retries work now: both reconnect
+    expect(a.sync.state.status).toBe('synced');
+    expect(b.sync.state.status).toBe('synced');
+    answer(a, 'l04.isomers');
+    await settle(a, b);
+    expect(b.store.get().skills['l03.naming'].n).toBe(1);
+    expect(b.store.get().skills['l04.isomers'].n).toBe(1); // live updates are flowing again
+    answer(b, 'l05.naming');
+    await settle(a, b);
+    expect(a.store.get().skills['l05.naming'].n).toBe(1);
+  });
   it('never loses an answer made while a sync is in flight', async () => {
     const cloud = createFakeCloud();
     const store = createStore({ storage: memoryStorage(), debounceMs: 0, now });

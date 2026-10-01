@@ -7,7 +7,7 @@ When this is set up, anyone using the app can sign in with their Google account,
 - **Offline:** the app still works offline. Changes sync when it's back online.
 - **Optional:** people who don't sign in keep progress on their device, as before.
 
-It uses **Firebase** (Google's app backend) on the free **Spark** plan, so **there's no cost and no credit card**. The free limits are 50,000 reads and 20,000 writes a day and 1 GB of storage. Each person uses a few dozen writes a day, so even a whole class stays far below that.
+It uses **Firebase** (Google's app backend) on the free **Spark** plan, so **there's no cost and no credit card**. The free limits are 50,000 reads and 20,000 writes a day and 1 GB of storage. Each person uses a few dozen writes a day, so even a whole class stays far below that. The paid **Blaze** plan includes the same free amount each day and only charges above it, so this app costs nothing on Blaze too.
 
 Setup takes about 10 minutes, all in the browser. Do it while signed in to the Google account you want to own the project.
 
@@ -64,6 +64,19 @@ localStorage.setItem('cc-fake-cloud', '1')
 ```
 
 Then reload. Sign-in now uses a pretend account stored in the browser. Remove that setting to go back.
+
+## If it doesn't work
+
+The message under **Settings → Account** says what's wrong:
+
+- **"The cloud database isn't set up yet"**: Firebase has no Firestore database named `(default)`.
+  - Open **Databases & Storage → Firestore** and click **Create database**. (*Data Connect*, *Realtime Database* and *Storage* are different products. The app doesn't use them.)
+  - Leave the **Database ID** as `(default)` and choose the **Standard** edition.
+  - To see which Firestore databases exist, go to <https://console.cloud.google.com/firestore/databases> and pick the project.
+  - Sign-in still works meanwhile, and progress stays on the device. It syncs by itself once the database exists (within about 5 minutes, or straight away after a reload).
+- **"Google sign-in isn't set up for this web address yet"**: add the site's domain under **Authentication → Settings → Authorized domains** (step 2).
+- **"The cloud database refused to save"**: publish the rules from step 3.
+- **No sign-in button at all**: `js/cloud/config.js` is still `null`, or the new version hasn't been pushed yet.
 
 ## Good to know
 

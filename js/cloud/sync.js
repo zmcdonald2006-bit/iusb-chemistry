@@ -57,6 +57,7 @@ export function friendlyError(e) {
     'auth/user-disabled': 'This account has been disabled.',
     'permission-denied': 'The cloud database refused to save (check the Firestore rules in docs/GOOGLE_SIGN_IN.md).',
     'failed-precondition': 'The cloud database isn\'t set up yet (create a Firestore database in Firebase).',
+    'not-found': 'The cloud database isn\'t set up yet (Firebase → Firestore → Create database). Your progress is safe on this device.',
     'unavailable': 'Can\'t reach the cloud right now. Your progress is safe on this device and will sync later.',
     'resource-exhausted': 'The free cloud quota is used up for today. Progress will sync tomorrow.',
   };
@@ -85,6 +86,7 @@ export function createSync({ store, adapter, now = () => Date.now(), debounceMs 
   let again = false;
   let applying = false;
   let lastResent = null;
+  let watchBroken = false; // the live listener stopped (e.g. the database wasn't ready); restart it after a good sync
   let generation = 0; // bumps on every sign-in/out so stale async work is ignored
 
   const set = (patch) => {
@@ -102,7 +104,7 @@ export function createSync({ store, adapter, now = () => Date.now(), debounceMs 
   function maybePush() {
     if (!st.user) return Promise.resolve();
     const cur = store.get();
-    if (lastFp !== null && cur.meta.cloudUid === st.user.uid && fingerprint(cur) === lastFp) return Promise.resolve();
+    if (!watchBroken && lastFp !== null && cur.meta.cloudUid === st.user.uid && fingerprint(cur) === lastFp) return Promise.resolve();
     return push();
   }
 
@@ -138,6 +140,7 @@ export function createSync({ store, adapter, now = () => Date.now(), debounceMs 
         apply(res.merged, snapFp, adopt);
         retryMs = 5000;
         set({ status: 'synced', lastSyncAt: now(), error: null });
+        if (watchBroken && st.user && st.user.uid === user.uid) watch(user.uid);
       } catch (e) {
         if (gen !== generation) return;
         const offline = isOffline(e);
@@ -176,6 +179,7 @@ export function createSync({ store, adapter, now = () => Date.now(), debounceMs 
 
   function watch(uid) {
     stopWatching();
+    watchBroken = false;
     const gen = generation;
     unwatch = adapter.subscribe(uid, async (doc) => {
       if (gen !== generation || !st.user || !doc || (doc.rev || 0) <= lastRev) return;
@@ -188,7 +192,13 @@ export function createSync({ store, adapter, now = () => Date.now(), debounceMs 
         apply(syncMerge(cur, remote), fingerprint(cur), false);
         set({ status: 'synced', lastSyncAt: now(), error: null });
       } catch { /* a bad snapshot is ignored; the next push repairs it */ }
-    }, (e) => { if (gen === generation) set({ status: isOffline(e) ? 'offline' : 'error', error: isOffline(e) ? null : friendlyError(e) }); });
+    }, (e) => {
+      if (gen !== generation) return;
+      watchBroken = true;
+      set({ status: isOffline(e) ? 'offline' : 'error', error: isOffline(e) ? null : friendlyError(e) });
+      // The next sync attempt retries, and restarts the listener once it works.
+      if (!retryTimer) { retryTimer = later(() => { retryTimer = null; maybePush(); }, retryMs); retryMs = Math.min(retryMs * 2, 5 * 60 * 1000); }
+    });
   }
 
   function stopWatching() {
@@ -205,6 +215,7 @@ export function createSync({ store, adapter, now = () => Date.now(), debounceMs 
     if (retryTimer) { clearT(retryTimer); retryTimer = null; }
     lastRev = 0;
     lastFp = null;
+    watchBroken = false;
     if (!user) { set({ user: null, status: 'signed-out', error: null }); return; }
     set({ user, status: 'syncing', error: null });
     await push();
