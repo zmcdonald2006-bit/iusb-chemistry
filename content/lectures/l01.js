@@ -25,7 +25,8 @@ export default {
           t: 'mols', items: [
             { smiles: 'C', caption: 'methane — natural gas' },
             { smiles: 'CCO', caption: 'ethanol — in alcoholic drinks' },
-            { smiles: 'COc1cc(CNC(=O)CCCC/C=C/C(C)C)ccc1O', caption: 'capsaicin — makes peppers spicy' },
+            { smiles: 'COc1cc(CNC(=O)CCCC/C=C/C(C)C)ccc1O', caption: 'capsaicin — makes peppers spicy (and is used in pain-relief creams)' },
+            { smiles: 'Cn1cnc2c1c(=O)n(C)c(=O)n2C', caption: 'caffeine — the stimulant in coffee, tea, cola and chocolate' },
           ],
         },
         { t: 'callout', kind: 'key', title: 'The big idea', text: 'All organic compounds contain carbon, and most contain hydrogen. **Carbon always forms four bonds.**' },
@@ -48,8 +49,9 @@ export default {
           ],
         },
         { t: 'callout', kind: 'memory', title: 'Memory trick: HONC 1-2-3-4', text: '**H**ONC = **H** 1 bond, **O** 2, **N** 3, **C** 4. (Say it like "honk"!) Lone pairs fill the rest of the octet: O has 2, N has 1, halogens have 3.' },
+        { t: 'callout', kind: 'key', title: 'Bonds + lone pairs = 4', text: 'For **C, N, O and the halogens**: number of bonds + number of lone pairs = **4**.\n- C: 4 bonds + 0 lone pairs\n- N: 3 bonds + 1 lone pair\n- O: 2 bonds + 2 lone pairs\n- F, Cl, Br, I: 1 bond + 3 lone pairs\nHydrogen is the exception: 1 bond, 0 lone pairs.' },
         { t: 'h', text: 'Single, double and triple bonds' },
-        { t: 'p', text: 'Carbon can use its four bonds in different ways, but the **total is always 4**. A double bond counts as 2, a triple bond as 3.' },
+        { t: 'p', text: 'Carbon can use its four bonds in different ways, but the **total is always 4**. A double bond counts as 2, a triple bond as 3. Each bond line is a pair of shared electrons: a **single bond has 2 electrons**, a **double bond 4**, and a **triple bond 6**.' },
         {
           t: 'mols', items: [
             { smiles: 'CC', caption: 'ethane: C–C (each C has 3 H)', mode: 'full' },
@@ -57,7 +59,8 @@ export default {
             { smiles: 'C#C', caption: 'acetylene: C≡C (each C has 1 H)', mode: 'full' },
           ],
         },
-        { t: 'p', text: 'Carbon atoms can link into **chains** or close into **rings**.' },
+        { t: 'p', text: 'Carbon atoms can link into **chains** or close into **rings**. Closing a ring uses up two H\'s: propane is $C_3H_8$, cyclopropane is $C_3H_6$.' },
+        { t: 'mols', items: [{ smiles: 'CCC', caption: 'propane $C_3H_8$ (a chain)', mode: 'full' }, { smiles: 'C1CC1', caption: 'cyclopropane $C_3H_6$ (a ring)', mode: 'full' }] },
         { t: 'h', text: 'Heteroatoms' },
         { t: 'p', text: 'Any atom that is **not C or H** is a **heteroatom** — commonly N, O, F, Cl, Br and I. Heteroatoms carry **lone pairs** (nonbonding electrons). Oxygen can make **two single bonds** (as in alcohols) or **one double bond** (as in C=O).' },
         {
@@ -113,8 +116,10 @@ export default {
             ['N in $NH_3$', '3', '1', 'trigonal pyramidal', '~109.5°'],
             ['O in $H_2O$', '2', '2', 'bent', '~109.5°'],
             ['O in an alcohol or ether', '2', '2', 'bent', '~109.5°'],
+            ['N in $H_2C=NH$', '2', '1', 'bent', '~120°'],
           ],
         },
+        { t: 'callout', kind: 'tip', title: 'Electron geometry vs molecular shape', text: 'Count **all groups** (atoms + lone pairs) to get the arrangement and the angle: 2 → linear 180°, 3 → trigonal planar 120°, 4 → tetrahedral 109.5°. Then name the **shape** from the atoms only: 4 groups with 1 lone pair → **trigonal pyramidal**; 4 groups with 2 lone pairs → **bent**; 3 groups with 1 lone pair (like the N in $H_2C=NH$) → **bent, ~120°**.' },
         { t: 'callout', kind: 'exam', title: 'Match your professor', text: 'On the slides, NH₃ and H₂O are both given as **109.5°** (all four groups point to tetrahedral corners). Real measured angles are a bit smaller (~107° and ~104.5°), but use **109.5°** on your exams.' },
         {
           t: 'mols', items: [
@@ -153,6 +158,27 @@ export default {
             'Finish with the $CH_2OH$ end.',
           ],
           answer: '$CH_3CH_2CH(CH_3)CH_2OH$',
+        },
+        {
+          t: 'example', title: 'Sample Problem 11.4 (a)', prompt: 'Convert this structure into a condensed structure.',
+          mol: { smiles: 'CC(C)CC(C)C', mode: 'full' },
+          steps: [
+            'Walk the 5-carbon main chain: $CH_3$, $CH$, $CH_2$, $CH$, $CH_3$.',
+            'Each CH carries a $CH_3$ branch → write it in parentheses after that CH: $CH_3CH(CH_3)CH_2CH(CH_3)CH_3$.',
+            'Further simplified: each end is a C with **two $CH_3$ groups** → $(CH_3)_2CH$– on both ends.',
+          ],
+          answer: '$CH_3CH(CH_3)CH_2CH(CH_3)CH_3$ = $(CH_3)_2CHCH_2CH(CH_3)_2$',
+        },
+        {
+          t: 'example', title: 'Sample Problem 11.4 (b)', prompt: 'Convert this structure into a condensed structure.',
+          mol: { smiles: 'CCCOCCl', mode: 'full' },
+          steps: [
+            'Write each carbon with its H\'s, left to right: $CH_3CH_2CH_2$…',
+            'Then the O (its lone pairs are left out): …$O$…',
+            'Then $CH_2Cl$.',
+            'Further simplified: the two $CH_2$ groups in a row become $(CH_2)_2$.',
+          ],
+          answer: '$CH_3CH_2CH_2OCH_2Cl$ = $CH_3(CH_2)_2OCH_2Cl$',
         },
         { t: 'h', text: 'Shortcuts' },
         { t: 'list', items: ['**Repeated $CH_2$ groups** can be grouped: $CH_3CH_2CH_2CH_2CH_2CH_3$ = $CH_3(CH_2)_4CH_3$', '**Identical groups** on one carbon: $(CH_3)_2CH$– means two methyls on one CH', 'Some bonds may be drawn in for emphasis, e.g. $CH_2=CHCH_3$ shows the double bond'] },
@@ -196,6 +222,8 @@ export default {
           mol: { smiles: 'CCCCCCO', numbers: 'auto' },
           answer: 'A 6-carbon zig-zag ending in OH (1-hexanol).',
         },
+        { t: 'p', text: 'Rings work the same way. Every corner of cyclohexane is a $CH_2$ (each C has 2 H\'s). In cyclopentanol the H on the **O** must be drawn in.' },
+        { t: 'mols', items: [{ smiles: 'C1CCCCC1', caption: 'cyclohexane: each corner is a CH₂' }, { smiles: 'OC1CCCC1', caption: 'cyclopentanol: draw the H on O' }] },
         { t: 'callout', kind: 'warn', title: 'Common mistakes', text: '- Not counting the **line ends** as carbons.\n- Drawing a straight line instead of a zig-zag (a straight line looks like one long bond).\n- Leaving off the **H on OH** — "O" alone would mean an O with a missing bond.' },
         { t: 'callout', kind: 'life', title: 'Why this matters later', text: 'Every naming question in Lectures 3–10 starts with finding and counting carbons in a skeletal drawing. If this feels slow, drill "Hidden hydrogens" in Practice until it is automatic.' },
         {
@@ -233,6 +261,11 @@ export default {
     { id: 'l01-q13', skill: 'l01.condensed', type: 'mc', prompt: 'Which condensed formula is the same compound as $CH_3CH_2CH_2CH_2CH_3$?', choices: ['$CH_3(CH_2)_3CH_3$', '$CH_3(CH_2)_5CH_3$', '$(CH_3)_2CHCH_3$', '$CH_3(CH_2)_2CH_3$'], answer: 0, explain: 'There are **three** $CH_2$ groups between the two $CH_3$ groups → $CH_3(CH_2)_3CH_3$ (pentane).' },
     { id: 'l01-q14', skill: 'l01.condensed', type: 'mc', prompt: 'In $CH_3CH(CH_3)CH_2OH$, what is attached to the second carbon?', choices: ['a methyl group ($CH_3$) branch', 'an OH group', 'a double bond', 'nothing extra'], answer: 0, explain: 'Parentheses show a branch on the carbon right before them: the CH carries a **$CH_3$ branch**.' },
     { id: 'l01-q15', skill: 'l01.skeletal', type: 'tf', prompt: 'True or false: in a skeletal structure, the hydrogens on an oxygen (like the H in –OH) are drawn in.', answer: true, explain: '**True.** Only H\'s on **carbon** are hidden. Heteroatoms and their H\'s are always shown.' },
+    { id: 'l01-q17', skill: 'l01.bonding', type: 'num', prompt: 'For carbon, nitrogen, oxygen and the halogens, the number of bonds **plus** the number of lone pairs always equals…', answer: 4, tol: 0, explain: 'Bonds + lone pairs = **4**: C 4+0, N 3+1, O 2+2, halogen 1+3.' },
+    { id: 'l01-q18', skill: 'l01.bonding', type: 'mc', prompt: 'How many electrons are shared in a C≡C **triple** bond?', choices: ['6', '3', '4', '2'], answer: 0, explain: 'Each bond is 2 electrons: a single bond has 2, a double bond 4, a **triple bond 6**.' },
+    { id: 'l01-q19', skill: 'l01.condensed', type: 'mc', prompt: 'Which condensed formula matches $CH_3CH_2CH_2OCH_2Cl$, written in its shortest form?', choices: ['$CH_3(CH_2)_2OCH_2Cl$', '$CH_3(CH_2)_3OCl$', '$(CH_3)_2CHOCH_2Cl$', '$CH_3(CH_2)_2CH_2OCl$'], answer: 0, explain: 'The two $CH_2$ groups in a row become $(CH_2)_2$: **$CH_3(CH_2)_2OCH_2Cl$** (Sample Problem 11.4).' },
+    { id: 'l01-q20', skill: 'l01.condensed', type: 'mc', prompt: 'What does $(CH_3)_2CH$– mean?', choices: ['a CH carbon bonded to two CH₃ groups', 'two separate CH carbons', 'a CH₃ group with two extra H', 'a CH₂ group'], answer: 0, explain: 'Parentheses with a subscript mean **two identical CH₃ groups on the same carbon**: $(CH_3)_2CHCH_2CH(CH_3)_2$ has this on both ends.' },
+    { id: 'l01-q21', skill: 'l01.shapes', type: 'mc', prompt: 'The N in $H_2C=NH$ has a double bond to C, a single bond to H, and one lone pair. What is its shape?', choices: ['bent (~120°)', 'trigonal pyramidal (~109.5°)', 'linear (180°)', 'tetrahedral (109.5°)'], answer: 0, explain: 'Three groups (2 atoms + 1 lone pair; the double bond counts once) → 120° arrangement. Only 2 are atoms → **bent**.' },
     { id: 'l01-q16', skill: 'l01.skeletal', type: 'formula', prompt: 'What is the molecular formula of this compound?', figure: { smiles: 'CC(C)CO' }, answer: 'C4H10O', explain: '4 carbons, 9 H on carbons + 1 H on O = 10 H, 1 O → **$C_4H_{10}O$**.' },
   ],
   cards: [
@@ -252,6 +285,10 @@ export default {
     { id: 'l01-k14', front: 'What is this?', mol: 'CCO', back: '**Ethanol**, $CH_3CH_2OH$ ($C_2H_6O$) — the alcohol in alcoholic drinks.' },
     { id: 'l01-k15', front: 'Methane', back: '$CH_4$ — the main component of **natural gas**; the simplest organic compound.' },
     { id: 'l01-k16', front: 'What does $(CH_2)_4$ mean in a condensed formula?', back: 'Four $CH_2$ groups in a row: $CH_2CH_2CH_2CH_2$.' },
+    { id: 'l01-k17', front: 'Bonds + lone pairs rule', back: 'For C, N, O and halogens: bonds + lone pairs = **4** (C 4+0, N 3+1, O 2+2, X 1+3).' },
+    { id: 'l01-k18', front: 'Electrons in single, double, triple bonds', back: 'Single **2**, double **4**, triple **6**.' },
+    { id: 'l01-k19', front: 'Caffeine', back: 'The **stimulant** in coffee, tea, cola beverages and chocolate.' },
+    { id: 'l01-k20', front: 'Capsaicin', back: 'Makes peppers **spicy**; used in topical pain-relief medicines.' },
   ],
   keyTerms: [
     { term: 'organic chemistry', def: 'The study of carbon-containing compounds.' },

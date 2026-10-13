@@ -24,6 +24,16 @@ export default {
         { t: 'p', text: 'A **functional group** is an atom or group of atoms with characteristic chemical and physical properties. It contains a **heteroatom**, a **multiple bond**, or both. The functional group is the "business end" of a molecule — it decides how the molecule behaves.' },
         { t: 'p', text: 'Chemists use **R** as shorthand for "the rest of the molecule" — the carbon and hydrogen part. So R–OH means "any alcohol".' },
         { t: 'callout', kind: 'life', title: 'Why this matters', text: 'Lectures 4–10 are each about one family of functional groups. Recognizing them instantly is the single most useful skill in this course.' },
+        {
+          t: 'example', title: 'Quick review from class: aspartic acid', prompt: 'Draw the skeletal structure of aspartic acid, $HO_2C–CH(NH_2)–CH_2–CO_2H$.',
+          steps: [
+            'Count the carbons: **4** (two COOH carbons, the CH and the $CH_2$).',
+            'Draw a 4-carbon zig-zag. Hydrogens on carbon are left out.',
+            'Draw the heteroatoms and their H\'s: $NH_2$ on C2, and a C=O plus OH on **both** end carbons.',
+          ],
+          answerMols: [{ smiles: 'NC(CC(=O)O)C(=O)O', caption: 'aspartic acid' }],
+          answer: 'A 4-carbon chain with COOH at both ends and $NH_2$ on the second carbon.',
+        },
       ],
     },
     {
@@ -91,24 +101,26 @@ export default {
             ['**Aldehyde**', 'at least one **H**', 'RCHO', 'acetaldehyde $CH_3CHO$'],
             ['**Ketone**', '**two carbons**', 'RCOR', 'acetone $CH_3COCH_3$'],
             ['**Carboxylic acid**', 'an **OH**', 'RCOOH', 'acetic acid $CH_3COOH$'],
-            ['**Ester**', 'an **OR**', 'RCOOR', 'methyl acetate $CH_3COOCH_3$'],
+            ['**Ester**', 'an **OR**', 'RCOOR', 'ethyl acetate $CH_3COOCH_2CH_3$'],
             ['**Amide**', 'a **N**', 'RCONH₂', 'acetamide $CH_3CONH_2$'],
           ],
         },
         {
           t: 'mols', items: [
-            { smiles: 'CC=O', caption: 'aldehyde' }, { smiles: 'CC(C)=O', caption: 'ketone' }, { smiles: 'CC(=O)O', caption: 'carboxylic acid' }, { smiles: 'CC(=O)OC', caption: 'ester' }, { smiles: 'CC(N)=O', caption: 'amide' },
+            { smiles: 'CC=O', caption: 'aldehyde' }, { smiles: 'CC(C)=O', caption: 'ketone' }, { smiles: 'CC(=O)O', caption: 'carboxylic acid' }, { smiles: 'CC(=O)OCC', caption: 'ester' }, { smiles: 'CC(N)=O', caption: 'amide' },
           ],
         },
+        { t: 'callout', kind: 'tip', title: 'Reading C=O groups in condensed formulas', text: '- $CH_3CHO$: the C is bonded to **H and O** → aldehyde (acetaldehyde).\n- $CH_3COOH$ = $CH_3CO_2H$: the C is bonded to **both O atoms** → carboxylic acid (acetic acid).\n- $CH_3COOCH_2CH_3$ = $CH_3CO_2CH_2CH_3$: both O atoms again, but the second O carries a carbon → ester (ethyl acetate).' },
         { t: 'callout', kind: 'memory', title: 'Acid vs alcohol', text: 'A carboxylic acid has an OH **on the carbonyl carbon** (C(=O)–OH). An OH on any other carbon is an **alcohol**.' },
         { t: 'callout', kind: 'life', title: 'In real life', text: 'Benzaldehyde smells like cherries and almonds, isoamyl acetate (an ester) like banana, ethyl butanoate like pineapple, and citric acid makes citrus sour.' },
         { t: 'h', text: 'Practice from class' },
         {
           t: 'mols', items: [
+            { smiles: 'OCC1OC(O)C(O)C(O)C1O', caption: 'glucose: five –OH groups (alcohol) + an O in the ring (ether)' },
+            { smiles: 'OC(=O)c1ccccc1', caption: 'benzoic acid: aromatic ring + carboxylic acid' },
             { smiles: 'NC(Cc1ccc(O)cc1)C(=O)O', caption: 'tyrosine: amine, phenol –OH, aromatic ring, carboxylic acid' },
             { smiles: 'CC(=O)OCCC(C)C', caption: 'isoamyl acetate (banana): ester' },
             { smiles: 'O=CCCCC=O', caption: 'glutaraldehyde: two aldehydes' },
-            { smiles: 'OCC(O)C(O)C(O)C(O)C=O', caption: 'glucose: five alcohols + an aldehyde' },
           ],
         },
       ],
@@ -129,6 +141,7 @@ export default {
           steps: ['Each C–Cl bond is polar (Cl is more electronegative).', 'C is tetrahedral, and the two C–Cl bonds point in similar directions.', 'The two C–H bonds are nonpolar, so nothing balances the C–Cl dipoles.'],
           answer: 'The dipoles **do not cancel** → $CH_2Cl_2$ has a net dipole → **polar**.',
         },
+        { t: 'mols', items: [{ smiles: 'CC', caption: 'ethane: no polar bonds → nonpolar', mode: 'full' }, { smiles: 'ClC#CCl', caption: 'dichloroacetylene: two C–Cl dipoles point opposite ways and cancel → nonpolar' }] },
       ],
     },
     {
@@ -146,6 +159,7 @@ export default {
           ],
         },
         { t: 'callout', kind: 'key', title: 'Hydrogen bond', text: 'A **hydrogen bond** forms when an H **covalently bonded to O, N or F** is attracted to a lone pair on an O, N or F of **another** molecule. Alcohols (R–O–H) hydrogen bond with each other; aldehydes, ketones and ethers (no O–H) **cannot** H-bond with each other.' },
+        { t: 'callout', kind: 'exam', title: 'The example from class', text: 'An alcohol\'s O–**H** **can** hydrogen bond to the O of an aldehyde: R–O–H ··· O=CHR ✔. Two aldehyde molecules (O=CHR and O=CHR) **cannot** — neither has an H on O, N or F. The H must sit on O, N or F; the partner only needs an O, N or F.' },
         { t: 'p', text: 'Nonpolar organic compounds have weak forces, so they have **low boiling points** and are often liquids or gases at room temperature.' },
         {
           t: 'check', q: {
@@ -170,6 +184,7 @@ export default {
           ],
         },
         { t: 'mol', smiles: 'CC(C)CCCC(C)C1CCC2C1(C)CCC1C2CC=C2CC(O)CCC12C', caption: 'cholesterol: one OH can\'t make this huge nonpolar molecule dissolve' },
+        { t: 'callout', kind: 'tip', title: 'Drawing ethanol and water together', text: 'Ethanol H-bonds to water **both ways**: the H on ethanol\'s O is attracted to a water O, and an H of water is attracted to ethanol\'s O. The C–H hydrogens never H-bond.' },
       ],
     },
     {
@@ -180,11 +195,15 @@ export default {
         { t: 'p', text: '**Vitamins** are organic compounds needed in small amounts for normal cell function. The body cannot make them, so they must come from the diet.' },
         {
           t: 'compare', items: [
-            { title: 'Fat-soluble: A, D, E, K', text: 'Many nonpolar C–C and C–H bonds, few polar groups. Dissolve in fat, insoluble in water (stored in the body).' },
-            { title: 'Water-soluble: B vitamins and C', text: 'Many polar bonds (lots of O–H, N–H). Dissolve in water (excess is excreted).' },
+            { title: 'Fat-soluble: A, D, E, K', text: 'Many nonpolar C–C and C–H bonds, few polar groups. Dissolve in organic solvents, not water, and are **stored in the liver and fatty tissue**.' },
+            { title: 'Water-soluble: B vitamins and C', text: 'Many polar bonds (lots of O–H, N–H). Dissolve in the gastric juices of the stomach and in blood, and the excess is **readily excreted in urine**.' },
           ],
         },
         { t: 'callout', kind: 'memory', title: 'Memory trick', text: 'Fat-soluble vitamins are **A, D, E, K** — "**ADEK**" sounds like "a deck" of fat cards.' },
+        {
+          t: 'table', head: ['Fat-soluble (slide)', 'Water-soluble (slide)'],
+          rows: [['vitamin A', 'B₁ (thiamine)'], ['vitamin D₂', 'B₂ (riboflavin)'], ['vitamin E', 'B₃ (niacin)'], ['vitamin K₁', 'B₅ (pantothenic acid)'], ['', 'B₇ (biotin)'], ['', 'B₉ (folic acid)'], ['', 'C (ascorbic acid)']],
+        },
         { t: 'list', items: ['**Vitamin A (retinol)**: vision receptors in the eye; healthy skin and mucous membranes. A large, mostly nonpolar molecule with only **one OH** → fat soluble.', '**Vitamin C (ascorbic acid)**: needed to form collagen (connective tissue). Deficiency causes **scurvy** (sailors in the 1600s without fresh fruit). Many polar bonds and O atoms → water soluble.'] },
         {
           t: 'mols', items: [
@@ -211,6 +230,12 @@ export default {
     { id: 'l02-q13', skill: 'l02.vitamins', type: 'multi', prompt: 'Select all the **fat-soluble** vitamins.', choices: ['A', 'B₁', 'C', 'D', 'E', 'K'], answer: [0, 3, 4, 5], shuffle: false, explain: 'Fat-soluble: **A, D, E, K** ("ADEK"). B vitamins and C are water-soluble.' },
     { id: 'l02-q14', skill: 'l02.vitamins', type: 'mc', prompt: 'A deficiency of vitamin C causes…', choices: ['scurvy', 'night blindness', 'rickets', 'anemia'], answer: 0, explain: 'Vitamin C is needed for collagen; without it you get **scurvy** — historically a disease of sailors.' },
     { id: 'l02-q15', skill: 'l02.vitamins', type: 'mc', prompt: 'Why is vitamin A fat-soluble?', choices: ['It is large and mostly nonpolar with only one OH', 'It has many OH groups', 'It is ionic', 'It contains nitrogen'], answer: 0, explain: 'Vitamin A (retinol) is a big hydrocarbon with just **one OH**, so it dissolves in fat, not water.' },
+    { id: 'l02-q17', skill: 'l02.fg-id', type: 'multi', prompt: 'Select every functional group in **benzoic acid**.', figure: { smiles: 'OC(=O)c1ccccc1' }, choices: ['aromatic ring', 'carboxylic acid', 'ketone', 'alcohol', 'ester'], answer: [0, 1], shuffle: false, explain: 'A benzene (**aromatic**) ring carrying a –COOH (**carboxylic acid**). The OH sits on the C=O carbon, so it is part of the acid, not an alcohol.' },
+    { id: 'l02-q18', skill: 'l02.fg-id', type: 'multi', prompt: 'Select every functional group in **glucose** (drawn as on the slide).', figure: { smiles: 'OCC1OC(O)C(O)C(O)C1O' }, choices: ['alcohol (–OH)', 'ether (O in the ring)', 'aldehyde', 'carboxylic acid', 'amine'], answer: [0, 1], shuffle: false, explain: 'Five –OH groups (**alcohols**) and an O between two ring carbons (**ether**). There is no C=O in this ring form.' },
+    { id: 'l02-q19', skill: 'l02.imf', type: 'mc', prompt: 'Which pair can form a hydrogen bond between the two molecules?', choices: ['$CH_3CH_2OH$ and $CH_3CHO$', '$CH_3CHO$ and $CH_3CHO$', '$CH_3OCH_3$ and $CH_3OCH_3$', '$CH_3CH_3$ and $CH_3CHO$'], answer: 0, explain: 'You need an **H on O, N or F** on one molecule. Ethanol\'s O–H can H-bond to the aldehyde\'s O. Two aldehydes or two ethers have no O–H.' },
+    { id: 'l02-q20', skill: 'l02.polarity', type: 'mc', prompt: 'Dichloroacetylene, Cl–C≡C–Cl, has two polar C–Cl bonds. Why is it **nonpolar**?', choices: ['The linear molecule\'s two dipoles point in opposite directions and cancel', 'C–Cl bonds are nonpolar', 'Triple bonds make molecules nonpolar', 'Cl and C have the same electronegativity'], answer: 0, explain: 'If the bond dipoles **cancel** by symmetry, the molecule is nonpolar.' },
+    { id: 'l02-q21', skill: 'l02.vitamins', type: 'mc', prompt: 'Where does the body store vitamin A and the other fat-soluble vitamins?', choices: ['liver and fatty tissue', 'urine', 'gastric juice', 'red blood cells'], answer: 0, explain: 'Fat-soluble vitamins are **stored in the liver and fatty tissue**; water-soluble ones dissolve in blood and are excreted in urine.' },
+    { id: 'l02-q22', skill: 'l02.vitamins', type: 'match', prompt: 'Match each B vitamin to its name.', left: ['B₁', 'B₂', 'B₃', 'B₉'], right: ['thiamine', 'riboflavin', 'niacin', 'folic acid'], answer: [0, 1, 2, 3], explain: 'B₁ thiamine · B₂ riboflavin · B₃ niacin · B₉ folic acid. All B vitamins are **water soluble**.' },
     { id: 'l02-q16', skill: 'l02.fg-id', type: 'match', prompt: 'Match each group to its family.', left: ['–OH on an sp³ carbon', '–SH', 'C=O with H on the carbonyl carbon', 'C≡C'], right: ['alcohol', 'thiol', 'aldehyde', 'alkyne'], answer: [0, 1, 2, 3], explain: '–OH → alcohol · –SH → thiol · –CHO → aldehyde · C≡C → alkyne.' },
   ],
   cards: [
@@ -230,6 +255,9 @@ export default {
     { id: 'l02-k14', front: 'Fat-soluble vitamins', back: '**A, D, E, K** — mostly nonpolar.' },
     { id: 'l02-k15', front: 'Water-soluble vitamins', back: '**B vitamins and C** — many polar bonds.' },
     { id: 'l02-k16', front: 'Vitamin C deficiency', back: '**Scurvy**; vitamin C is needed to make collagen.' },
+    { id: 'l02-k17', front: 'Where fat-soluble vs water-soluble vitamins go', back: 'Fat-soluble: **stored** in the liver and fatty tissue. Water-soluble: dissolve in blood, excess **excreted in urine**.' },
+    { id: 'l02-k18', front: 'Can an alcohol H-bond to an aldehyde?', back: '**Yes**: R–O–H ··· O=CHR. But two aldehydes can\'t H-bond to each other (no H on O).' },
+    { id: 'l02-k19', front: 'Condensed C=O groups', back: '–CHO aldehyde · –COOH = –CO₂H acid · –COOR = –CO₂R ester (ethyl acetate CH₃CO₂CH₂CH₃).' },
   ],
   keyTerms: [
     { term: 'functional group', def: 'An atom or group of atoms with characteristic chemical and physical properties.' },

@@ -82,7 +82,7 @@ export const NURSING = [
   // Lecture 6 — Ethers, halides & thiols
   {
     id: 'n-l06-anesthetics', lecture: 'l06', section: 'ethers', title: 'Today\'s anesthetic gases',
-    text: 'Modern inhaled anesthetics like **sevoflurane** and **desflurane** are ethers with fluorine atoms attached. In rare, genetically at-risk patients they can trigger **malignant hyperthermia**, a dangerous spike in temperature with rigid muscles, treated with **dantrolene**.',
+    text: 'The slide\'s examples (isoflurane, enflurane, methoxyflurane) led to the gases used most today: **isoflurane**, **sevoflurane** and **desflurane**, all ethers with fluorine attached. For the exam, learn the slide\'s three. In rare, genetically at-risk patients they can trigger **malignant hyperthermia**, a dangerous spike in temperature with rigid muscles, treated with **dantrolene**.',
   },
   {
     id: 'n-l06-nac', lecture: 'l06', section: 'thiols', title: 'A thiol antidote',

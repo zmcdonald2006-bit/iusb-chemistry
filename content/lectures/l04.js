@@ -29,7 +29,7 @@ export default {
         },
         { t: 'p', text: 'They are called **unsaturated** hydrocarbons because they have **fewer than the maximum number of H atoms** per C. Their bonds are nonpolar, so — like alkanes — they have **low melting and boiling points** and are **insoluble in water**.' },
         { t: 'mols', items: [{ smiles: 'C=CCC', caption: '1-butene, $C_4H_8$' }, { smiles: 'CC#CC', caption: '2-butyne, $C_4H_6$' }] },
-        { t: 'callout', kind: 'tip', title: 'Condensed structures', text: 'The multiple bond is always drawn in a condensed structure: $CH_2=CHCH_2CH_3$, $CH_3C≡CCH_3$.' },
+        { t: 'callout', kind: 'tip', title: 'Condensed structures', text: 'The multiple bond is always drawn in a condensed structure: propene is $CH_3CH=CH_2$ (keep the double bond), and 2-butyne is $CH_3C≡CCH_3$.' },
       ],
     },
     {
@@ -45,6 +45,18 @@ export default {
           ],
         },
         { t: 'mols', items: [{ smiles: 'C=CCC', caption: '1-butene', numbers: 'auto', name: '1-butene' }, { smiles: 'CC#CCCC', caption: '2-hexyne', numbers: 'auto', name: '2-hexyne' }] },
+        {
+          t: 'example', title: 'Example from class (a)', prompt: 'Give the IUPAC name of $CH_2=CHCH(CH_3)CH_3$.',
+          mol: { smiles: 'C=CC(C)C', numbers: 'auto' },
+          steps: ['Longest chain containing both C=C carbons: **4 C** → but**ene**.', 'Number from the end nearer the C=C: the double bond starts at **C1**.', 'The methyl is on **C3**.'],
+          answer: '**3-methyl-1-butene**',
+        },
+        {
+          t: 'example', title: 'Example from class (b)', prompt: 'Give the IUPAC name of $CH_3CH_2CH(CH_2CH_3)C≡CCH_3$.',
+          mol: { smiles: 'CC#CC(CC)CC', numbers: 'auto' },
+          steps: ['Longest chain containing both C≡C carbons: **6 C** (go down into the ethyl branch) → hex**yne**.', 'Number from the right so the triple bond starts at **C2**.', 'The ethyl group is on **C4**.'],
+          answer: '**4-ethyl-2-hexyne**',
+        },
         {
           t: 'example', title: 'The multiple bond wins the numbering', prompt: 'Name this alkene.',
           mol: { smiles: 'CC(C)CC=CC', numbers: 'auto' },
@@ -110,6 +122,20 @@ export default {
         { t: 'callout', kind: 'life', title: 'Trans fats', text: 'Partial hydrogenation leaves a few C=C bonds, and some are flipped from cis to **trans** — "trans fats," which do not occur naturally and are linked to heart disease.' },
         { t: 'h', text: 'Interesting alkenes' },
         { t: 'list', items: ['**Lycopene** (red color of tomatoes and watermelon) has 13 C=C bonds and is an **antioxidant** (prevents unwanted oxidation). Diets rich in antioxidants lower the risk of heart disease and cancer.', '**Tamoxifen** treats breast cancers that need estrogen to grow.', '**Oral contraceptives** (ethynylestradiol, norethindrone) resemble estradiol and progesterone but contain a **C≡C triple bond**.'] },
+        { t: 'mol', smiles: 'CC(C)=CCCC(C)=CC=CC(C)=CC=CC(C)=CC=CC=C(C)C=CC=C(C)C=CC=C(C)CCC=C(C)C', caption: 'lycopene: 13 C=C bonds' },
+        { t: 'mol', smiles: 'CCC(=C(c1ccccc1)c1ccc(OCCN(C)C)cc1)c1ccccc1', caption: 'tamoxifen: an alkene drug for estrogen-dependent breast cancer' },
+        {
+          t: 'mols', items: [
+            { smiles: 'CC12CCC3c4ccc(O)cc4CCC3C1CCC2O', caption: 'estradiol (female sex hormone)' },
+            { smiles: 'CC12CCC3c4ccc(O)cc4CCC3C1CCC2(O)C#C', caption: 'ethynylestradiol (a synthetic estrogen): C≡C added' },
+          ],
+        },
+        {
+          t: 'mols', items: [
+            { smiles: 'CC(=O)C1CCC2C1(C)CCC1C2CCC2=CC(=O)CCC12C', caption: 'progesterone (female sex hormone)' },
+            { smiles: 'CC12CCC3C(CCC4=CC(=O)CCC34)C1CCC2(O)C#C', caption: 'norethindrone (a synthetic progesterone): C≡C added' },
+          ],
+        },
       ],
     },
     {
@@ -131,6 +157,11 @@ export default {
         { t: 'rxn', from: 'C1=CCCCC1', reagent: 'Br₂', to: 'BrC1CCCCC1Br', caption: 'Halogenation: cyclohexene → 1,2-dibromocyclohexane' },
         { t: 'rxn', from: 'C=C', reagent: 'HCl', to: 'CCCl', caption: 'Hydrohalogenation: ethylene → chloroethane' },
         { t: 'rxn', from: 'C=C', reagent: 'H₂O, H₂SO₄', to: 'CCO', caption: 'Hydration: ethylene → ethanol' },
+        { t: 'h', text: 'Practice from class: draw the products' },
+        { t: 'rxn', from: 'C=C', reagent: 'Cl₂', to: 'ClCCCl', caption: 'ethylene + Cl₂ → 1,2-dichloroethane (a Cl on each carbon)' },
+        { t: 'rxn', from: 'C1=CCCCC1', reagent: 'HBr', to: 'BrC1CCCCC1', caption: 'cyclohexene + HBr → bromocyclohexane (one H, one Br)' },
+        { t: 'rxn', from: 'C1=CCCCC1', reagent: 'H₂, Pd', to: 'C1CCCCC1', caption: 'cyclohexene + H₂ → cyclohexane' },
+        { t: 'rxn', from: 'C1=CCCCC1', reagent: 'H₂O, H₂SO₄', to: 'OC1CCCCC1', caption: 'cyclohexene + H₂O → cyclohexanol' },
         { t: 'h', text: 'Markovnikov\'s rule' },
         { t: 'p', text: 'When H–X or H–OH adds to an **unsymmetrical** alkene, two products are possible (constitutional isomers). Only one forms as the major product:' },
         { t: 'callout', kind: 'key', title: 'Markovnikov\'s rule', text: 'The **H** of H–X adds to the **less substituted** carbon of the C=C — the one that **already has more H\'s**. X (or OH) ends up on the **more substituted** carbon.' },
@@ -139,10 +170,10 @@ export default {
         { t: 'rxn', from: 'C=CC', reagent: 'H₂O, H₂SO₄', to: 'CC(O)C', caption: 'Propene + H₂O → 2-propanol (major)' },
         {
           t: 'check', q: {
-            id: 'l04-c-markov', skill: 'l04.markovnikov', type: 'struct', prompt: 'Circle the **main product**: 1-methylcyclohexene + HCl →',
-            figure: { rxn: { from: 'CC1=CCCCC1', reagent: 'HCl' } },
-            choices: [{ smiles: 'CC1(Cl)CCCCC1' }, { smiles: 'CC1CCCCC1Cl' }], answer: 0, shuffle: false,
-            explain: 'The ring CH of the C=C has 1 H; the other C=C carbon (holding the CH₃) has 0 H. H goes to the CH ("rich get richer"), so **Cl goes on the carbon with the methyl**.',
+            id: 'l04-c-markov', skill: 'l04.markovnikov', type: 'struct', prompt: 'Practice from class — circle the **main product** of this reaction:',
+            figure: { rxn: { from: 'C=C1CCCC1', reagent: 'HCl' } },
+            choices: [{ smiles: 'CC1(Cl)CCCC1' }, { smiles: 'ClCC1CCCC1' }], answer: 0, shuffle: false,
+            explain: 'The outside $CH_2$ of the C=C has **2 H**; the ring carbon has **0 H**. H adds to the $CH_2$ (it becomes a CH₃), so **Cl goes on the ring carbon** — the more substituted one.',
           },
         },
         { t: 'callout', kind: 'warn', title: 'Where students lose points', text: '- Mixing up **halogenation** (X₂ → two X\'s) with **hydrohalogenation** (HX → one H, one X).\n- Forgetting **Markovnikov** on unsymmetrical alkenes.\n- Forgetting that hydration needs **H₂SO₄** and hydrogenation needs a **Pd** catalyst.' },
@@ -165,6 +196,12 @@ export default {
     { id: 'l04-q13', skill: 'l04.addition', type: 'mc', prompt: 'What catalyst is used for hydrogenation?', choices: ['Pd (palladium)', 'H₂SO₄', 'NaOH', 'none is needed'], answer: 0, explain: 'H₂ adds to C=C with a metal catalyst, usually **Pd**.' },
     { id: 'l04-q14', skill: 'l04.addition', type: 'match', prompt: 'Match each reaction to its product type.', left: ['hydrogenation', 'halogenation', 'hydrohalogenation', 'hydration'], right: ['alkane', 'dihalide', 'alkyl halide', 'alcohol'], answer: [0, 1, 2, 3], explain: 'H₂ → alkane; X₂ → dihalide; HX → alkyl halide; H₂O → alcohol.' },
     { id: 'l04-q15', skill: 'l04.markovnikov', type: 'mc', prompt: 'In the reaction of propene ($CH_2=CHCH_3$) with HBr, the H adds to…', choices: ['C1 (the $CH_2$ end, which has more H\'s)', 'C2 (the CH)', 'C3 (the $CH_3$)', 'both equally'], answer: 0, explain: 'Markovnikov: H adds to the C=C carbon with **more H\'s** (C1), Br goes to C2 → **2-bromopropane**.' },
+    { id: 'l04-q17', skill: 'l04.markovnikov', type: 'struct', prompt: 'What is the main product of 1-methylcyclohexene + HCl?', figure: { rxn: { from: 'CC1=CCCCC1', reagent: 'HCl' } }, choices: [{ smiles: 'CC1(Cl)CCCCC1' }, { smiles: 'CC1CCCCC1Cl' }], answer: 0, shuffle: false, explain: 'The ring CH of the C=C has 1 H; the carbon holding the CH₃ has 0 H. H goes to the CH ("rich get richer"), so **Cl goes on the carbon with the methyl**.' },
+    { id: 'l04-q18', skill: 'l04.naming', type: 'name', prompt: 'Name this alkene.', figure: { smiles: 'C=CC(C)C' }, name: { smiles: 'C=CC(C)C' }, explain: '4-carbon chain with the C=C at C1 and a methyl on C3 → **3-methyl-1-butene**.' },
+    { id: 'l04-q19', skill: 'l04.naming', type: 'name', prompt: 'Name this alkyne.', figure: { smiles: 'CC#CC(CC)CC' }, name: { smiles: 'CC#CC(CC)CC' }, explain: 'The longest chain with the C≡C runs into the ethyl branch: 6 C. C≡C at C2, ethyl on C4 → **4-ethyl-2-hexyne**.' },
+    { id: 'l04-q20', skill: 'l04.addition', type: 'struct', prompt: 'What is the product of ethylene + Cl₂?', figure: { rxn: { from: 'C=C', reagent: 'Cl₂' } }, choices: [{ smiles: 'ClCCCl' }, { smiles: 'CCCl' }, { smiles: 'CC(Cl)Cl' }, { smiles: 'ClC=CCl' }], answer: 0, explain: 'Halogenation adds **one Cl to each carbon** of the C=C → 1,2-dichloroethane (a dihalide).' },
+    { id: 'l04-q21', skill: 'l04.addition', type: 'struct', prompt: 'What is the product of cyclohexene + HBr?', figure: { rxn: { from: 'C1=CCCCC1', reagent: 'HBr' } }, choices: [{ smiles: 'BrC1CCCCC1' }, { smiles: 'BrC1CCCCC1Br' }, { smiles: 'C1CCCCC1' }, { smiles: 'OC1CCCCC1' }], answer: 0, explain: 'Hydrohalogenation adds **H to one carbon and Br to the other** → bromocyclohexane (an alkyl halide).' },
+    { id: 'l04-q22', skill: 'l04.fats', type: 'mc', prompt: 'What do the oral contraceptives ethynylestradiol and norethindrone have that estradiol and progesterone do not?', choices: ['a C≡C triple bond', 'a benzene ring', 'a C=O group', 'an extra OH group'], answer: 0, explain: 'The synthetic hormones are similar in structure to the natural ones but also contain a **C–C triple bond**.' },
     { id: 'l04-q16', skill: 'l04.markovnikov', type: 'struct', prompt: 'What is the major product of 2-methylpropene + H₂O (H₂SO₄)?', figure: { rxn: { from: 'C=C(C)C', reagent: 'H₂O, H₂SO₄' } }, choices: [{ smiles: 'CC(C)(C)O' }, { smiles: 'CC(C)CO' }, { smiles: 'CC(C)C' }, { smiles: 'OCC(C)(C)O' }], answer: 0, explain: 'H goes to the $CH_2$ end; OH goes to the carbon with two methyls → **2-methyl-2-propanol** (a 3° alcohol).' },
   ],
   cards: [
@@ -186,6 +223,9 @@ export default {
     { id: 'l04-k16', front: 'Hydration', back: 'Alkene + **H₂O, H₂SO₄** → **alcohol** (Markovnikov)' },
     { id: 'l04-k17', front: 'Markovnikov\'s rule', back: 'The **H** adds to the C=C carbon that already has **more H\'s**; X/OH goes to the more substituted carbon. "The rich get richer."' },
     { id: 'l04-k18', front: 'Trans fats come from…', back: '**Partial hydrogenation** of vegetable oils (some cis C=C become trans).' },
+    { id: 'l04-k19', front: 'Tamoxifen', back: 'An alkene drug that treats breast cancers that require **estrogen** to grow.' },
+    { id: 'l04-k20', front: 'Ethynylestradiol & norethindrone', back: 'The two most common **birth control** drugs: like estradiol and progesterone, plus a **C≡C**.' },
+    { id: 'l04-k21', front: 'Name this', mol: 'CC#CC(CC)CC', back: '**4-ethyl-2-hexyne** (the longest chain runs into the ethyl branch).' },
   ],
   keyTerms: [
     { term: 'alkene', def: 'A hydrocarbon containing a C=C double bond.' },

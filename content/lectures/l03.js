@@ -48,6 +48,10 @@ export default {
         },
         { t: 'callout', kind: 'memory', title: 'Memory trick for 1–4', text: '"**M**onkeys **E**at **P**eanut **B**utter" → **m**eth, **e**th, **p**rop, **b**ut. From 5 on the prefixes are the Greek/Latin numbers you already know: **pent**agon (5), **hex**agon (6), **oct**opus (8), **dec**ade (10). Hept (7) and non (9) are the odd ones out — hept = "heptathlon".' },
         { t: 'callout', kind: 'tip', title: 'Bends don\'t matter', text: 'A chain drawn zig-zag, bent around a corner, or straight is still the same compound. Only **how atoms are connected** matters.' },
+        { t: 'h', text: 'Bond rotation and the zig-zag' },
+        { t: 'p', text: '**Rotation can occur around C–C single bonds**, so the H\'s and groups on neighboring carbons keep changing places. The **zig-zag** arrangement is the most stable because it avoids crowding — that\'s why skeletal structures of alkanes are drawn as zig-zags.' },
+        { t: 'mols', items: [{ smiles: 'CCC', caption: 'propane, $C_3H_8$' }, { smiles: 'CCCCCC', caption: 'hexane, $C_6H_{14}$' }] },
+        { t: 'callout', kind: 'exam', title: 'Practice from class', text: 'Condensed butane: $CH_3CH_2CH_2CH_3$ = $CH_3(CH_2)_2CH_3$. Condensed nonane: $CH_3CH_2CH_2CH_2CH_2CH_2CH_2CH_2CH_3$ = $CH_3(CH_2)_7CH_3$. Count the $CH_2$ groups **between** the two $CH_3$ ends.' },
         {
           t: 'check', q: {
             id: 'l03-c-oct', skill: 'l03.names-1-10', type: 'num', prompt: 'How many carbons are in oct**ane**?', answer: 8, tol: 0,
@@ -66,7 +70,7 @@ export default {
         { t: 'p', text: 'Isomers don\'t have to be in the same family: ethanol and dimethyl ether are both $C_2H_6O$.' },
         { t: 'mols', items: [{ smiles: 'CCO', caption: 'ethanol $C_2H_6O$' }, { smiles: 'COC', caption: 'dimethyl ether $C_2H_6O$' }] },
         { t: 'p', text: 'As the number of carbons grows, the number of isomers explodes. Pentane ($C_5H_{12}$) has **three** isomers:' },
-        { t: 'mols', items: [{ smiles: 'CCCCC', caption: 'pentane' }, { smiles: 'CC(C)CC', caption: '2-methylbutane' }, { smiles: 'CC(C)(C)C', caption: '2,2-dimethylpropane' }] },
+        { t: 'mols', items: [{ smiles: 'CCCCC', caption: 'pentane' }, { smiles: 'CC(C)CC', caption: 'isopentane (2-methylbutane)' }, { smiles: 'CC(C)(C)C', caption: 'neopentane (2,2-dimethylpropane)' }] },
         { t: 'callout', kind: 'warn', title: 'Trap: same compound, drawn differently', text: 'Before calling two drawings isomers, **name both** (or count the longest chain and branches). If they get the same name, they are the **same compound**.' },
       ],
     },
@@ -81,7 +85,18 @@ export default {
           rows: [['**1° primary**', '1 carbon', '$CH_3$ at a chain end'], ['**2° secondary**', '2 carbons', '$CH_2$ in a chain'], ['**3° tertiary**', '3 carbons', 'CH at a branch point'], ['**4° quaternary**', '4 carbons', 'C with no H']],
         },
         {
-          t: 'example', title: 'Practice from class', prompt: 'Count the 1°, 2°, 3° and 4° carbons in 5-ethyl-2,4-dimethyloctane.',
+          t: 'example', title: 'Practice from class', prompt: 'Identify each carbon (1°, 2°, 3° or 4°) in $CH_3CH_2CH_2C(CH_3)(CH(CH_3)_2)CH_2CH(CH_3)CH_3$.',
+          mol: { smiles: 'CCCC(C)(C(C)C)CC(C)C', mode: 'condensed' },
+          steps: ['Every $CH_3$ is bonded to one carbon → **1°**: there are 6.', 'The three $CH_2$ carbons each have two carbon neighbors → **2°**: 3.', 'The two CH carbons (the isopropyl CH and the CH near the right end) each have three carbon neighbors → **3°**: 2.', 'The carbon with no H, bonded to four carbons → **4°**: 1.'],
+          answer: '1°: 6 · 2°: 3 · 3°: 2 · 4°: 1',
+        },
+        {
+          t: 'example', title: 'Practice from class', prompt: 'Classify the carbons in pentane, neopentane and isopentane.',
+          steps: ['**Pentane** $CH_3CH_2CH_2CH_2CH_3$: two 1° ($CH_3$) and three 2° ($CH_2$).', '**Neopentane** $C(CH_3)_4$: four 1° carbons around one **4°** carbon.', '**Isopentane** $(CH_3)_2CHCH_2CH_3$: three 1°, one 2° and one **3°** (the CH).'],
+          answer: 'pentane 1°×2, 2°×3 · neopentane 1°×4, 4°×1 · isopentane 1°×3, 2°×1, 3°×1',
+        },
+        {
+          t: 'example', title: 'Another example', prompt: 'Count the 1°, 2°, 3° and 4° carbons in 5-ethyl-2,4-dimethyloctane.',
           mol: { smiles: 'CC(C)CC(C)C(CC)CCC', mode: 'condensed' },
           steps: ['Every chain end ($CH_3$) is **1°**: there are 5.', '$CH_2$ carbons inside chains are **2°**: 4.', 'Branch-point CH carbons are **3°**: 3.', 'No carbon has four carbon neighbours → 0 **4°**.'],
           answer: '1°: 5 · 2°: 4 · 3°: 3 · 4°: 0',
@@ -100,10 +115,10 @@ export default {
           rows: [['identity, location and number of **substituents** (branches)', 'number of C in the **longest chain**', 'the **functional group** (-ane for alkanes)']],
         },
         { t: 'h', text: 'Substituent (branch) names' },
-        { t: 'p', text: 'A branch is named by changing **-ane to -yl**:' },
+        { t: 'p', text: 'A branch (alkyl group) is made by **removing one H** from an alkane: methane $CH_4$ → methyl $CH_3$–. The line means that carbon can bond to something else. Name it by changing **-ane to -yl**:' },
         {
           t: 'table', head: ['Branch', 'Name', 'Branch', 'Name'],
-          rows: [['$CH_3$–', '**methyl**', '$CH_3CH_2CH_2CH_2$–', '**butyl**'], ['$CH_3CH_2$–', '**ethyl**', '$CH_3(CH_2)_4$–', '**pentyl**'], ['$CH_3CH_2CH_2$–', '**propyl**', '$(CH_3)_2CH$–', '**isopropyl** (1-methylethyl)']],
+          rows: [['$CH_3$–', '**methyl**', '$CH_3CH_2CH_2CH_2$–', '**butyl**'], ['$CH_3CH_2$–', '**ethyl**', '$CH_3(CH_2)_4$–', '**pentyl**'], ['$CH_3CH_2CH_2$–', '**propyl**', '$CH_3(CH_2)_5$–', '**hexyl**'], ['$(CH_3)_2CH$–', '**isopropyl** (1-methylethyl)', '', '']],
         },
         { t: 'h', text: 'Drug names' },
         { t: 'p', text: 'Most drugs have three names: a **systematic** IUPAC name (2-[4-(2-methylpropyl)phenyl]propanoic acid), a **generic** name (ibuprofen) and a **trade** name (Motrin, Advil).' },
@@ -182,7 +197,14 @@ export default {
       title: 'Naming cycloalkanes',
       minutes: 6,
       blocks: [
-        { t: 'p', text: 'For a ring: **prefix** (substituents) + **cyclo** + **parent** (number of ring carbons) + **-ane**.' },
+        { t: 'p', text: '**Cycloalkanes** contain carbon atoms arranged in a ring ($C_nH_{2n}$).' },
+        {
+          t: 'mols', items: [
+            { smiles: 'C1CC1', caption: 'cyclopropane $C_3H_6$ (triangle)' }, { smiles: 'C1CCC1', caption: 'cyclobutane $C_4H_8$ (square)' },
+            { smiles: 'C1CCCC1', caption: 'cyclopentane $C_5H_{10}$' }, { smiles: 'C1CCCCC1', caption: 'cyclohexane $C_6H_{12}$' },
+          ],
+        },
+        { t: 'p', text: 'To name a ring: **prefix** (substituents) + **cyclo** + **parent** (number of ring carbons) + **-ane**.' },
         { t: 'list', items: ['**One substituent:** no number needed → methylcyclohexane.', '**Two or more substituents:** number the ring to give the lowest numbers; if there\'s a tie, the substituent that comes **first alphabetically gets C1**.'] },
         {
           t: 'mols', items: [
@@ -217,6 +239,12 @@ export default {
     { id: 'l03-q13', skill: 'l03.naming', type: 'name', prompt: 'Name this alkane.', figure: { smiles: 'CCC(CC)C(C)C' }, name: { smiles: 'CCC(CC)C(C)C' }, explain: 'Longest chain = 5 → pentane (either 5-carbon path). Branches: methyl at 2, ethyl at 3 → **3-ethyl-2-methylpentane**.' },
     { id: 'l03-q14', skill: 'l03.drawing', type: 'struct', prompt: 'Which structure is **2-methylpentane**?', choices: [{ smiles: 'CC(C)CCC' }, { smiles: 'CCC(C)CC' }, { smiles: 'CC(C)CCCC' }, { smiles: 'CC(C)(C)CC' }], answer: 0, explain: 'Pentane (5 C) with a methyl on C2. The others are 3-methylpentane, 2-methylhexane and 2,2-dimethylbutane.' },
     { id: 'l03-q15', skill: 'l03.drawing', type: 'num', prompt: 'How many carbons does **5-ethyl-2,6-dimethyloctane** have in total?', answer: 12, tol: 0, explain: 'Octane (8) + ethyl (2) + two methyls (2) = **12** carbons.' },
+    { id: 'l03-q17', skill: 'l03.carbon-class', type: 'num', prompt: 'How many **primary (1°)** carbons are in neopentane (2,2-dimethylpropane)?', figure: { smiles: 'CC(C)(C)C' }, answer: 4, tol: 0, explain: 'All four $CH_3$ groups are 1°; the central carbon is bonded to four carbons → 4°.' },
+    { id: 'l03-q18', skill: 'l03.carbon-class', type: 'atoms', prompt: 'Tap the **tertiary (3°)** carbon in isopentane (2-methylbutane).', figure: { smiles: 'CC(C)CC' }, selectable: [0, 1, 2, 3, 4], answer: [1], explain: 'The CH is bonded to **three** carbons (two CH₃ and the CH₂) → 3°.' },
+    { id: 'l03-q19', skill: 'l03.carbon-class', type: 'num', prompt: 'How many **quaternary (4°)** carbons are in $CH_3CH_2CH_2C(CH_3)(CH(CH_3)_2)CH_2CH(CH_3)CH_3$?', figure: { smiles: 'CCCC(C)(C(C)C)CC(C)C' }, answer: 1, tol: 0, explain: 'Only the carbon with **no H** is bonded to four other carbons → **1** quaternary carbon. (Totals: 1° 6, 2° 3, 3° 2, 4° 1.)' },
+    { id: 'l03-q20', skill: 'l03.formulas', type: 'formula', prompt: 'What is the molecular formula of cyclobutane?', answer: 'C4H8', explain: 'Cycloalkanes are $C_nH_{2n}$: n = 4 → **$C_4H_8$**.' },
+    { id: 'l03-q21', skill: 'l03.names-1-10', type: 'mc', prompt: 'Which condensed formula is **nonane**?', choices: ['$CH_3(CH_2)_7CH_3$', '$CH_3(CH_2)_9CH_3$', '$CH_3(CH_2)_8CH_3$', '$CH_3(CH_2)_6CH_3$'], answer: 0, explain: 'Nonane has 9 carbons: two $CH_3$ ends + **7** $CH_2$ groups.' },
+    { id: 'l03-q22', skill: 'l03.isomers', type: 'mc', prompt: 'Why is a straight-chain alkane drawn as a **zig-zag**?', choices: ['The zig-zag is the most stable arrangement because it avoids crowding', 'C–C bonds cannot rotate', 'Carbon prefers 90° angles', 'It shows the double bonds'], answer: 0, explain: 'Groups rotate freely around C–C single bonds, and the **zig-zag** keeps them farthest apart.' },
     { id: 'l03-q16', skill: 'l03.naming', type: 'name', prompt: 'Name this cycloalkane.', figure: { smiles: 'CC1CCC(C(C)C)CC1' }, name: { smiles: 'CC1CCC(C(C)C)CC1' }, explain: 'Cyclohexane with substituents at 1 and 4. Tie → alphabetical: **i**sopropyl before **m**ethyl → **1-isopropyl-4-methylcyclohexane**.' },
   ],
   cards: [
@@ -237,6 +265,9 @@ export default {
     { id: 'l03-k15', front: 'Name this', mol: 'CC(C)C(C)CCC', back: '**2,3-dimethylhexane**' },
     { id: 'l03-k16', front: 'Cycloalkane with one substituent', back: 'No number needed: e.g. **methylcyclohexane**.' },
     { id: 'l03-k17', front: 'Three names of a drug', back: '**Systematic** (IUPAC), **generic** (ibuprofen), **trade** (Advil/Motrin).' },
+    { id: 'l03-k18', front: 'Isopentane and neopentane', back: 'Isopentane = **2-methylbutane**; neopentane = **2,2-dimethylpropane**. Both are $C_5H_{12}$ isomers of pentane.' },
+    { id: 'l03-k19', front: 'Small cycloalkanes', back: 'cyclopropane $C_3H_6$ · cyclobutane $C_4H_8$ · cyclopentane $C_5H_{10}$ · cyclohexane $C_6H_{12}$' },
+    { id: 'l03-k20', front: 'Rotation around C–C single bonds', back: 'Allowed; the **zig-zag** shape is the most stable (least crowded).' },
   ],
   keyTerms: [
     { term: 'alkane', def: 'A hydrocarbon with only C–C and C–H single bonds.' },

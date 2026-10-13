@@ -29,6 +29,7 @@ export default {
           ],
         },
         { t: 'p', text: 'This lecture is about alcohols; Lecture 6 covers the other three.' },
+        { t: 'list', items: ['**2-Mercaptomethylfuran** (a thiol, –SH) gives coffee its aroma.', '**Enflurane** (trade name Ethrane) is an ether used as a general anesthetic.', '**Taxol** (paclitaxel), an anticancer drug from the bark of the Pacific yew tree, contains several –OH groups.'] },
       ],
     },
     {
@@ -39,9 +40,9 @@ export default {
         { t: 'p', text: 'Alcohols are classified by the **number of carbons bonded to the carbon that holds the OH** — the same idea as 1°/2°/3° carbons in Lecture 3.' },
         {
           t: 'mols', items: [
-            { smiles: 'CCCO', caption: '1° alcohol: OH carbon bonded to 1 C', highlight: [2] },
-            { smiles: 'CC(O)C', caption: '2° alcohol: OH carbon bonded to 2 C', highlight: [1] },
-            { smiles: 'CC(C)(C)O', caption: '3° alcohol: OH carbon bonded to 3 C', highlight: [1] },
+            { smiles: 'CCO', caption: '1° alcohol (ethanol): OH carbon bonded to 1 C', highlight: [1] },
+            { smiles: 'CC(O)C', caption: '2° alcohol (2-propanol): OH carbon bonded to 2 C', highlight: [1] },
+            { smiles: 'CC(C)(C)O', caption: '3° alcohol (2-methyl-2-propanol): OH carbon bonded to 3 C', highlight: [1] },
           ],
         },
         { t: 'callout', kind: 'warn', title: 'Count carbons on the OH carbon — not the OH itself', text: 'Find the carbon with the –OH first, then count only the **carbons** attached to it.' },
@@ -54,11 +55,11 @@ export default {
       blocks: [
         { t: 'list', items: ['The O is **bent** (like water), bond angle ~109.5°.', 'Two polar bonds (C–O and O–H) on a bent O → a **net dipole** (polar).', 'The O–H lets alcohols **hydrogen bond** to each other.'] },
         { t: 'callout', kind: 'key', title: 'Result', text: 'Alcohols have **much stronger intermolecular forces** than alkanes and alkenes → **higher boiling and melting points** than hydrocarbons of similar size.' },
-        { t: 'table', head: ['Compound', 'Formula', 'bp'], rows: [['propane', '$CH_3CH_2CH_3$', '−42 °C'], ['ethanol', '$CH_3CH_2OH$', '78 °C']] },
+        { t: 'table', head: ['Compound', 'Formula', 'mp', 'bp'], rows: [['butane', '$CH_3CH_2CH_2CH_3$', '−138 °C', '−0.5 °C'], ['1-propanol', '$CH_3CH_2CH_2OH$', '−127 °C', '97 °C']], caption: 'Similar size and shape: the alcohol\'s stronger intermolecular forces give higher melting and boiling points.' },
         { t: 'h', text: 'Solubility' },
-        { t: 'list', items: ['Alcohols dissolve in organic solvents.', '**Small** alcohols (up to about 5 C) **dissolve in water** — the O–H hydrogen bonds with water.', '**Larger** alcohols (6+ C) are **insoluble** — the nonpolar chain wins.'] },
+        { t: 'list', items: ['Alcohols dissolve in organic solvents.', '**Low molecular weight** alcohols (about **6 C or fewer**) **dissolve in water** — the O–H hydrogen bonds with water.', '**Higher molecular weight** alcohols (more carbons than that) are **insoluble** — the nonpolar chain wins.'] },
         { t: 'mols', items: [{ smiles: 'CCO', caption: 'ethanol (2 C): water soluble' }, { smiles: 'CCCCCCCCO', caption: '1-octanol (8 C): water insoluble' }] },
-        { t: 'callout', kind: 'exam', title: 'About the cutoff', text: 'The slides put the cutoff "around 6 carbons." Exam questions use clear-cut cases like **2 C (soluble)** vs **8 C (insoluble)**, so focus on the idea: a longer nonpolar chain makes it less soluble.' },
+        { t: 'callout', kind: 'exam', title: 'About the cutoff', text: 'The slide says alcohols with "6 C\'s or less" are soluble and those with "6 C\'s or more" are not, so 6 is right on the line. The slide\'s own examples are clear-cut — **2 C (soluble)** vs **8 C (insoluble)** — so focus on the idea: a longer nonpolar chain makes an alcohol less soluble.' },
       ],
     },
     {
@@ -73,7 +74,13 @@ export default {
           ],
         },
         {
-          t: 'example', title: 'Example', prompt: 'Name this alcohol.',
+          t: 'example', title: 'Example from class', prompt: 'Give the IUPAC name of $CH_3CH(CH_3)CH_2CH(OH)CH_2CH_3$.',
+          mol: { smiles: 'CC(C)CC(O)CC', numbers: 'auto', name: '5-methyl-3-hexanol' },
+          steps: ['Longest chain containing the C–OH: **6 C** → hexane → hexan**ol**.', 'Number to put the OH at **C3, not C4** (start from the right).', 'The methyl is then on **C5**.'],
+          answer: '**5-methyl-3-hexanol**',
+        },
+        {
+          t: 'example', title: 'Another example', prompt: 'Name this alcohol.',
           mol: { smiles: 'CCC(C)CC(C)O', numbers: 'auto', name: '4-methyl-2-hexanol' },
           steps: ['Longest chain with the OH carbon: 6 C → hexan**ol**.', 'Number from the right so the OH is on **C2** (not C5).', 'Methyl on C4.'],
           answer: '**4-methyl-2-hexanol**',
@@ -88,8 +95,13 @@ export default {
         { t: 'list', items: ['OH on a ring → the OH carbon is **C1** (the "1" is left out); then number to give the next substituent the lowest number.', 'Two OH groups → **diol** (or glycol); three → **triol**. Keep the "e": ethane**diol**.'] },
         {
           t: 'mols', items: [
-            { smiles: 'CC1CCCCC1O', caption: '2-methylcyclohexanol', numbers: 'auto', name: '2-methylcyclohexanol' },
-            { smiles: 'OCCO', caption: '1,2-ethanediol (ethylene glycol)', name: '1,2-ethanediol' },
+            { smiles: 'CC1CCCC(O)C1', caption: '3-methylcyclohexanol', numbers: 'auto', name: '3-methylcyclohexanol' },
+            { smiles: 'CCC1CCCC1O', caption: '2-ethylcyclopentanol', numbers: 'auto', name: '2-ethylcyclopentanol' },
+          ],
+        },
+        {
+          t: 'mols', items: [
+            { smiles: 'OCCO', caption: '1,2-ethanediol (ethylene glycol), $HOCH_2CH_2OH$', name: '1,2-ethanediol' },
             { smiles: 'OC1CCCC1O', caption: '1,2-cyclopentanediol', name: '1,2-cyclopentanediol' },
           ],
         },
@@ -118,7 +130,7 @@ export default {
           ],
         },
         { t: 'p', text: '**Carbohydrates** are long, alcohol-rich natural polymers made mostly by plants. **Starch** (seeds, roots) is digested by humans into glucose; **cellulose** (wood, cotton) gives plants rigidity but humans **can\'t** digest it.' },
-        { t: 'mol', smiles: 'OCC(O)C(O)C(O)C(O)C=O', caption: 'glucose (open-chain form): five OH groups' },
+        { t: 'mol', smiles: 'OCC1OC(O)C(O)C(O)C1O', caption: 'glucose: the building block of both starch (amylose) and cellulose — full of OH groups' },
       ],
     },
     {
@@ -128,6 +140,7 @@ export default {
       blocks: [
         { t: 'p', text: '**Dehydration** is the loss of $H_2O$. An alcohol treated with a strong acid ($H_2SO_4$) loses its OH and an H from a **neighboring** carbon, forming an **alkene**. This is an **elimination reaction** — atoms are "lost" and a multiple bond forms.' },
         { t: 'rxn', from: 'CCO', reagent: 'H₂SO₄', to: 'C=C', caption: 'ethanol → ethylene + H₂O' },
+        { t: 'rxn', from: 'OC1CCCCC1', reagent: 'H₂SO₄', to: 'C1=CCCCC1', caption: 'cyclohexanol → cyclohexene + H₂O (the OH and an H on the next carbon leave)' },
         { t: 'h', text: 'Zaitsev\'s rule' },
         { t: 'p', text: 'If the OH carbon has two different neighbors with H\'s, two alkenes can form. The major product follows **Zaitsev\'s rule**:' },
         { t: 'callout', kind: 'key', title: 'Zaitsev\'s rule', text: 'The **major** product is the alkene with **more alkyl (carbon) groups bonded to the C=C** — the more substituted alkene.' },
@@ -151,7 +164,9 @@ export default {
         },
         { t: 'rxn', from: 'CCCO', reagent: '[O]', to: 'CCC=O', caption: '1° alcohol → aldehyde (replaces 1 C–H with 1 C–O)' },
         { t: 'rxn', from: 'CCC=O', reagent: '[O]', to: 'CCC(=O)O', caption: 'aldehyde → carboxylic acid (again 1 C–H → 1 C–O)' },
-        { t: 'rxn', from: 'CC(O)CC', reagent: '[O]', to: 'CC(=O)CC', caption: '2° alcohol → ketone' },
+        { t: 'rxn', from: 'CC(O)C', reagent: '[O]', to: 'CC(C)=O', caption: '2-propanol → acetone (2° alcohol → ketone; replace 1 C–H with 1 C–O)' },
+        { t: 'rxn', from: 'CC(O)CC', reagent: '[O]', to: 'CC(=O)CC', caption: '2-butanol → 2-butanone' },
+        { t: 'rxn', from: 'CC(C)(C)O', reagent: '[O]', to: [], caption: '3° alcohol → no reaction (no C–H on the OH carbon)' },
         { t: 'callout', kind: 'tip', title: 'How to draw the product', text: 'Draw the full structure with the H\'s on the OH carbon. Remove **one H from that carbon** (and the H from O), and make the C=O. If the carbon has **no H** (3°), nothing can happen.' },
         {
           t: 'check', q: {
@@ -181,7 +196,7 @@ export default {
   questions: [
     { id: 'l05-q01', skill: 'l05.classify', type: 'mc', prompt: 'How are alcohols classified as 1°, 2° or 3°?', choices: ['By the number of carbons bonded to the carbon holding the OH', 'By the number of OH groups', 'By the length of the chain', 'By the number of H on the oxygen'], answer: 0, explain: 'Count the **carbons** attached to the OH carbon.' },
     { id: 'l05-q02', skill: 'l05.classify', type: 'mc', prompt: '2-methyl-2-propanol, $(CH_3)_3COH$, is a…', choices: ['3° alcohol', '2° alcohol', '1° alcohol', 'diol'], answer: 0, explain: 'The OH carbon is bonded to **three** CH₃ groups → **tertiary**.' },
-    { id: 'l05-q03', skill: 'l05.properties', type: 'mc', prompt: 'Why does ethanol (bp 78 °C) boil so much higher than propane (bp −42 °C)?', choices: ['Ethanol molecules hydrogen bond to each other', 'Ethanol is much heavier', 'Propane is ionic', 'Ethanol has a C=C bond'], answer: 0, explain: 'The **O–H** lets ethanol hydrogen bond — much stronger than propane\'s London forces.' },
+    { id: 'l05-q03', skill: 'l05.properties', type: 'mc', prompt: 'Why does 1-propanol (bp 97 °C) boil so much higher than butane (bp −0.5 °C), a hydrocarbon of similar size?', choices: ['1-Propanol molecules hydrogen bond to each other', '1-Propanol is much heavier', 'Butane is ionic', '1-Propanol has a C=C bond'], answer: 0, explain: 'The **O–H** lets 1-propanol hydrogen bond (and it is polar) — much stronger intermolecular forces than butane has.' },
     { id: 'l05-q04', skill: 'l05.properties', type: 'mc', prompt: 'Which alcohol is **least** soluble in water?', choices: ['1-octanol', 'methanol', 'ethanol', '1-propanol'], answer: 0, explain: 'The long 8-carbon chain of 1-octanol is too nonpolar.' },
     { id: 'l05-q05', skill: 'l05.properties', type: 'mc', prompt: 'What is the shape around the oxygen of an alcohol?', choices: ['bent', 'linear', 'trigonal planar', 'tetrahedral with 4 atoms'], answer: 0, explain: 'Two atoms + two lone pairs → **bent** (like water), ~109.5°.' },
     { id: 'l05-q06', skill: 'l05.naming', type: 'mc', prompt: 'When naming an alcohol, the chain is numbered to give the lowest number to…', choices: ['the carbon bearing the OH', 'the first alkyl branch', 'the longest branch', 'whichever end is on the left'], answer: 0, explain: 'The **OH** gets priority over alkyl substituents.' },
@@ -196,6 +211,12 @@ export default {
     { id: 'l05-q15', skill: 'l05.health', type: 'order', prompt: 'Put the metabolism of ethanol in order.', items: ['acetic acid', 'ethanol', 'acetaldehyde'], answer: [1, 2, 0], explain: '**Ethanol → acetaldehyde → acetic acid** (by alcohol dehydrogenase, then aldehyde dehydrogenase).' },
     { id: 'l05-q16', skill: 'l05.health', type: 'mc', prompt: 'Methanol is so toxic because the liver oxidizes it to…', choices: ['formaldehyde and formic acid', 'ethanol and acetic acid', 'carbon dioxide only', 'glucose'], answer: 0, explain: 'Methanol → **formaldehyde** → **formic acid**, both very toxic (blindness, low blood pH, death).' },
     { id: 'l05-q17', skill: 'l05.health', type: 'mc', prompt: 'Which alcohol is sweet, nontoxic and used in food, lotions and soap?', choices: ['glycerol', 'ethylene glycol', 'methanol', '2-propanol'], answer: 0, explain: '**Glycerol** (a triol). Ethylene glycol is also sweet but extremely toxic.' },
+    { id: 'l05-q19', skill: 'l05.oxidation', type: 'struct', prompt: 'Practice from class: what does this 1° alcohol give **first** when oxidized?', figure: { rxn: { from: 'OCC1CCCCC1', reagent: '[O]' } }, choices: [{ smiles: 'O=CC1CCCCC1' }, { smiles: 'O=C1CCCCC1' }, { smiles: 'C=C1CCCCC1' }, { text: 'No reaction' }], answer: 0, explain: 'The OH is on a $CH_2$ bonded to one carbon → **1° alcohol** → an **aldehyde** first (remove one H from the OH carbon to make C=O). More [O] turns it into the carboxylic acid.' },
+    { id: 'l05-q20', skill: 'l05.oxidation', type: 'struct', prompt: 'Practice from class: predict the product of oxidizing 2-propanol, $CH_3CH(OH)CH_3$.', figure: { rxn: { from: 'CC(O)C', reagent: '[O]' } }, choices: [{ smiles: 'CC(C)=O' }, { smiles: 'CCC=O' }, { smiles: 'CC(=O)O' }, { text: 'No reaction' }], answer: 0, explain: '2-propanol is a **2° alcohol** → **ketone**: acetone. Hint from class: draw all the H\'s, then take one H off the alcohol carbon to form the C=O.' },
+    { id: 'l05-q21', skill: 'l05.dehydration', type: 'struct', prompt: 'What forms when cyclohexanol is heated with H₂SO₄?', figure: { rxn: { from: 'OC1CCCCC1', reagent: 'H₂SO₄' } }, choices: [{ smiles: 'C1=CCCCC1' }, { smiles: 'O=C1CCCCC1' }, { smiles: 'C1CCCCC1' }, { smiles: 'OC1CCCCC1O' }], answer: 0, explain: '**Dehydration**: the OH and an H on the neighboring carbon leave as water → an alkene, **cyclohexene**.' },
+    { id: 'l05-q22', skill: 'l05.naming', type: 'name', prompt: 'Name this alcohol.', figure: { smiles: 'CC(C)CC(O)CC' }, name: { smiles: 'CC(C)CC(O)CC' }, explain: '6-carbon chain; number so the OH gets C3 (not C4); methyl on C5 → **5-methyl-3-hexanol**.' },
+    { id: 'l05-q23', skill: 'l05.naming', type: 'name', prompt: 'Name this alcohol.', figure: { smiles: 'CCC1CCCC1O' }, name: { smiles: 'CCC1CCCC1O' }, explain: 'The OH carbon is C1 of the ring; number toward the ethyl so it gets **C2** → **2-ethylcyclopentanol**.' },
+    { id: 'l05-q24', skill: 'l05.classify', type: 'mc', prompt: 'Ethanol, $CH_3CH_2OH$, is a…', choices: ['1° alcohol', '2° alcohol', '3° alcohol', 'diol'], answer: 0, explain: 'The OH carbon is bonded to **one** other carbon → **primary**.' },
     { id: 'l05-q18', skill: 'l05.health', type: 'tf', prompt: 'True or false: humans can digest cellulose into glucose.', answer: false, explain: '**False.** Humans digest **starch** but not **cellulose** (wood, cotton).' },
   ],
   cards: [
@@ -217,6 +238,9 @@ export default {
     { id: 'l05-k16', front: 'Rubbing alcohol', back: '**2-propanol** (isopropyl alcohol)' },
     { id: 'l05-k17', front: 'Antifreeze', back: '**Ethylene glycol** — sweet but extremely toxic.' },
     { id: 'l05-k18', front: 'Starch vs cellulose', back: 'Both glucose polymers. Humans digest **starch**, not **cellulose**.' },
+    { id: 'l05-k19', front: 'Butane vs 1-propanol', back: 'Similar size: butane bp **−0.5 °C**, 1-propanol bp **97 °C** — H-bonding raises the alcohol\'s bp.' },
+    { id: 'l05-k20', front: '2-propanol + [O]', back: '→ **acetone** (2° alcohol → ketone).' },
+    { id: 'l05-k21', front: 'Cyclohexanol + H₂SO₄', back: '→ **cyclohexene** + H₂O (dehydration).' },
   ],
   keyTerms: [
     { term: 'alcohol', def: 'A compound with an OH group on an sp³ carbon.' },
