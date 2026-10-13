@@ -17,6 +17,8 @@ export const FAMILIES = [
   { id: 'salt', label: 'Carboxylate salt', smiles: 'CCC(=O)[O-].[Na+]', lecture: 'l10' },
   { id: 'thiol', label: 'Thiol', smiles: 'CCS', lecture: 'l06' },
   { id: 'disulfide', label: 'Disulfide', smiles: 'CCSSCC', lecture: 'l06' },
+  { id: 'amine', label: 'Amine', smiles: 'CCCN', lecture: 'l11' },
+  { id: 'ammonium', label: 'Ammonium salt', smiles: 'CCC[NH3+].[Cl-]', lecture: 'l11' },
 ];
 
 // Reaction types, with the one-line idea behind each.
@@ -148,6 +150,15 @@ export const REACTIONS = [
   },
 ];
 
+REACTIONS.push({
+  id: 'amine-acid', name: 'Amine + acid', type: 'acidbase', from: 'amine', to: 'ammonium', reagent: 'HCl',
+  lecture: 'l11', section: 'bases', skill: 'l11.bases', practice: 'l11-salt', example: ['CCCCCCCCN', 'CCCCCCCC[NH3+].[Cl-]'],
+  rule: 'Amines are **bases**: the N\'s **lone pair accepts the H⁺**. R–NH₂ + HCl → R–NH₃⁺ Cl⁻, an **ammonium salt** that is **water soluble**.',
+  steps: ['Find the N. It keeps all of its groups.', 'Add an **H** to the N and give it a **+ charge**.', 'Write the anion (**Cl⁻**) as a separate ion. Name it: groups + **ammonium chloride**.'],
+  trap: 'The Cl doesn\'t bond to the N; it\'s a separate ion. And a 4° ammonium ion has no lone pair, so it can\'t take another H⁺.',
+  body: 'Many drugs are sold as these salts ("hydrochloride") so they dissolve in the bloodstream, like **diphenhydramine hydrochloride** (Benadryl).',
+});
+
 // "See this reagent? Think this reaction." For the reagent decoder table.
 export const REAGENTS = [
   { reagent: 'H₂, Pd', on: 'alkene', does: 'hydrogenation', gives: 'alkane', ids: ['hydrogenation'] },
@@ -160,4 +171,5 @@ export const REAGENTS = [
   { reagent: '[O]', on: 'aldehyde / ketone', does: 'oxidation', gives: 'carboxylic acid / no reaction', ids: ['oxald', 'ket-ox'] },
   { reagent: '[O] / [H]', on: 'thiol / disulfide', does: 'oxidation / reduction', gives: 'disulfide / 2 thiols', ids: ['thiol-ox', 'disulfide-red'] },
   { reagent: 'NaOH', on: 'carboxylic acid', does: 'acid–base', gives: 'carboxylate salt + H₂O', ids: ['neutralize'] },
+  { reagent: 'HCl', on: 'amine', does: 'acid–base', gives: 'ammonium salt (water soluble)', ids: ['amine-acid'] },
 ];

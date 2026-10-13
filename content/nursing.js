@@ -144,6 +144,62 @@ export const NURSING = [
     id: 'n-l10-aspirin', lecture: 'l10', section: 'aspirin', title: 'Aspirin safety',
     text: 'Aspirin stops platelets from clumping for the rest of their life (about 7–10 days), so it\'s often stopped before surgery when the provider orders it. It\'s avoided in children and teens with viral illnesses because of the risk of **Reye\'s syndrome**.',
   },
+
+  // Lecture 11 — Amines
+  {
+    id: 'n-l11-nicu', lecture: 'l11', section: 'caffeine', title: 'Caffeine in the NICU',
+    text: '**Caffeine citrate** is given to premature babies to treat **apnea of prematurity** (pauses in breathing). As a CNS stimulant, it stimulates the brain\'s breathing center.',
+  },
+  {
+    id: 'n-l11-patch', lecture: 'l11', section: 'caffeine', title: 'Nicotine patch teaching',
+    text: 'Put each new patch on **clean, dry, hairless skin**, **rotate sites**, and remove the old one. Used patches still contain nicotine, so fold them sticky sides together and keep them away from children and pets.',
+  },
+  {
+    id: 'n-l11-opioids', lecture: 'l11', section: 'alkaloids', title: 'Opioid safety and naloxone',
+    text: 'The biggest danger of morphine-type drugs is **slowed breathing**. Nurses check breathing rate and sedation before and after doses, and keep **naloxone (Narcan)** ready. It blocks opioid receptors and reverses an overdose.',
+  },
+  {
+    id: 'n-l11-atropine', lecture: 'l11', section: 'alkaloids', title: 'Atropine on the crash cart',
+    text: 'Atropine is used to speed up a **dangerously slow heart rate** and to dry secretions before surgery. Its side effects come from blocking acetylcholine: dry mouth, dilated pupils and blurry vision, a fast heart rate, and trouble urinating.',
+  },
+  {
+    id: 'n-l11-hcl', lecture: 'l11', section: 'bases', title: '"HCl" on drug labels',
+    text: 'Look at drug labels and you\'ll often see **hydrochloride** or **HCl**: naloxone HCl, diphenhydramine HCl, hydromorphone HCl. The amine was made into its **ammonium salt** so it dissolves for pills and IV solutions.',
+  },
+
+  // Lecture 12 — Amines & the body
+  {
+    id: 'n-l12-quats', lecture: 'l12', section: 'salt-drugs', title: '"Quats" on hospital surfaces',
+    text: 'Quaternary ammonium compounds like **benzalkonium chloride** ("quats") are common disinfectants for hospital surfaces and some skin antiseptics.',
+  },
+  {
+    id: 'n-l12-organophosphate', lecture: 'l12', section: 'acetylcholine', title: 'Organophosphate poisoning',
+    text: 'Pesticide exposure floods the body with acetylcholine activity: salivation, sweating, urination, diarrhea, **pinpoint pupils** and a slow heart. Treatment is **atropine** (plus pralidoxime), and staff wear protective equipment because the poison can be on skin and clothes.',
+  },
+  {
+    id: 'n-l12-levodopa', lecture: 'l12', section: 'dopamine', title: 'Levodopa for Parkinson\'s',
+    text: 'Dopamine itself **can\'t cross the blood–brain barrier**, so Parkinson\'s patients take **levodopa**. It crosses into the brain and is converted to dopamine there (it\'s usually combined with carbidopa).',
+  },
+  {
+    id: 'n-l12-ssri', lecture: 'l12', section: 'serotonin', title: 'SSRI teaching',
+    text: 'SSRIs take **several weeks** to work, so patients shouldn\'t give up early or stop suddenly. Combining them with other drugs that raise serotonin can cause **serotonin syndrome**: agitation, fever, fast heart rate and tremor.',
+  },
+  {
+    id: 'n-l12-epipen', lecture: 'l12', section: 'epinephrine', title: 'Epinephrine for anaphylaxis',
+    text: 'In a severe allergic reaction, **epinephrine** is the first-line treatment, given by auto-injector (EpiPen) into the **outer thigh**. It raises blood pressure and opens the airways: the fight-or-flight effects from this lecture.',
+  },
+  {
+    id: 'n-l12-inhalers', lecture: 'l12', section: 'pea', title: 'Rescue vs controller inhalers',
+    text: '**Albuterol** is the quick-acting **rescue** inhaler for an asthma attack. **Salmeterol** is long-acting and is **not** used for rescue: it\'s a daily controller, given together with an inhaled steroid.',
+  },
+  {
+    id: 'n-l12-sudafed', lecture: 'l12', section: 'pea', title: 'Why Sudafed is behind the counter',
+    text: 'Because pseudoephedrine can be made into methamphetamine, US law keeps it **behind the pharmacy counter**, with photo ID and monthly purchase limits.',
+  },
+  {
+    id: 'n-l12-benadryl', lecture: 'l12', section: 'histamine', title: 'Benadryl and older adults',
+    text: 'Diphenhydramine reaches the brain, so in **older adults** it can cause confusion, drowsiness and **falls**. It\'s generally avoided in that age group.',
+  },
 ];
 
 export const nursingFor = (lecture, section) => NURSING.filter((n) => n.lecture === lecture && n.section === section);

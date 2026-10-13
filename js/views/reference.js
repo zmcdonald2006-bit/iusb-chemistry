@@ -16,7 +16,7 @@ const FAMILIES = [
   ['Alcohol', 'CCO', '–OH', '-ol', 'L5'],
   ['Ether', 'COC', 'C–O–C', 'alkoxy- / "… ether"', 'L6'],
   ['Thiol', 'CCS', '–SH', '-thiol', 'L6'],
-  ['Amine', 'CCN', '–NH₂', '(not covered yet)', 'L2'],
+  ['Amine', 'CCN', '–NH₂, –NHR, –NR₂', '-amine (N- for groups on N)', 'L11'],
   ['Aldehyde', 'CC=O', '–CHO', '-al', 'L8'],
   ['Ketone', 'CC(C)=O', 'C–CO–C', '-one', 'L8'],
   ['Carboxylic acid', 'CC(=O)O', '–COOH', '-oic acid', 'L10'],
@@ -56,6 +56,7 @@ function naming(body) {
     ['Ketone', '**-one**', 'lowest number to C=O'],
     ['Alcohol', '**-ol**', 'lowest number to OH'],
     ['Thiol', '**-thiol**', 'lowest number to SH (keep the "e": propanethiol)'],
+    ['Amine', '**-amine**', 'lowest number to the C bonded to N; other groups on the N are **N-** prefixes (N-methyl-2-propanamine)'],
     ['Alkene / alkyne', '**-ene / -yne**', 'lowest number to the multiple bond'],
     ['Alkane', '**-ane**', 'lowest numbers to substituents'],
   ]), h('p', { class: 'hint', style: { marginTop: '8px' } }, 'If a molecule has two of these, the one higher in the table is the suffix; the other becomes a prefix (hydroxy-, oxo-).')));
@@ -77,7 +78,8 @@ function properties(body) {
   body.appendChild(h('div', { class: 'card' }, h('h3', {}, 'Boiling-point ladder (molecules of similar size)'),
     h('div', { class: 'ladder' }, h('div', { class: 'ladder-row' },
       ...['alkane', 'ether / alkyl halide', 'aldehyde / ketone', 'alcohol', 'carboxylic acid'].flatMap((x, i, arr) => [h('span', { class: 'fam' }, x), i < arr.length - 1 ? h('span', { class: 'faint' }, '<') : null]))),
-    h('p', { class: 'small muted', style: { marginTop: '10px' } }, 'Nonpolar (London only) < polar, no H-bonding < H-bonding < extra H-bonding. Within one family, bigger molecules (and bigger halogens) boil higher.')));
+    h('p', { class: 'small muted', style: { marginTop: '10px' } }, 'Nonpolar (London only) < polar, no H-bonding < H-bonding < extra H-bonding. Within one family, bigger molecules (and bigger halogens) boil higher.'),
+    h('p', { class: 'small', style: { marginTop: '6px' } }, mdi('**Amines (Lecture 11):** 3° amines (no N–H) boil about like ethers. 1° and 2° amines (N–H hydrogen bonds) boil higher than those, but **lower than alcohols**: diethyl ether 38 °C < 1-butanamine 78 °C < 1-butanol 118 °C.'))));
   body.appendChild(h('div', { class: 'card' }, h('h3', {}, 'Water solubility rules from class'), table(['Family', 'Soluble in water?'], [
     ['Hydrocarbons (alkanes, alkenes, alkynes)', 'No — nonpolar'],
     ['Alkyl halides', 'No — all are insoluble'],
@@ -86,8 +88,9 @@ function properties(body) {
     ['Aldehydes & ketones', '≤ 6 C yes; 7+ C no'],
     ['Carboxylic acids', 'Small ones yes; long chains (e.g. octanoic acid) no'],
     ['Carboxylate salts', 'Yes — ionic'],
+    ['Ammonium salts (amine + HCl)', 'Yes — ionic (that\'s why drugs are sold as "hydrochlorides")'],
   ])));
-  body.appendChild(h('div', { class: 'card' }, h('h3', {}, 'Hydrogen bonding'), mdi('Needs an **H on O, N or F**. Alcohols, carboxylic acids and amines H-bond with each other. Ethers, aldehydes and ketones can\'t H-bond with each other, but water can H-bond **to** their O. Thiols (S–H) don\'t H-bond.')));
+  body.appendChild(h('div', { class: 'card' }, h('h3', {}, 'Hydrogen bonding'), mdi('Needs an **H on O, N or F**. Alcohols, carboxylic acids and **1° and 2° amines** H-bond with each other (3° amines have no N–H). Ethers, aldehydes and ketones can\'t H-bond with each other, but water can H-bond **to** their O. Thiols (S–H) don\'t H-bond.')));
 }
 
 function shapes(body) {

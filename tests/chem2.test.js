@@ -155,3 +155,19 @@ describe('Layout and rendering', () => {
     expect(renderTetrahedral(['OH', 'CH3', 'H', 'CH2CH3'])).toContain('polygon');
   });
 });
+
+describe('Hand-placed drawings', () => {
+  it('have one point per atom and sensible bond lengths', async () => {
+    const { DEPICTIONS } = await import('../js/chem/depictions.js');
+    const { parseSmiles: parse } = await import('../js/chem/smiles.js');
+    for (const [smi, d] of Object.entries(DEPICTIONS)) {
+      const m = parse(smi);
+      if (m.atoms.length !== d.coords.length) throw new Error(`${smi}: ${d.coords.length} points for ${m.atoms.length} atoms`);
+      for (const b of m.bonds) {
+        const L = Math.hypot(d.coords[b.a][0] - d.coords[b.b][0], d.coords[b.a][1] - d.coords[b.b][1]);
+        if (L < 0.5 || L > 1.6) throw new Error(`${smi}: bond ${b.a}-${b.b} is ${L.toFixed(2)} long`);
+      }
+      for (const [a, b] of d.bold || []) if (!m.bonds.some((x) => (x.a === a && x.b === b) || (x.a === b && x.b === a))) throw new Error(`${smi}: bold ${a}-${b} isn't a bond`);
+    }
+  });
+});

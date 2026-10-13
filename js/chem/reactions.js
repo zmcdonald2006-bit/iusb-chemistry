@@ -190,3 +190,45 @@ export function oxidizeThiol(smiles) {
 }
 
 export { uniqueSmiles };
+
+// ---- Amines as bases (Lecture 11) -----------------------------------------------------------
+
+// The amine N: neutral, only single bonds, not part of an amide (no C=O next to it), not aromatic.
+export function amineSite(input) {
+  const m = typeof input === 'string' ? parseSmiles(input) : input;
+  for (const a of m.atoms) {
+    if (a.el !== 'N' || a.charge || a.aromatic) continue;
+    if (a.bonds.some((bid) => m.bonds[bid].order !== 1)) continue;
+    const amide = neighbors(m, a.id).some((c) => m.atoms[c].el === 'C' && m.atoms[c].bonds.some((bid) => m.bonds[bid].order === 2 && m.atoms[m.bonds[bid].a === c ? m.bonds[bid].b : m.bonds[bid].a].el === 'O'));
+    if (amide) continue;
+    return a.id;
+  }
+  return null;
+}
+
+// Amine + acid (HCl, HBr…) -> ammonium salt: the N's lone pair takes the H⁺; the anion stays as a separate ion.
+// A 4° ammonium ion has no lone pair: no reaction (null).
+export function protonateAmine(smiles, anion = 'Cl') {
+  const m = prep(smiles);
+  const n = amineSite(m);
+  if (n == null) return null;
+  const a = m.atoms[n];
+  computeHydrogens(m);
+  Object.assign(a, { charge: 1, bracket: true, hExplicit: (a.h || 0) + 1 });
+  if (anion === 'OH') addAtomTo(m, 'O', null, 1, { charge: -1, bracket: true, hExplicit: 1 });
+  else addAtomTo(m, anion, null, 1, { charge: -1, bracket: true, hExplicit: 0 });
+  return finish(m);
+}
+
+// The neutral amine form of an ammonium salt (what's left when the N gives its extra H⁺ back).
+// A quaternary ion (no N–H) has no neutral amine form: null.
+export function deprotonateAmmonium(smiles) {
+  const m = prep(smiles);
+  computeHydrogens(m);
+  const n = m.atoms.find((a) => a.el === 'N' && a.charge === 1);
+  if (!n || !(n.h > 0)) return null;
+  Object.assign(n, { charge: 0, bracket: false, hExplicit: null });
+  const ions = m.atoms.filter((a) => a.charge === -1 && a.bonds.length === 0).map((a) => a.id);
+  const out = removeAtoms(m, ions);
+  return finish(out);
+}

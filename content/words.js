@@ -1,4 +1,4 @@
-// Word Splash: the chemistry words to guess. Every word comes from Lectures 1–10.
+// Word Splash: the chemistry words to guess. Every word comes from the lectures.
 //
 // ✏️ Safe to edit and extend:
 //   word     4–9 letters, A–Z only (written in capitals)
@@ -174,4 +174,45 @@ export const WORDS = [
   { word: 'SODIUM', lecture: 'l10', section: 'acidity', clue: 'The metal named first in "___ acetate".' },
   { word: 'SOAP', lecture: 'l10', section: 'soap', clue: 'The sodium salt of a long-chain carboxylic acid.', smiles: 'CCCCCCCCCCCCCCCCCC(=O)[O-].[Na+]' },
   { word: 'MICELLE', lecture: 'l10', section: 'soap', clue: 'A sphere of soap molecules surrounding grease.' },
+
+  // Lecture 11 — Amines
+  { word: 'PYRAMIDAL', lecture: 'l11', section: 'shape', clue: 'Trigonal ___: the shape around an amine N.' },
+  { word: 'CONIINE', lecture: 'l11', section: 'structure', clue: 'The poisonous amine heterocycle in hemlock.', smiles: 'CCCC1CCCCN1' },
+  { word: 'HEMLOCK', lecture: 'l11', section: 'structure', clue: 'The poisonous plant that coniine comes from.' },
+  { word: 'ALKALOID', lecture: 'l11', section: 'caffeine', clue: 'A naturally occurring amine from plants, like caffeine or nicotine.' },
+  { word: 'CAFFEINE', lecture: 'l11', section: 'caffeine', clue: 'Bitter, mildly stimulating amine in coffee, tea and chocolate.', smiles: 'Cn1cnc2c1c(=O)n(C)c(=O)n2C' },
+  { word: 'NICOTINE', lecture: 'l11', section: 'caffeine', clue: 'The addictive amine in tobacco smoke.', smiles: 'CN1CCCC1c1cccnc1' },
+  { word: 'MORPHINE', lecture: 'l11', section: 'alkaloids', clue: 'A strong, very addictive pain reliever from the opium poppy.' },
+  { word: 'CODEINE', lecture: 'l11', section: 'alkaloids', clue: 'An opium poppy alkaloid used for less severe pain.' },
+  { word: 'HEROIN', lecture: 'l11', section: 'alkaloids', clue: 'Made from morphine by turning both of its OH groups into esters.' },
+  { word: 'POPPY', lecture: 'l11', section: 'alkaloids', clue: 'Morphine and codeine come from the opium ___.' },
+  { word: 'QUININE', lecture: 'l11', section: 'alkaloids', clue: 'From cinchona bark: treats malaria and flavors tonic water.' },
+  { word: 'MALARIA', lecture: 'l11', section: 'alkaloids', clue: 'The disease quinine is used to treat.' },
+  { word: 'TONIC', lecture: 'l11', section: 'alkaloids', clue: '___ water gets its bitter flavor from quinine.' },
+  { word: 'ATROPINE', lecture: 'l11', section: 'alkaloids', clue: 'From deadly nightshade: enlarges the pupils.' },
+  { word: 'AMMONIUM', lecture: 'l11', section: 'bases', clue: 'The kind of salt an amine forms with HCl.', smiles: 'CCC[NH3+].[Cl-]' },
+
+  // Lecture 12 — Amines & the body
+  { word: 'BENADRYL', lecture: 'l12', section: 'salt-drugs', clue: 'Diphenhydramine hydrochloride: an antihistamine that causes drowsiness.' },
+  { word: 'NEURON', lecture: 'l12', section: 'nervous', clue: 'A nerve cell.' },
+  { word: 'SYNAPSE', lecture: 'l12', section: 'nervous', clue: 'The space between two nerve cells (the cleft).' },
+  { word: 'RECEPTOR', lecture: 'l12', section: 'nervous', clue: 'Where a neurotransmitter binds on the postsynaptic neuron.' },
+  { word: 'AFFERENT', lecture: 'l12', section: 'nervous', clue: 'Neurons that carry signals to the CNS.' },
+  { word: 'EFFERENT', lecture: 'l12', section: 'nervous', clue: 'Neurons that carry signals from the CNS.' },
+  { word: 'AGONIST', lecture: 'l12', section: 'agonists', clue: 'A molecule that mimics or boosts a neurotransmitter.' },
+  { word: 'SARIN', lecture: 'l12', section: 'acetylcholine', clue: 'A nerve agent that blocks the breakdown of acetylcholine.', smiles: 'CC(C)OP(C)(=O)F' },
+  { word: 'BOTOX', lecture: 'l12', section: 'acetylcholine', clue: 'The clinical use of botulinum toxin.' },
+  { word: 'DOPAMINE', lecture: 'l12', section: 'dopamine', clue: 'Controls movement, emotion and pleasure; low in Parkinson\'s disease.', smiles: 'NCCc1ccc(O)c(O)c1' },
+  { word: 'TYROSINE', lecture: 'l12', section: 'dopamine', clue: 'The amino acid that dopamine and norepinephrine are made from.' },
+  { word: 'PARKINSON', lecture: 'l12', section: 'dopamine', clue: '___\'s disease: too little dopamine in the brain.' },
+  { word: 'SEROTONIN', lecture: 'l12', section: 'serotonin', clue: 'Helps control mood and sleep; too little causes depression.', smiles: 'NCCc1c[nH]c2ccc(O)cc12' },
+  { word: 'REUPTAKE', lecture: 'l12', section: 'serotonin', clue: 'What SSRIs block, so serotonin stays in the synapse.' },
+  { word: 'PROZAC', lecture: 'l12', section: 'serotonin', clue: 'The trade name of fluoxetine, an SSRI.' },
+  { word: 'HORMONE', lecture: 'l12', section: 'epinephrine', clue: 'Made by an endocrine gland and carried in the blood, like epinephrine.' },
+  { word: 'ADRENAL', lecture: 'l12', section: 'epinephrine', clue: 'The gland that makes epinephrine.' },
+  { word: 'ADHD', lecture: 'l12', section: 'pea', clue: 'The attention disorder amphetamines are used to treat.' },
+  { word: 'ASTHMA', lecture: 'l12', section: 'pea', clue: 'The lung condition treated with bronchodilators.' },
+  { word: 'ALBUTEROL', lecture: 'l12', section: 'pea', clue: 'A bronchodilator inhaler (Ventolin) shaped like epinephrine.', smiles: 'CC(C)(C)NCC(O)c1ccc(O)c(CO)c1' },
+  { word: 'HISTAMINE', lecture: 'l12', section: 'histamine', clue: 'The amine behind allergy symptoms and stomach acid.', smiles: 'NCCc1c[nH]cn1' },
+  { word: 'ALLEGRA', lecture: 'l12', section: 'histamine', clue: 'A nonsedating antihistamine (fexofenadine).' },
 ];

@@ -2,9 +2,11 @@
 // Uses the "old style" locant placement taught in class: 2-butanol, 1-butene, 2-pentanone.
 //
 // Supported: alkanes, alkenes, alkynes (acyclic + cyclo), alkyl halides, alcohols (incl. diols),
-// thiols, ethers (alkoxy), aldehydes, ketones, carboxylic acids, carboxylate salts, and
-// hydroxy/oxo prefixes. Returns null for anything outside that scope (aromatic compounds,
-// esters, amines, complex substituents), so callers can fall back to authored names.
+// thiols, ethers (alkoxy), aldehydes, ketones, carboxylic acids, carboxylate salts,
+// hydroxy/oxo prefixes, amines (1°, 2°, 3°: 2-propanamine, N-methyl-2-propanamine; common names
+// like triethylamine) and ammonium salts (octylammonium chloride). Returns null for anything outside
+// that scope (aromatic compounds, esters, amides, amines with N in a ring, complex substituents),
+// so callers can fall back to authored names.
 
 import { toMol } from './analyze.js';
 import { neighbors, otherAtom, bondBetween, components, cloneMol, computeHydrogens } from './smiles.js';
@@ -15,7 +17,7 @@ export const STEMS = ['', 'meth', 'eth', 'prop', 'but', 'pent', 'hex', 'hept', '
 export const MULT = ['', '', 'di', 'tri', 'tetra', 'penta', 'hexa', 'hepta', 'octa'];
 
 const HALO = { F: 'fluoro', Cl: 'chloro', Br: 'bromo', I: 'iodo' };
-const PRIORITY = ['acid', 'aldehyde', 'ketone', 'alcohol', 'thiol'];
+const PRIORITY = ['acid', 'aldehyde', 'ketone', 'alcohol', 'thiol', 'amine'];
 
 const COMMON_BY_IUPAC = {
   methanal: ['formaldehyde'],
@@ -68,7 +70,7 @@ function perceive(mol) {
   const claimed = new Set();
   let etherO = [];
   for (const a of A) {
-    if (!['C', 'O', 'S', 'F', 'Cl', 'Br', 'I'].includes(a.el)) return null;
+    if (!['C', 'O', 'S', 'F', 'Cl', 'Br', 'I', 'N'].includes(a.el)) return null;
     if (a.charge || a.aromatic) return null;
   }
   // carbonyls first
@@ -106,6 +108,10 @@ function perceive(mol) {
       else return null;
     } else if (HALO[a.el]) {
       if (nb.length === 1 && A[nb[0]].el === 'C') groups.push({ kind: 'halo', c: nb[0], atoms: [a.id], sub: HALO[a.el] });
+      else return null;
+    } else if (a.el === 'N') {
+      // only a 1° amine here (–NH₂); 2° and 3° amines are reduced to one first (see nameAmine)
+      if (nb.length === 1 && A[nb[0]].el === 'C' && a.bonds.every((bid) => mol.bonds[bid].order === 1)) groups.push({ kind: 'amine', c: nb[0], atoms: [a.id] });
       else return null;
     }
   }
@@ -169,6 +175,9 @@ export function alkoxyName(alkyl) {
 
 // ---- Shared assembly -------------------------------------------------------------------
 
+// Locants are numbers, or "N" for a group on an amine nitrogen (N comes first: N,2-dimethyl).
+export const locantSort = (a, b) => (a === b ? 0 : a === 'N' ? -1 : b === 'N' ? 1 : a - b);
+
 function groupPrefixes(prefixes) {
   // prefixes: [{name, locant}] -> [{name, locants:[...]}] sorted alphabetically
   const map = new Map();
@@ -176,7 +185,7 @@ function groupPrefixes(prefixes) {
     if (!map.has(p.name)) map.set(p.name, []);
     map.get(p.name).push(p.locant);
   }
-  const out = [...map.entries()].map(([name, locants]) => ({ name, locants: locants.sort((a, b) => a - b) }));
+  const out = [...map.entries()].map(([name, locants]) => ({ name, locants: locants.sort(locantSort) }));
   out.sort((a, b) => (alphaKey(a.name) < alphaKey(b.name) ? -1 : alphaKey(a.name) > alphaKey(b.name) ? 1 : 0));
   return out;
 }
@@ -444,6 +453,7 @@ function assemble(mol, num, ctx) {
       case 'ketone': parent = stem + (pc > 1 ? 'ane' + mult + 'one' : 'anone'); omitParentLocs = cyclic && pc === 1; break;
       case 'alcohol': parent = stem + (pc > 1 ? 'ane' + mult + 'ol' : 'anol'); omitParentLocs = pc === 1 && (cyclic || n <= 2); break;
       case 'thiol': parent = stem + 'ane' + (pc > 1 ? mult : '') + 'thiol'; omitParentLocs = pc === 1 && (cyclic || n <= 2); break;
+      case 'amine': parent = stem + (pc > 1 ? 'ane' + mult + 'amine' : 'anamine'); omitParentLocs = pc === 1 && (cyclic || n <= 2); break;
       default: return null;
     }
   }
@@ -487,6 +497,7 @@ function assemble(mol, num, ctx) {
       },
     },
     numbering: num.chain, // atom ids in chain/ring order (C1 first)
+    parentStr, // e.g. "2-propanamine" (used to add N- prefixes to amines)
   };
 }
 
@@ -555,13 +566,146 @@ function nameSalt(mol, comps) {
   return { name, alternates, common: [], parts: null, numbering: null, salt: { metal, acid: r } };
 }
 
+// ---- Amines (Lecture 11) ---------------------------------------------------------------------
+// Smith's rules: the longest chain (or ring) bonded to the N is the parent "-amine"; any other groups
+// on the N are "N-" prefixes (N-methyl-2-propanamine). Common names list the groups on the N
+// alphabetically + "amine" (triethylamine, ethylmethylamine).
+
+// A group on the N: a simple alkyl, or an unsubstituted cycloalkyl ring.
+function nGroupName(mol, root, n) {
+  const alk = alkylName(mol, root, n);
+  if (alk) return alk;
+  const branch = collectBranch(mol, root, n);
+  const rings = findRings(mol).filter((r) => r.includes(root));
+  if (rings.length === 1 && rings[0].length === branch.size && [...branch].every((i) => mol.atoms[i].el === 'C')
+    && mol.bonds.every((b) => !(branch.has(b.a) && branch.has(b.b)) || b.order === 1) && rings[0].length < STEMS.length) {
+    return `cyclo${STEMS[rings[0].length]}yl`;
+  }
+  return null;
+}
+
+// The single amine N of a molecule, with its carbon neighbours, or null if out of scope.
+function amineNitrogen(mol) {
+  const ns = mol.atoms.filter((a) => a.el === 'N');
+  if (ns.length !== 1) return null;
+  const N = ns[0];
+  if (N.aromatic || N.bonds.some((bid) => mol.bonds[bid].order !== 1)) return null;
+  const nb = neighbors(mol, N.id);
+  if (nb.some((x) => mol.atoms[x].el !== 'C')) return null;
+  if (findRings(mol).some((r) => r.includes(N.id))) return null; // N in a ring (piperidine…): authored names
+  return { N: N.id, nb };
+}
+
+// "ethyl", "methyl", "methyl" -> "ethyldimethyl"
+function joinGroupNames(names) {
+  const counts = new Map();
+  for (const g of names) counts.set(g, (counts.get(g) || 0) + 1);
+  return [...counts.keys()].sort((a, b) => (alphaKey(a) < alphaKey(b) ? -1 : alphaKey(a) > alphaKey(b) ? 1 : 0))
+    .map((g) => `${MULT[counts.get(g)] || ''}${g}`).join('');
+}
+
+function subMolWithout(mol, removeSet) {
+  const keep = mol.atoms.filter((a) => !removeSet.has(a.id)).map((a) => a.id);
+  const map = new Map(keep.map((id, i) => [id, i]));
+  const sub = { atoms: [], bonds: [], stereo: [] };
+  for (const id of keep) sub.atoms.push({ ...mol.atoms[id], id: map.get(id), bonds: [], hExplicit: null });
+  for (const b of mol.bonds) {
+    if (!map.has(b.a) || !map.has(b.b)) continue;
+    const nb = { ...b, id: sub.bonds.length, a: map.get(b.a), b: map.get(b.b) };
+    sub.bonds.push(nb);
+    sub.atoms[nb.a].bonds.push(nb.id);
+    sub.atoms[nb.b].bonds.push(nb.id);
+  }
+  computeHydrogens(sub);
+  return sub;
+}
+
+function nameAmine(mol) {
+  const am = amineNitrogen(mol);
+  if (!am || !am.nb.length) return null;
+  if (mol.atoms.some((a) => a.charge)) return null;
+  const { N, nb } = am;
+  // Common name: the groups on the N (all must be simple), alphabetical, + "amine"
+  const groupNames = nb.map((c) => nGroupName(mol, c, N));
+  const common = groupNames.every(Boolean) ? [`${joinGroupNames(groupNames)}amine`] : [];
+
+  // Systematic name: try each group on the N as the parent; the longest parent wins.
+  let best = null;
+  for (const parentC of nb) {
+    const others = nb.filter((c) => c !== parentC);
+    const otherNames = others.map((c) => nGroupName(mol, c, N));
+    if (otherNames.some((x) => !x)) continue;
+    const remove = new Set();
+    for (const c of others) for (const x of collectBranch(mol, c, N)) remove.add(x);
+    const reduced = remove.size ? subMolWithout(mol, remove) : mol;
+    const perception = perceive(reduced);
+    if (!perception) continue;
+    const rings = findRings(reduced);
+    if (rings.length > 1) continue;
+    let r;
+    if (rings.length === 1) {
+      if (rings[0].some((i) => reduced.atoms[i].el !== 'C')) continue;
+      r = nameCyclic(reduced, rings[0], perception);
+    } else r = nameAcyclic(reduced, perception);
+    if (!r || r.parts.parent.kind !== 'amine') continue;
+    const score = [r.parts.parent.n, r.parts.parent.cyclic ? 0 : 1];
+    if (!best || cmpArrays(score, best.score) > 0) best = { r, otherNames, score, parentC };
+  }
+  if (!best) return null;
+  const { r, otherNames, parentC } = best;
+  if (!otherNames.length) {
+    for (const c of common) if (!r.common.includes(c)) r.common.push(c);
+    return r;
+  }
+  // add the N- groups to the prefixes, alphabetized with the rest
+  const all = r.parts.prefixes.flatMap((p) => p.locants.map((l) => ({ name: p.name, locant: l })));
+  for (const g of otherNames) all.push({ name: g, locant: 'N' });
+  const grouped = groupPrefixes(all);
+  const name = joinName(formatPrefixes(grouped, false), r.parentStr);
+  // also accepted: the N- groups + the parent group's common name ("N,N-dimethylethylamine")
+  const alternates = [];
+  const own = nGroupName(mol, parentC, N);
+  if (own && !r.parts.prefixes.length) alternates.push(`${formatPrefixes(groupPrefixes(otherNames.map((g) => ({ name: g, locant: 'N' }))), false)}${own}amine`);
+  return { ...r, name, alternates, common, parts: { ...r.parts, prefixes: grouped } };
+}
+
+// Ammonium salts: the amine took an H⁺ from an acid. Named like the common amine name, with
+// "ammonium" + the anion: octylammonium chloride, triethylammonium hydroxide.
+const ANIONS = { Cl: 'chloride', Br: 'bromide', I: 'iodide', F: 'fluoride' };
+
+function nameAmmoniumSalt(mol, comps) {
+  const isAnion = (c) => c.length === 1 && mol.atoms[c[0]].charge === -1 && (ANIONS[mol.atoms[c[0]].el] || (mol.atoms[c[0]].el === 'O' && mol.atoms[c[0]].h === 1));
+  const anionComp = comps.find(isAnion);
+  const cationComp = comps.find((c) => c !== anionComp);
+  if (!anionComp || !cationComp) return null;
+  const nPlus = cationComp.filter((i) => mol.atoms[i].el === 'N');
+  if (nPlus.length !== 1 || mol.atoms[nPlus[0]].charge !== 1) return null;
+  if (cationComp.some((i) => mol.atoms[i].charge && i !== nPlus[0])) return null;
+  const N = nPlus[0];
+  if (mol.atoms[N].bonds.some((bid) => mol.bonds[bid].order !== 1)) return null;
+  if (findRings(mol).some((r) => r.includes(N))) return null;
+  const nb = neighbors(mol, N);
+  if (nb.some((x) => mol.atoms[x].el !== 'C')) return null;
+  // the rest of the cation: carbon and hydrogen only
+  if (cationComp.some((i) => !['C', 'N'].includes(mol.atoms[i].el))) return null;
+  const groups = nb.map((c) => nGroupName(mol, c, N));
+  if (groups.some((g) => !g)) return null;
+  const a = mol.atoms[anionComp[0]];
+  const anion = a.el === 'O' ? 'hydroxide' : ANIONS[a.el];
+  const name = `${joinGroupNames(groups)}ammonium ${anion}`;
+  // drug-style name for amine + HCl: "octylamine hydrochloride" (not for 4° ions)
+  const alternates = anion === 'chloride' && nb.length < 4 && groups.length ? [`${joinGroupNames(groups)}amine hydrochloride`] : [];
+  return { name, alternates, common: [], parts: null, numbering: null, salt: { cation: 'ammonium', anion } };
+}
+
 // ---- Public -------------------------------------------------------------------------------
 
 export function nameCompound(input) {
   let mol;
   try { mol = toMol(input); } catch { return null; }
   const comps = components(mol);
-  if (comps.length === 2) return nameSalt(mol, comps);
+  if (comps.length === 2) return mol.atoms.some((a) => a.el === 'N') ? nameAmmoniumSalt(mol, comps) : nameSalt(mol, comps);
+  if (comps.length === 1 && mol.atoms.some((a) => a.el === 'N')) return nameAmine(mol);
   if (comps.length !== 1) return null;
   if (!mol.atoms.some((a) => a.el === 'C')) return null;
   const perception = perceive(mol);

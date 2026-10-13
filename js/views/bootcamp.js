@@ -11,7 +11,7 @@ export default function bootcamp({ app, main }) {
   const mastered = steps.filter((s) => s.stats.p >= 0.8).length;
   const next = steps.find((s) => s.stats.p < 0.8);
 
-  main.appendChild(pageHead({ eyebrow: 'Lectures 1–4', title: 'Foundations Bootcamp', sub: 'Those first tests are behind you — this path rebuilds the basics one skill at a time. Everything in Lectures 5–10 sits on top of these.' }));
+  main.appendChild(pageHead({ eyebrow: 'Lectures 1–4', title: 'Foundations Bootcamp', sub: 'Those first tests are behind you — this path rebuilds the basics one skill at a time. Everything from Lecture 5 on sits on top of these.' }));
   main.appendChild(h('div', { class: 'card row wrap', style: { gap: '16px' } },
     ring(avg, { size: 76, stroke: 8, cls: avg >= 0.8 ? 'ok' : '' }),
     h('div', { class: 'grow' },

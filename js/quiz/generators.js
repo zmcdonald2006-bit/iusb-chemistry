@@ -5,6 +5,7 @@ import { structureGenerators } from './gen/structure.js';
 import { reactionGenerators } from './gen/reactions.js';
 import { propertyGenerators } from './gen/properties.js';
 import { acidBaseGenerators } from './gen/acidbase.js';
+import { amineGenerators } from './gen/amines.js';
 import { moleculeOf, nameTyped, nameMcq, drawMcq, mcq } from './gen/common.js';
 import { parseSmiles, neighbors } from '../chem/smiles.js';
 import { functionalGroups } from '../chem/analyze.js';
@@ -22,6 +23,7 @@ const extra = [
   ...naming('l06t', 'l06.thiol-naming', ['thiol'], 'thiol', 'e.g. 2-butanethiol'),
   ...naming('l08', 'l08.naming', ['aldehyde', 'ketone', 'ketone', 'cycloketone'], 'ketone', 'e.g. 3-methylbutanal'),
   ...naming('l10', 'l10.naming', ['acid'], 'acid', 'e.g. 3-methylpentanoic acid'),
+  ...naming('l11', 'l11.naming', ['amine1', 'amine1', 'amine2', 'amine3', 'cycloAmine'], 'amine1', 'e.g. N-methyl-2-propanamine'),
   {
     id: 'l06-common-ether', skill: 'l06.ether-naming', title: 'Common ether names',
     make(r) {
@@ -82,7 +84,7 @@ const extra = [
   },
 ];
 
-export const GENERATORS = [...structureGenerators, ...reactionGenerators, ...propertyGenerators, ...acidBaseGenerators, ...extra];
+export const GENERATORS = [...structureGenerators, ...reactionGenerators, ...propertyGenerators, ...acidBaseGenerators, ...amineGenerators, ...extra];
 
 const BY_ID = new Map(GENERATORS.map((g) => [g.id, g]));
 

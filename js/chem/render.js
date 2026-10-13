@@ -1,5 +1,6 @@
 // SVG rendering of molecules. Returns markup strings so the same code works in the
 // browser (innerHTML) and in tests. Colours come from CSS classes (theme aware).
+import { DEPICTIONS } from './depictions.js';
 import { toMol } from './analyze.js';
 import { neighbors } from './smiles.js';
 import { findRings, isRingBond } from './graph.js';
@@ -31,7 +32,10 @@ export function renderMolecule(input, opts = {}) {
   }
   const base = opts.scale || 38;
   const S = base * (opts.mode === 'condensed' ? 1.4 : 1);
-  const coords = layoutMolecule(mol);
+  // hand-placed drawings for cage-shaped molecules (js/chem/depictions.js), else the automatic layout
+  const dep = typeof input === 'string' ? DEPICTIONS[input] : null;
+  const coords = dep && dep.coords.length === mol.atoms.length ? dep.coords.map(([x, y]) => ({ x, y })) : layoutMolecule(mol);
+  const boldBonds = new Set(((dep && dep.bold) || []).map(([a, b]) => `${Math.min(a, b)}-${Math.max(a, b)}`));
   const P = coords.map((c) => ({ x: c.x * S, y: -c.y * S }));
   const fs = Math.round(base * 0.42);
   const labels = mol.atoms.map((a, i) => atomLabel(mol, i, opts, P));
@@ -63,7 +67,8 @@ export function renderMolecule(input, opts = {}) {
       if (L < 2) return '';
       const ua = { x: u.x + d.x * shrinkA, y: u.y + d.y * shrinkA };
       const vc = { x: v.x - d.x * shrinkC, y: v.y - d.y * shrinkC };
-      return `<line class="bond" x1="${r2(ua.x)}" y1="${r2(ua.y)}" x2="${r2(vc.x)}" y2="${r2(vc.y)}"/>`;
+      const bold = boldBonds.has(`${Math.min(b.a, b.b)}-${Math.max(b.a, b.b)}`);
+      return `<line class="bond${bold ? ' bold' : ''}" x1="${r2(ua.x)}" y1="${r2(ua.y)}" x2="${r2(vc.x)}" y2="${r2(vc.y)}"${bold ? ` stroke-width="${r2(S * 0.12)}"` : ''}/>`;
     };
     const shifted = (s) => [{ x: p1.x + n.x * s, y: p1.y + n.y * s }, { x: p2.x + n.x * s, y: p2.y + n.y * s }];
     const off = S * 0.17;

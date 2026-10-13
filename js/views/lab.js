@@ -10,7 +10,7 @@ import { FG_LABELS } from '../chem/analyze.js';
 import { randomMolecule, KINDS } from '../chem/generator.js';
 import { makeRng } from '../lib/random.js';
 
-const EXAMPLES = ['2-methylhexane', '5-ethyl-2,6-dimethyloctane', '2-ethylpentane', 'cis-2-butene', '4,4-dimethyl-2-pentyne', '2-butanol', '3-methoxyheptane', '2-chloro-5-methylheptane', '2-methylbutanal', '3-pentanone', '2-methylbutanoic acid', 'sodium acetate', 'methylcyclohexane', 'diethyl ether', 'acetone'];
+const EXAMPLES = ['2-methylhexane', '5-ethyl-2,6-dimethyloctane', '2-ethylpentane', 'cis-2-butene', '4,4-dimethyl-2-pentyne', '2-butanol', '3-methoxyheptane', '2-chloro-5-methylheptane', '2-methylbutanal', '3-pentanone', '2-methylbutanoic acid', 'sodium acetate', 'methylcyclohexane', 'diethyl ether', 'acetone', 'N-methyl-2-propanamine', 'triethylamine', 'octylammonium chloride'];
 
 export default function lab({ app, main, query }) {
   main.appendChild(pageHead({ title: 'Name Lab', sub: 'Type any name from class and see the structure it describes. Great for checking homework — and for seeing why a name is wrong.' }));

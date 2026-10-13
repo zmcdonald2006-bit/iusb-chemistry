@@ -116,17 +116,19 @@ export function explainName(mol) {
   if (!info || !info.parts) return `The name is **${mol.name}**.`;
   const p = info.parts;
   const cyc = p.parent.cyclic ? 'cyclo' : '';
-  const kindWord = { ane: `${cyc}alkane (-ane)`, ene: `${cyc}alkene (-ene)`, yne: 'alkyne (-yne)', alcohol: 'alcohol (-ol)', thiol: 'thiol (-thiol)', aldehyde: 'aldehyde (-al)', ketone: 'ketone (-one)', acid: 'carboxylic acid (-oic acid)' }[p.parent.kind] || p.parent.kind;
+  const kindWord = { ane: `${cyc}alkane (-ane)`, ene: `${cyc}alkene (-ene)`, yne: 'alkyne (-yne)', alcohol: 'alcohol (-ol)', thiol: 'thiol (-thiol)', aldehyde: 'aldehyde (-al)', ketone: 'ketone (-one)', acid: 'carboxylic acid (-oic acid)', amine: 'amine (-amine)' }[p.parent.kind] || p.parent.kind;
   const lines = [];
-  lines.push(`**Parent:** ${p.parent.cyclic ? `a ${p.parent.n}-carbon ring` : `the longest chain has ${p.parent.n} carbons`}${p.parent.kind !== 'ane' && !p.parent.cyclic ? ' (it must include the functional group)' : ''} → ${kindWord}.`);
+  const mustInclude = p.parent.kind === 'amine' ? ' (the longest chain bonded to the N)' : p.parent.kind !== 'ane' && !p.parent.cyclic ? ' (it must include the functional group)' : '';
+  lines.push(`**Parent:** ${p.parent.cyclic ? `a ${p.parent.n}-carbon ring` : `the longest chain has ${p.parent.n} carbons`}${mustInclude} → ${kindWord}.`);
   if (p.parent.locants.length && !['acid', 'aldehyde'].includes(p.parent.kind)) {
-    lines.push(`**Number** so the ${p.parent.kind === 'ene' ? 'C=C' : p.parent.kind === 'yne' ? 'C≡C' : 'functional group'} gets the lowest number: ${p.parent.locants.join(',')}.`);
+    lines.push(`**Number** so the ${p.parent.kind === 'ene' ? 'C=C' : p.parent.kind === 'yne' ? 'C≡C' : p.parent.kind === 'amine' ? 'carbon bonded to the N' : 'functional group'} gets the lowest number: ${p.parent.locants.join(',')}.`);
   } else if (['acid', 'aldehyde'].includes(p.parent.kind)) {
     lines.push(`The ${p.parent.kind === 'acid' ? 'COOH' : 'CHO'} carbon is always **C1**.`);
   }
   if (p.prefixes.length) {
     lines.push(`**Substituents:** ${p.prefixes.map((x) => `${x.name} at ${x.locants.join(', ')}`).join('; ')}${p.prefixes.length > 1 ? ' — listed alphabetically' : ''}.`);
   }
+  if (p.prefixes.some((x) => x.locants.includes('N'))) lines.push('Groups on the **nitrogen** get the locant **N** (two of them: N,N-).');
   lines.push(`→ **${mol.name}**`);
   return lines.join('\n');
 }

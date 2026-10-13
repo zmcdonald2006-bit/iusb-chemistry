@@ -213,9 +213,32 @@ describe('IUPAC namer', () => {
     });
   }
   it('returns null for compounds outside the course scope', () => {
-    for (const smi of ['c1ccccc1', 'CC(=O)OC', 'CCN', 'CC(N)=O', 'C1CCC2CCCCC2C1', 'CCCCCCCCC1CC1', 'C=CCO']) {
+    for (const smi of ['c1ccccc1', 'CC(=O)OC', 'C1CCNCC1', 'CC(N)=O', 'C1CCC2CCCCC2C1', 'CCCCCCCCC1CC1', 'C=CCO', 'NCCN']) {
       expect(iupacName(smi)).toBeNull();
     }
+  });
+  it('names amines and ammonium salts the way Lecture 11 does', () => {
+    const cases = [
+      ['CN', 'methanamine', 'methylamine'], ['CCCCN', '1-butanamine', 'butylamine'], ['CCCCCCN', '1-hexanamine', 'hexylamine'],
+      ['CC(C)NC', 'N-methyl-2-propanamine', 'isopropylmethylamine'], ['CCN(CC)CC', 'N,N-diethylethanamine', 'triethylamine'],
+      ['CCCNCCC', 'N-propyl-1-propanamine', 'dipropylamine'], ['CN(C)CC', 'N,N-dimethylethanamine', 'ethyldimethylamine'],
+      ['NC1CCCCC1', 'cyclohexanamine', 'cyclohexylamine'], ['CCCNC1CCCCC1', 'N-propylcyclohexanamine', 'cyclohexylpropylamine'],
+      ['CCCC1(N)CCCCC1', '1-propylcyclohexanamine', null], ['CC(N)CC(C)C', '4-methyl-2-pentanamine', null],
+      ['CCCCCCCC[NH3+].[Cl-]', 'octylammonium chloride', null], ['[NH3+]C1CCCCC1.[F-]', 'cyclohexylammonium fluoride', null],
+      ['CC[NH+](CC)CC.[OH-]', 'triethylammonium hydroxide', null], ['C[NH+](C)C.[Cl-]', 'trimethylammonium chloride', null],
+    ];
+    for (const [smi, name, common] of cases) {
+      const r = nameCompound(smi);
+      if (!r || r.name !== name) throw new Error(`${smi}: expected ${name}, got ${r && r.name}`);
+      if (common && !r.common.includes(common)) throw new Error(`${smi}: missing common name ${common}`);
+      const back = parseName(name);
+      if (!back.ok || !sameMolecule(back.mol, smi)) throw new Error(`${name} doesn't parse back to ${smi}`);
+      if (common && !sameMolecule(parseName(common).mol, smi)) throw new Error(`${common} doesn't parse back to ${smi}`);
+    }
+    // the slide's own spellings are understood too
+    expect(sameMolecule(parseName('N,N-dimethyl-ethylamine').mol, 'CN(C)CC')).toBe(true);
+    expect(sameMolecule(parseName('cyclohexylamonium fluoride').mol, '[NH3+]C1CCCCC1.[F-]')).toBe(true);
+    expect(sameMolecule(parseName('octylamine hydrochloride').mol, 'CCCCCCCC[NH3+].[Cl-]')).toBe(true);
   });
   it('provides numbering in chain order (C1 first)', () => {
     const r = nameCompound('CC(C)CCCC'); // 2-methylhexane

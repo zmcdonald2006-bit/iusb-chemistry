@@ -170,7 +170,8 @@ function exampleBlock(b) {
   }
   const sol = h('div', { class: 'hidden' },
     h('ol', {}, b.steps.map((s) => h('li', {}, mdi(s)))),
-    b.answer ? h('div', { class: 'answer' }, h('b', {}, 'Answer: '), mdi(b.answer)) : null);
+    b.answer ? h('div', { class: 'answer' }, h('b', {}, 'Answer: '), mdi(b.answer)) : null,
+    b.answerMols ? molsView(b.answerMols) : null); // "draw the structure" problems: the drawing is the answer
   const btn = h('button', { type: 'button', class: 'btn secondary small reveal-btn', 'aria-expanded': 'false' }, icon('eye'), 'Show solution');
   btn.addEventListener('click', () => {
     const open = sol.classList.toggle('hidden') === false;

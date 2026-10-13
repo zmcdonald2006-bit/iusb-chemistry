@@ -5,8 +5,10 @@ import { skillStats } from '../state/progress.js';
 import { plain } from '../lib/markup.js';
 
 const NAMES_1 = ['l03-name-mc', 'l04-name-mc'];
-const NAMES_2 = ['l05-name-mc', 'l06e-name-mc', 'l06h-name-mc', 'l06t-name-mc', 'l08-name-mc', 'l10-name-mc'];
-const PRODUCTS = ['l04-hydrogenation', 'l04-halogenation', 'l04-hydrohalogenation', 'l04-hydration', 'l05-dehydration', 'l05-oxidation', 'l06-disulfide', 'l08-oxidation', 'l08-reduction', 'l10-neutralize'];
+const NAMES_2 = ['l05-name-mc', 'l06e-name-mc', 'l06h-name-mc', 'l06t-name-mc', 'l08-name-mc', 'l10-name-mc', 'l11-name-mc'];
+const PRODUCTS = ['l04-hydrogenation', 'l04-halogenation', 'l04-hydrohalogenation', 'l04-hydration', 'l05-dehydration', 'l05-oxidation', 'l06-disulfide', 'l08-oxidation', 'l08-reduction', 'l10-neutralize', 'l11-salt'];
+const AMINES = ['l11-classify', 'l11-vs-alcohol', 'l11-shape', 'l11-name-mc', 'l11-hbond', 'l11-salt', 'l11-alkaloid', 'l11-conjugate'];
+const BODY = ['l12-agonist', 'l12-messenger', 'l12-precursor', 'l12-pea', 'l12-nervous', 'l12-amine-form', 'l12-drug-ep', 'l12-drug-ssri', 'l12-drug-hist'];
 
 export const DECKS = [
   { id: 'foundations', name: 'Foundations Mix', desc: 'Lectures 1–4: the ones to rebuild', lectures: [1, 2, 3, 4], featured: true,
@@ -15,13 +17,15 @@ export const DECKS = [
   { id: 'shapes', name: 'Shape Shifter', desc: 'Shapes and bond angles', lectures: [1], gens: ['l01-shape', 'l01-angle'] },
   { id: 'chains', name: 'Name That Chain', desc: 'Alkanes, alkenes and alkynes', lectures: [3, 4], gens: NAMES_1 },
   { id: 'dissolve', name: 'Like Dissolves Like', desc: 'Polarity, H-bonding, solubility', lectures: [2], gens: ['l02-polar', 'l02-hbond', 'l02-solubility'] },
-  { id: 'class', name: '1°, 2° or 3°?', desc: 'Carbons, alcohols and halides', lectures: [3, 5, 6], gens: ['l03-cclass', 'l05-classify', 'l06-halide-class'] },
+  { id: 'class', name: '1°, 2° or 3°?', desc: 'Carbons, alcohols, halides and amines', lectures: [3, 5, 6, 11], gens: ['l03-cclass', 'l05-classify', 'l06-halide-class', 'l11-classify'] },
   { id: 'mirror', name: 'Mirror Lagoon', desc: 'Cis/trans and chirality', lectures: [4, 7], gens: ['l04-cistrans', 'l04-cistrans-possible', 'l07-chiral-yn'] },
-  { id: 'names', name: 'Name Remix', desc: 'Alcohols, ethers, halides, thiols, carbonyls, acids', lectures: [5, 6, 8, 10], gens: NAMES_2 },
-  { id: 'reactions', name: 'Reaction Rapids', desc: 'Predict the product or the reagent', lectures: [4, 5, 6, 8, 10], gens: [...PRODUCTS, 'l04-reagent', 'l08-oxred-classify'] },
+  { id: 'names', name: 'Name Remix', desc: 'Alcohols, ethers, halides, thiols, carbonyls, acids, amines', lectures: [5, 6, 8, 10, 11], gens: NAMES_2 },
+  { id: 'reactions', name: 'Reaction Rapids', desc: 'Predict the product or the reagent', lectures: [4, 5, 6, 8, 10, 11], gens: [...PRODUCTS, 'l04-reagent', 'l08-oxred-classify'] },
   { id: 'acids', name: 'Acid Ocean', desc: 'pH, conjugates, acid strength, buffers', lectures: [9], gens: ['l09-acidic', 'l09-conjugate', 'l09-stronger', 'l09-identify', 'l09-buffer'] },
+  { id: 'amines', name: 'Amine Alley', desc: 'Lecture 11: classify, name, alkaloids, salts', lectures: [11], gens: AMINES },
+  { id: 'body', name: 'Nerve Reef', desc: 'Lecture 12: neurotransmitters and drugs', lectures: [12], gens: BODY },
   { id: 'everything', name: 'Open Ocean', desc: 'Everything, tilted toward your weak spots', lectures: [],
-    gens: ['l02-fg-single', 'l02-carbonyl', 'l01-shape', 'l01-angle', ...NAMES_1, ...NAMES_2, 'l03-cclass', 'l05-classify', 'l06-halide-class', 'l04-cistrans', 'l04-cistrans-possible', 'l07-chiral-yn', 'l02-polar', 'l02-hbond', 'l02-solubility', ...PRODUCTS, 'l04-reagent', 'l08-oxred-classify', 'l09-acidic', 'l09-conjugate', 'l09-stronger', 'l09-identify', 'l09-buffer'] },
+    gens: ['l02-fg-single', 'l02-carbonyl', 'l01-shape', 'l01-angle', ...NAMES_1, ...NAMES_2, 'l03-cclass', 'l05-classify', 'l06-halide-class', 'l04-cistrans', 'l04-cistrans-possible', 'l07-chiral-yn', 'l02-polar', 'l02-hbond', 'l02-solubility', ...PRODUCTS, 'l04-reagent', 'l08-oxred-classify', 'l09-acidic', 'l09-conjugate', 'l09-stronger', 'l09-identify', 'l09-buffer', ...AMINES, ...BODY] },
 ];
 
 export const deckById = (id) => DECKS.find((d) => d.id === id) || null;

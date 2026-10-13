@@ -60,6 +60,8 @@ export function checkName(input, expected) {
 
   // Same molecule. Is the name itself correct?
   if (parsed.kind === 'common' || parsed.kind === 'salt') {
+    const spelling = (parsed.issues || []).find((i) => i.code === 'spelling');
+    if (spelling) return result('correct', `Correct! (${spelling.msg} ${primary}.)`);
     if (looseHit) return result('correct', 'Correct!');
     const alpha = (parsed.issues || []).find((i) => i.code === 'alphabetical');
     if (alpha && !expected.iupacOnly) return result('correct', `Correct! (Tip: ${alpha.msg}) IUPAC name: ${primary}.`);
@@ -97,7 +99,8 @@ function diagnose(userParse, expParts) {
   if (up.parent.n !== ep.parent.n || up.parent.cyclic !== ep.parent.cyclic) {
     const what = ep.parent.kind === 'ene' ? ' that contains the C=C'
       : ep.parent.kind === 'yne' ? ' that contains the C≡C'
-        : ['alcohol', 'thiol', 'ketone', 'aldehyde', 'acid'].includes(ep.parent.kind) ? ' that contains the functional group' : '';
+        : ep.parent.kind === 'amine' ? ' bonded to the N (other groups on the N become N- prefixes)'
+          : ['alcohol', 'thiol', 'ketone', 'aldehyde', 'acid'].includes(ep.parent.kind) ? ' that contains the functional group' : '';
     tips.push(`Parent chain: find the longest chain${what}. It has ${ep.parent.n} carbons here, not ${up.parent.n}. Remember: chains can bend around corners.`);
     return tips;
   }
@@ -110,7 +113,7 @@ function diagnose(userParse, expParts) {
   const upLocs = up.parent.locants.join(',');
   const epLocs = ep.parent.locants.join(',');
   if (upLocs !== epLocs && ep.parent.locants.length) {
-    const grp = { ene: 'the C=C', yne: 'the C≡C', alcohol: 'the –OH', thiol: 'the –SH', ketone: 'the C=O', aldehyde: 'the CHO', acid: 'the COOH' }[ep.parent.kind] || 'the functional group';
+    const grp = { ene: 'the C=C', yne: 'the C≡C', alcohol: 'the –OH', thiol: 'the –SH', ketone: 'the C=O', aldehyde: 'the CHO', acid: 'the COOH', amine: 'the carbon bonded to the N' }[ep.parent.kind] || 'the functional group';
     tips.push(`Numbering: number the chain from the end that gives ${grp} the lowest number (${epLocs}).`);
     return tips;
   }

@@ -175,6 +175,43 @@ export const KINDS = {
     if (r.chance(0.3)) addSub(subs, r.int(3, 4), r.pick(['C', 'Cl']));
     return S(n, subs, {}, true);
   },
+  // Amines (Lecture 11). Groups on the N are written as part of the fragment: 'NC' = –NHCH₃.
+  amine1(r) {
+    const n = r.int(1, 7);
+    const pos = r.int(1, Math.max(1, Math.ceil(n / 2)));
+    const subs = {};
+    addSub(subs, pos, 'N');
+    if (n >= 4) alkylSubs(r, n, subs, r.int(0, 1), { avoid: [pos] });
+    return S(n, subs);
+  },
+  amine2(r) {
+    const n = r.int(2, 6);
+    const pos = r.int(1, Math.max(1, Math.ceil(n / 2)));
+    const subs = {};
+    addSub(subs, pos, n >= 3 ? r.pick(['NC', 'NC', 'NCC']) : 'NC');
+    if (n >= 5 && r.chance(0.4)) alkylSubs(r, n, subs, 1, { avoid: [pos] });
+    return S(n, subs);
+  },
+  amine3(r) {
+    const n = r.int(2, 6);
+    const pos = r.int(1, Math.max(1, Math.ceil(n / 2)));
+    const subs = {};
+    addSub(subs, pos, n >= 3 ? r.pick(['N(C)C', 'N(C)C', 'N(C)CC']) : 'N(C)C');
+    return S(n, subs);
+  },
+  cycloAmine(r) {
+    const n = r.weighted([[5, 3], [6, 5]]);
+    const subs = { 1: [r.pick(['N', 'N', 'NC', 'N(C)C', 'NCC', 'NCCC'])] };
+    if (r.chance(0.4)) addSub(subs, r.int(2, 3), r.pick(['C', 'CC']));
+    return S(n, subs, {}, true);
+  },
+  simpleAmine(r) {
+    // common names: groups on the N, like ethylmethylamine or triethylamine
+    const groups = ['C', 'CC', 'CCC', 'C(C)C', 'CCCC'];
+    const k = r.weighted([[1, 3], [2, 4], [3, 3]]);
+    const picked = Array.from({ length: k }, () => r.pick(groups));
+    return named({ smiles: `N${picked.map((g) => `(${g})`).join('')}` });
+  },
   acid(r) {
     const n = r.int(1, 8);
     const subs = { 1: ['=O', 'O'] };
@@ -192,6 +229,7 @@ export const KIND_SETS = {
   l6: ['ether', 'haloalkane', 'haloalkane', 'thiol'],
   carbonyl: ['aldehyde', 'ketone', 'ketone', 'cycloketone'],
   acids: ['acid'],
+  amines: ['amine1', 'amine1', 'amine2', 'amine3', 'cycloAmine'],
 };
 
 export function randomMolecule(r, kind, attempts = 40) {
@@ -210,7 +248,10 @@ function cloneSpec(spec) {
   return { n: spec.n, subs, bonds: { ...(spec.bonds || {}) }, ring: !!spec.ring };
 }
 
-const SWAPS = { C: ['CC'], CC: ['C', 'CCC'], CCC: ['CC', 'C(C)C'], 'C(C)C': ['CCC'], Cl: ['Br'], Br: ['Cl'], F: ['Cl'], I: ['Br'], O: ['S'], S: ['O'] };
+const SWAPS = {
+  C: ['CC'], CC: ['C', 'CCC'], CCC: ['CC', 'C(C)C'], 'C(C)C': ['CCC'], Cl: ['Br'], Br: ['Cl'], F: ['Cl'], I: ['Br'], O: ['S'], S: ['O'],
+  N: ['NC'], NC: ['N', 'NCC', 'N(C)C'], NCC: ['NC', 'NCCC'], NCCC: ['NCC'], 'N(C)C': ['NC', 'N(C)CC'], 'N(C)CC': ['N(C)C', 'NCC'],
+};
 
 export function mutateSpec(spec, r) {
   const m = cloneSpec(spec);

@@ -22,6 +22,8 @@ const NODES = [
   { id: 'salt', x: 80, y: 570 },
   { id: 'thiol', x: 292, y: 478 },
   { id: 'disulfide', x: 292, y: 570 },
+  { id: 'amine', x: 80, y: 652 },
+  { id: 'ammonium', x: 292, y: 652 },
 ];
 const NH = 32; // node height
 const label = (n) => n.label || FAMILIES.find((f) => f.id === n.id).label;
@@ -44,8 +46,9 @@ export const EDGES = [
   ['neutralize', 'acid', 'salt', 0, 'right'],
   ['thiol-ox', 'thiol', 'disulfide', -9, 'left'],
   ['disulfide-red', 'disulfide', 'thiol', 9, 'right'],
+  ['amine-acid', 'amine', 'ammonium', 0, 'above'],
 ];
-const SHORT = { hydration: ['H₂O, H₂SO₄'], dehydration: ['H₂SO₄', '(−H₂O)'], 'red-ald': ['H₂, Pd'], 'red-ket': ['H₂, Pd'], hydrogenation: ['H₂, Pd'], halogenation: ['X₂'], hydrohalogenation: ['HX'], neutralize: ['NaOH'], 'disulfide-red': ['[H]'] };
+const SHORT = { hydration: ['H₂O, H₂SO₄'], dehydration: ['H₂SO₄', '(−H₂O)'], 'red-ald': ['H₂, Pd'], 'red-ket': ['H₂, Pd'], hydrogenation: ['H₂, Pd'], halogenation: ['X₂'], hydrohalogenation: ['HX'], neutralize: ['NaOH'], 'disulfide-red': ['[H]'], 'amine-acid': ['HCl'] };
 
 function mapSvg() {
   const NS = 'http://www.w3.org/2000/svg';
@@ -55,7 +58,7 @@ function mapSvg() {
     if (text != null) e.textContent = text;
     return e;
   };
-  const svg = el('svg', { viewBox: `0 0 ${W} 600`, class: 'rmap', role: 'group', 'aria-label': 'Reaction map: tap a family or an arrow' });
+  const svg = el('svg', { viewBox: `0 0 ${W} 680`, class: 'rmap', role: 'group', 'aria-label': 'Reaction map: tap a family or an arrow' });
 
   // alcohol hub → 1°, 2°, 3°
   const hub = node('alcohol');

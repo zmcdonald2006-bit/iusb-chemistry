@@ -10,8 +10,10 @@ import l07 from './lectures/l07.js';
 import l08 from './lectures/l08.js';
 import l09 from './lectures/l09.js';
 import l10 from './lectures/l10.js';
+import l11 from './lectures/l11.js';
+import l12 from './lectures/l12.js';
 
-export const LECTURES = [l01, l02, l03, l04, l05, l06, l07, l08, l09, l10];
+export const LECTURES = [l01, l02, l03, l04, l05, l06, l07, l08, l09, l10, l11, l12];
 
 export const COURSE = {
   code: 'C102',
@@ -19,12 +21,21 @@ export const COURSE = {
   school: 'IU South Bend',
   textbook: 'Smith, General, Organic & Biological Chemistry',
   // Bump when content changes so the app can show "what's new".
-  contentVersion: '2026.10.01.3',
+  contentVersion: '2026.10.12',
   lectures: LECTURES,
 };
 
 // Shown on the "What's new" screen after an update. Newest first.
 export const CHANGELOG = [
+  {
+    version: '2026.10.12',
+    title: 'New: Lectures 11 & 12 (amines and the body)',
+    items: [
+      'Lecture 11, Amines: classifying, shape, naming (N-methyl-2-propanamine, triethylamine), boiling points, caffeine, nicotine, morphine and other alkaloids, and ammonium salts',
+      'Lecture 12, Amines & the Body: drugs as ammonium salts, the nervous system, agonists and antagonists, acetylcholine, dopamine, serotonin, epinephrine and antihistamines',
+      'Unlimited practice for both, Name Lab support for amines, 38 new flashcards, new nursing connections, an amine + HCl reaction on the map, 37 new Word Splash words, and two new Sea Lion Splash decks',
+    ],
+  },
   {
     version: '2026.10.01.3',
     title: 'New game: Word Splash 🟩🟨',

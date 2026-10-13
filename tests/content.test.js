@@ -109,6 +109,7 @@ describe('Lesson sections', () => {
           if (b.t === 'mol') checkMolItem(b, where);
           if (b.t === 'mols') b.items.forEach((it2, k) => checkMolItem(it2, `${where}[${k}]`));
           if (b.t === 'example' && b.mol) checkMolItem(b.mol, where);
+          if (b.t === 'example' && b.answerMols) b.answerMols.forEach((it2, k) => checkMolItem(it2, `${where}.answer[${k}]`));
           if (b.t === 'rxn') {
             checkSmiles(b.from, where);
             for (const t of [].concat(b.to || [])) checkSmiles(t, where);
@@ -215,6 +216,7 @@ describe('Reaction map', () => {
     same('neutralize', rx.neutralizeAcid(byId.neutralize.example[0]));
     same('thiol-ox', rx.oxidizeThiol(byId['thiol-ox'].example[0]));
     expect(rx.oxidizeAldehyde(byId['ket-ox'].example[0])).toBeNull();
+    same('amine-acid', rx.protonateAmine(byId['amine-acid'].example[0], 'Cl'));
     // disulfide reduction is thiol oxidation backwards
     if (!sameMolecule(rx.oxidizeThiol(byId['disulfide-red'].example[1]), byId['disulfide-red'].example[0])) throw new Error('disulfide-red example');
   });

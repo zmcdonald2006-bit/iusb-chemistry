@@ -1,11 +1,12 @@
 // Name -> structure parser for the naming grammar used in C102.
 // Accepts old style (2-butanol, 1,3-butadiene) and new IUPAC style (butan-2-ol,
-// buta-1,3-diene), common names (acetone, diethyl ether, isopropyl alcohol) and
-// carboxylate salts (sodium acetate). Returns a structured parse plus any issues found,
+// buta-1,3-diene), common names (acetone, diethyl ether, isopropyl alcohol, triethylamine),
+// carboxylate salts (sodium acetate), amines (N-methyl-2-propanamine) and ammonium salts
+// (octylammonium chloride, octylamine hydrochloride). Returns a structured parse plus any issues found,
 // so the answer checker can give specific feedback.
 
 import { parseSmiles, toSmiles } from './smiles.js';
-import { STEMS, MULT, alphaKey } from './namer.js';
+import { STEMS, MULT, alphaKey, locantSort } from './namer.js';
 
 const STEM_RE = 'icos|nonadec|octadec|heptadec|hexadec|pentadec|tetradec|tridec|dodec|undec|meth|eth|prop|but|pent|hex|hept|oct|non|dec';
 
@@ -13,7 +14,9 @@ const ALKYL_SMILES = {
   methyl: 'C', ethyl: 'CC', propyl: 'CCC', butyl: 'CCCC', pentyl: 'CCCCC', hexyl: 'CCCCCC',
   heptyl: 'CCCCCCC', octyl: 'CCCCCCCC', nonyl: 'CCCCCCCCC', decyl: 'CCCCCCCCCC',
   isopropyl: 'C(C)C', 'sec-butyl': 'C(C)CC', isobutyl: 'CC(C)C', 'tert-butyl': 'C(C)(C)C',
+  cyclopropyl: 'C1CC1', cyclobutyl: 'C1CCC1', cyclopentyl: 'C1CCCC1', cyclohexyl: 'C1CCCCC1',
 };
+const ALKYL_NAMES = Object.keys(ALKYL_SMILES).sort((a, b) => b.length - a.length);
 const PREFIX_SMILES = {
   ...ALKYL_SMILES,
   fluoro: 'F', chloro: 'Cl', bromo: 'Br', iodo: 'I', hydroxy: 'O', oxo: '=O',
@@ -94,7 +97,66 @@ export function parseName(input) {
     if (r1 !== r2 && alphaKey(r1) > alphaKey(r2)) iss.push(issue('alphabetical', 'In common names, list the two groups in alphabetical order.'));
     return build({ smiles, kind: 'common', issues: iss, commonGroups: [r1, r2] });
   }
+  // Ammonium salts: octylammonium chloride, triethylammonium hydroxide
+  if ((m = /^(.*?)(am{1,2}onium) (chloride|bromide|iodide|fluoride|hydroxide)$/.exec(s))) {
+    const groups = m[1] ? amineGroups(m[1]) : [];
+    if (!groups) return fail([issue('unknown', `Couldn't read the groups in "${m[1]}".`)]);
+    if (groups.length > 4) return fail([issue('valence', 'An ammonium ion has at most 4 groups on the N.')]);
+    const iss = m[2] === 'amonium' ? [issue('spelling', 'Spelling: ammonium has two m\'s.')] : [];
+    const h = 4 - groups.length;
+    const cation = `[N${h ? `H${h > 1 ? h : ''}` : ''}+]${groups.map((g) => `(${ALKYL_SMILES[g.name]})`).join('')}`;
+    const anion = { chloride: '[Cl-]', bromide: '[Br-]', iodide: '[I-]', fluoride: '[F-]', hydroxide: '[OH-]' }[m[3]];
+    return build({ smiles: `${cation}.${anion}`, kind: 'salt', issues: iss });
+  }
+  // Drug-style amine salts: octylamine hydrochloride
+  if ((m = /^(.+) hydrochloride$/.exec(s))) {
+    const base = parseName(m[1]);
+    if (!base.ok) return base;
+    const ns = base.mol.atoms.filter((a) => a.el === 'N');
+    if (ns.length !== 1) return fail([issue('salt', 'A hydrochloride is made from an amine (a compound with an N).')]);
+    const n = ns[0];
+    if (n.bonds.length >= 4) return fail([issue('salt', 'That nitrogen already has 4 groups, so it can\'t take an H⁺.')]);
+    Object.assign(n, { charge: 1, bracket: true, hExplicit: n.h + 1, h: n.h + 1 });
+    return build({ smiles: `${toSmiles(base.mol)}.[Cl-]`, kind: 'salt', issues: base.issues || [] });
+  }
+  // Common amine names: methylamine, triethylamine, ethylmethylamine, N,N-dimethylethylamine
+  if ((m = /^(.+?)-?amine$/.exec(s)) && !/an$/.test(m[1])) {
+    const groups = amineGroups(m[1]);
+    if (groups) {
+      if (groups.length > 3) return fail([issue('valence', 'A neutral amine has at most 3 groups on the N.')]);
+      const smiles = `N${groups.map((g) => `(${ALKYL_SMILES[g.name]})`).join('')}`;
+      const names = groups.map((g) => g.name);
+      const plain = groups.filter((g) => !g.nLocant).map((g) => g.name);
+      const iss = [];
+      if (plain.join('|') !== [...plain].sort((a, b) => (alphaKey(a) < alphaKey(b) ? -1 : 1)).join('|')) iss.push(issue('alphabetical', 'In common names, list the groups on the N in alphabetical order (ethylmethylamine).'));
+      return build({ smiles, kind: 'common', issues: iss, commonGroups: names });
+    }
+  }
   return parseSystematic(s);
+}
+
+// "ethyldimethyl", "triethyl", "n,n-dimethylethyl", "cyclohexyl" -> [{ name, nLocant }]; null if unreadable
+function amineGroups(str) {
+  const out = [];
+  let rest = str.replace(/\s+/g, '');
+  for (let guard = 0; rest && guard < 8; guard++) {
+    let nCount = 0;
+    const loc = /^(n(?:,n)*)-/.exec(rest);
+    if (loc) { nCount = loc[1].split(',').length; rest = rest.slice(loc[0].length); }
+    const mult = /^(di|tri|tetra)/.exec(rest);
+    let count = 1;
+    let afterMult = rest;
+    if (mult) { count = MULT.indexOf(mult[1]); afterMult = rest.slice(mult[0].length); }
+    const name = ALKYL_NAMES.find((a) => afterMult.startsWith(a)) || (mult ? null : null);
+    if (!name) {
+      // "di" might be part of nothing here: give up
+      return null;
+    }
+    if (nCount && nCount !== count) return null;
+    for (let i = 0; i < count; i++) out.push({ name, nLocant: !!nCount });
+    rest = afterMult.slice(name.length).replace(/^-/, '');
+  }
+  return rest ? null : out;
 }
 
 function splitAlkyls(str) {
@@ -111,7 +173,7 @@ function splitAlkyls(str) {
 
 // ---- Systematic names -------------------------------------------------------------------
 
-const PREFIX_RE = new RegExp(`^[,\\- ]*(?:(\\d+(?:,\\d+)*)-?)?(di|tri|tetra|penta|hexa)?(${PREFIX_NAMES.map((p) => p.replace('-', '\\-')).join('|')})-?`);
+const PREFIX_RE = new RegExp(`^[,\\- ]*(?:((?:\\d+|n)(?:,(?:\\d+|n))*)-?)?(di|tri|tetra|penta|hexa)?(${PREFIX_NAMES.map((p) => p.replace('-', '\\-')).join('|')})-?`);
 const PARENT_RE = new RegExp(`^[,\\- ]*(?:(\\d+(?:,\\d+)*)-)?(cyclo)?(${STEM_RE})(.*)$`);
 
 const ENDINGS = [
@@ -123,16 +185,18 @@ const ENDINGS = [
   [/^anone$/, 'ketone', 1], [/^anedione$/, 'ketone', 2],
   [/^anoic ?acid$/, 'acid', 1], [/^anedioic ?acid$/, 'acid', 2],
   [/^anethiol$/, 'thiol', 1], [/^anedithiol$/, 'thiol', 2],
+  [/^anamine$/, 'amine', 1],
 ];
 const NEW_SUFFIX = {
   ol: ['alcohol', 1], diol: ['alcohol', 2], triol: ['alcohol', 3], al: ['aldehyde', 1], dial: ['aldehyde', 2],
   one: ['ketone', 1], dione: ['ketone', 2], thiol: ['thiol', 1], dithiol: ['thiol', 2],
   ene: ['ene', 1], diene: ['ene', 2], triene: ['ene', 3], yne: ['yne', 1], diyne: ['yne', 2],
   'oic acid': ['acid', 1], oicacid: ['acid', 1], 'dioic acid': ['acid', 2],
+  amine: ['amine', 1],
 };
 
 function parseLocants(str) {
-  return str ? str.split(',').map((x) => parseInt(x, 10)) : null;
+  return str ? str.split(',').map((x) => (x === 'n' ? 'N' : parseInt(x, 10))) : null;
 }
 
 function parseSystematic(s) {
@@ -204,7 +268,7 @@ function parseSystematic(s) {
       if (count === 1 && (cyclo || n <= 2)) locs = [1];
       else if (kind === 'ketone' && n <= 4 && count === 1) { locs = [2]; }
       else {
-        issues.push(issue('missingLocant', 'Add the position number of the functional group (e.g. 2-butanol, 3-pentanone).'));
+        issues.push(issue('missingLocant', kind === 'amine' ? 'Add the number of the carbon bonded to the N (e.g. 1-butanamine, 2-propanamine).' : 'Add the position number of the functional group (e.g. 2-butanol, 3-pentanone).'));
         locs = kind === 'ketone' ? [2] : [1];
         if (count > 1) return fail([issue('missingLocant', 'Give a number for each functional group (e.g. 1,2-ethanediol).')]);
       }
@@ -212,7 +276,7 @@ function parseSystematic(s) {
     if (locs.length !== count) return fail([issue('multiplier', `The ending says ${count} group(s) but you gave ${locs.length} number(s).`)]);
     for (const l of locs) if (l < 1 || l > n) return fail([issue('range', `C${l} doesn't exist in a ${n}-carbon ${cyclo ? 'ring' : 'chain'}.`)]);
     principal = { kind, locants: locs };
-    const frag = { alcohol: 'O', thiol: 'S', ketone: '=O', aldehyde: '=O', acid: null }[kind];
+    const frag = { alcohol: 'O', thiol: 'S', ketone: '=O', aldehyde: '=O', acid: null, amine: 'N' }[kind];
     for (const l of locs) {
       if (kind === 'acid') { subs[l].push('=O'); subs[l].push('O'); }
       else subs[l].push(frag);
@@ -225,6 +289,7 @@ function parseSystematic(s) {
 
   // ---- place prefixes
   const parsedPrefixes = [];
+  const nSubs = []; // groups on the amine N (N-methyl…)
   let prefixCount = 0;
   for (const p of prefixes) {
     const multCount = p.mult ? MULT.indexOf(p.mult) : 1;
@@ -244,11 +309,24 @@ function parseSystematic(s) {
       else return fail([issue('multiplier', `"${p.mult}${p.name}" needs ${multCount} number(s), but you gave ${locs.length}.`)]);
     }
     for (const l of locs) {
+      if (l === 'N') {
+        if (kind !== 'amine') return fail([issue('nPrefix', 'An "N-" prefix means a group on the nitrogen of an amine (like N-methyl-2-propanamine).')]);
+        if (!ALKYL_SMILES[p.name]) return fail([issue('nPrefix', `Only alkyl groups go on the N here, not ${p.name}.`)]);
+        nSubs.push(PREFIX_SMILES[p.name]);
+        prefixCount++;
+        continue;
+      }
       if (l < 1 || l > n) return fail([issue('range', `C${l} doesn't exist in a ${n}-carbon ${cyclo ? 'ring' : 'chain'}.`)]);
       subs[l].push(PREFIX_SMILES[p.name]);
       prefixCount++;
     }
-    parsedPrefixes.push({ name: p.name, locants: [...locs].sort((a, b) => a - b), mult: p.mult });
+    parsedPrefixes.push({ name: p.name, locants: [...locs].sort(locantSort), mult: p.mult });
+  }
+  if (nSubs.length) {
+    if (nSubs.length > 2) return fail([issue('valence', 'The N already has the parent chain, so it can hold at most 2 more groups (N,N-dimethyl).')]);
+    const l = principal.locants[0];
+    const i = subs[l].indexOf('N');
+    subs[l][i] = `N${nSubs.map((x) => `(${x})`).join('')}`;
   }
   if (commaStyle) issues.push(issue('commaStyle', 'Separate a number from the next word with a hyphen, not a comma (e.g. 2-bromo-5-methylhexane).'));
 
@@ -260,7 +338,7 @@ function parseSystematic(s) {
       issues.push(issue('duplicatePrefix', `Combine identical groups into one prefix (e.g. 2,3-dimethyl instead of 2-methyl-3-methyl).`));
     } else merged.set(p.name, { name: p.name, locants: [...p.locants] });
   }
-  const grouped = [...merged.values()].map((g) => ({ ...g, locants: g.locants.sort((a, b) => a - b) }));
+  const grouped = [...merged.values()].map((g) => ({ ...g, locants: g.locants.sort(locantSort) }));
   const order = parsedPrefixes.map((p) => p.name);
   const sortedOrder = [...order].sort((a, b) => (alphaKey(a) < alphaKey(b) ? -1 : alphaKey(a) > alphaKey(b) ? 1 : 0));
   if (order.join('|') !== sortedOrder.join('|')) issues.push(issue('alphabetical', 'List substituents in alphabetical order (ignore di-, tri-, sec-, tert-).'));
@@ -329,7 +407,7 @@ function build(r) {
   // Valence check: no carbon may exceed 4 bonds.
   for (const a of mol.atoms) {
     const sum = a.bonds.reduce((acc, bid) => acc + mol.bonds[bid].order, 0);
-    const max = { C: 4, O: 2, S: 2, F: 1, Cl: 1, Br: 1, I: 1 }[a.el];
+    const max = { C: 4, N: 3, O: 2, S: 2, F: 1, Cl: 1, Br: 1, I: 1 }[a.el];
     if (max != null && !a.charge && !a.bracket && sum > max) {
       return fail([...(r.issues || []), issue('valence', `That name gives a ${a.el} with ${sum} bonds — ${a.el === 'C' ? 'carbon can only have 4' : 'too many'}.`)]);
     }
