@@ -31,6 +31,11 @@ export default {
         { t: 'callout', kind: 'key', title: 'Example', text: '$HCl + H_2O → H_3O^+^ + Cl^−^$\nHCl **donates** a proton → Brønsted–Lowry **acid**. $H_2O$ **accepts** it → Brønsted–Lowry **base**.' },
         { t: 'list', items: ['A Brønsted–Lowry **acid must contain an H** (HCl, HBr, $H_2SO_4$, $HNO_3$, and the acidic H of acetic acid $CH_3COOH$).', 'A Brønsted–Lowry **base must have a lone pair** to form a new bond to H⁺ (e.g. $NH_3$, $OH^−^$, $H_2O$).'] },
         { t: 'callout', kind: 'memory', title: 'Memory trick', text: 'Ac**id** = **d**onates. **B**ase = **b**onds to (accepts) the proton.' },
+        {
+          t: 'example', title: 'Practice from class', prompt: 'Identify the acid and the base in each reaction:\n- $HBr + H_2O → H_3O^+^ + Br^−^$\n- $HSO_4^−^ + H_3O^+^ → H_2SO_4 + H_2O$',
+          steps: ['Find who **loses** an H⁺ (the acid) and who **gains** it (the base).', 'Reaction 1: HBr loses H⁺ → **acid**; $H_2O$ gains it → **base**.', 'Reaction 2: $H_3O^+^$ loses H⁺ (becomes $H_2O$) → **acid**; $HSO_4^−^$ gains it (becomes $H_2SO_4$) → **base**.'],
+          answer: '1: acid HBr, base H₂O · 2: acid H₃O⁺, base HSO₄⁻',
+        },
       ],
     },
     {
@@ -70,8 +75,8 @@ export default {
         { t: 'callout', kind: 'key', title: 'Strength', text: '**The stronger the acid, the larger its Ka.** Equilibrium favors formation of the **weaker acid** (the one with the smaller Ka).' },
         {
           t: 'table', head: ['Acid', 'Ka'],
-          rows: [['HSO₄⁻', '1.2 × 10^−2^'], ['H₃PO₄', '7.5 × 10^−3^'], ['HF', '7.2 × 10^−4^'], ['CH₃COOH (acetic acid)', '1.8 × 10^−5^'], ['H₂CO₃ (carbonic acid)', '4.3 × 10^−7^'], ['NH₄⁺', '5.6 × 10^−10^'], ['HCN', '4.9 × 10^−10^']],
-          caption: 'Some weak acids, strongest at the top.',
+          rows: [['HSO₄⁻ (hydrogen sulfate ion)', '1.2 × 10^−2^'], ['H₃PO₄ (phosphoric acid)', '7.5 × 10^−3^'], ['HF (hydrofluoric acid)', '7.2 × 10^−4^'], ['CH₃COOH (acetic acid)', '1.8 × 10^−5^'], ['H₂CO₃ (carbonic acid)', '4.3 × 10^−7^'], ['H₂PO₄⁻ (dihydrogen phosphate ion)', '6.2 × 10^−8^'], ['NH₄⁺ (ammonium ion)', '5.6 × 10^−10^'], ['HCN (hydrocyanic acid)', '4.9 × 10^−10^'], ['HCO₃⁻ (bicarbonate ion)', '5.6 × 10^−11^'], ['HPO₄²⁻ (hydrogen phosphate ion)', '2.2 × 10^−13^']],
+          caption: 'Table 9.3: common weak acids, strongest at the top.',
         },
         { t: 'callout', kind: 'tip', title: 'Comparing numbers like 1.5 × 10⁻⁴', text: 'Look at the **exponent first**: 10^−2^ > 10^−4^ > 10^−10^. Only compare the front numbers if the exponents match. (0.12 > 0.021 > 0.0035 > 1.5 × 10^−4^ > 0.000034.)' },
       ],
@@ -82,7 +87,8 @@ export default {
       minutes: 12,
       blocks: [
         { t: 'callout', kind: 'key', title: 'pH = −log[H₃O⁺]', text: 'The **lower** the pH, the **higher** the $[H_3O^+^]$.\n- Acidic: pH **< 7**, $[H_3O^+^]$ > 1 × 10^−7^ M\n- Neutral: pH **= 7**, $[H_3O^+^]$ = 1 × 10^−7^ M\n- Basic: pH **> 7**, $[H_3O^+^]$ < 1 × 10^−7^ M' },
-        { t: 'table', head: ['Everyday item', 'approx. pH'], rows: [['lemon juice', '2'], ['tomatoes', '4'], ['milk', '6.5'], ['pure water', '7'], ['milk of magnesia', '10.5'], ['household ammonia', '11'], ['bleach', '12.5']] },
+        { t: 'table', head: ['Everyday item', 'approx. pH'], rows: [['lemon juice', '2'], ['strawberries', '3'], ['tomatoes', '4'], ['milk', '6.5'], ['pure water', '7'], ['milk of magnesia', '10.5'], ['household ammonia', '11'], ['bleach', '12.5']] },
+        { t: 'table', head: ['In the body', 'pH'], rows: [['stomach', '1.6–1.8'], ['urine', '4.6–8.0'], ['large intestine', '5.0–7.0'], ['saliva', '5.8–7.1'], ['blood', '7.4'], ['pancreas', '7.5–8.8'], ['small intestine', '8.5']], caption: 'From the slide\'s body diagram: the stomach is very acidic; the small intestine is basic.' },
         { t: 'h', text: 'Calculating pH with a calculator' },
         {
           t: 'example', title: 'Concentration → pH', prompt: '$[H_3O^+^]$ = 1.2 × 10^−5^ M. What is the pH?',
@@ -110,7 +116,8 @@ export default {
       blocks: [
         { t: 'p', text: 'A **buffer** is a solution whose pH changes very little when acid or base is added. Most buffers contain roughly **equal amounts of a weak acid and the salt of its conjugate base**.' },
         { t: 'callout', kind: 'key', title: 'How a buffer works (acetic acid / acetate)', text: '- Add **base** (OH⁻): it reacts with the **weak acid** ($CH_3COOH + OH^−^ → CH_3COO^−^ + H_2O$).\n- Add **acid** (H₃O⁺): it reacts with the **conjugate base** ($CH_3COO^−^ + H_3O^+^ → CH_3COOH + H_2O$).\nEither way, the added acid or base is "used up," so the pH barely moves.' },
-        { t: 'table', head: ['Buffer', 'Weak acid', 'Conjugate base', 'Ka'], rows: [['acetic acid/acetate', 'CH₃COOH', 'CH₃COO⁻', '1.8 × 10^−5^'], ['bicarbonate/carbonate', 'HCO₃⁻', 'CO₃²⁻', '5.6 × 10^−11^'], ['dihydrogen phosphate/hydrogen phosphate', 'H₂PO₄⁻', 'HPO₄²⁻', '6.2 × 10^−8^']] },
+        { t: 'p', text: 'What the slides show: adding acid pushes the equilibrium $CH_3COOH + H_2O ⇌ H_3O^+^ + CH_3COO^−^$ to the **left** ([CH₃COOH] increases slightly, [CH₃COO⁻] decreases slightly). Adding base drives $CH_3COOH + OH^−^ ⇌ H_2O + CH_3COO^−^$ to the **right**. Either way the **ratio [CH₃COOH]/[CH₃COO⁻] doesn\'t change much**, so $[H_3O^+^]$ doesn\'t change much.' },
+        { t: 'table', head: ['Buffer', 'Weak acid', 'Conjugate base', 'Ka'], rows: [['acetic acid/acetate', 'CH₃COOH', 'CH₃COO⁻', '1.8 × 10^−5^'], ['bicarbonate/carbonate', 'HCO₃⁻', 'CO₃²⁻', '5.6 × 10^−11^'], ['dihydrogen phosphate/hydrogen phosphate', 'H₂PO₄⁻', 'HPO₄²⁻', '6.2 × 10^−8^'], ['hydrogen phosphate/phosphate', 'HPO₄²⁻', 'PO₄³⁻', '2.2 × 10^−13^']], caption: 'Table 9.6: common buffers.' },
         { t: 'p', text: 'The buffer\'s pH is set by its Ka: rearranging the Ka expression gives $[H_3O^+^]$ = Ka × [HA]/[A⁻]. With equal amounts of HA and A⁻, $[H_3O^+^]$ = Ka.' },
         { t: 'callout', kind: 'warn', title: 'Not a buffer', text: 'A **strong** acid and its salt (HCl + NaCl) can\'t buffer — Cl⁻ is too weak a base to soak up added acid.' },
       ],
@@ -124,8 +131,8 @@ export default {
         { t: 'callout', kind: 'key', title: 'CO₂ + H₂O ⇌ H₂CO₃ ⇌ H₃O⁺ + HCO₃⁻', text: 'More CO₂ pushes this to the right → more H₃O⁺ → **lower pH**. Less CO₂ pulls it left → **higher pH**.' },
         {
           t: 'compare', items: [
-            { title: 'Respiratory acidosis', text: 'The body **can\'t get rid of enough CO₂** (lung disease or failure) → CO₂ builds up → **pH drops**.' },
-            { title: 'Respiratory alkalosis', text: '**Hyperventilating** blows off too much CO₂ → **pH rises**.' },
+            { title: 'Respiratory acidosis', text: 'The body **can\'t get rid of enough CO₂** (lung disease or failure). A **lower breathing rate increases [CO₂]**, which drives the reaction to the right → **higher [H₃O⁺] → lower pH**.' },
+            { title: 'Respiratory alkalosis', text: '**Hyperventilating**: a **faster breathing rate decreases [CO₂]**, which drives the reaction to the left → **lower [H₃O⁺] → higher pH**.' },
           ],
         },
       ],
@@ -148,6 +155,12 @@ export default {
     { id: 'l09-q14', skill: 'l09.buffers', type: 'mc', prompt: 'In an acetic acid/acetate buffer, added OH⁻ reacts with…', choices: ['CH₃COOH (the weak acid)', 'CH₃COO⁻ (the conjugate base)', 'Na⁺', 'nothing'], answer: 0, explain: 'Added **base** is neutralized by the **weak acid**.' },
     { id: 'l09-q15', skill: 'l09.buffers', type: 'mc', prompt: 'In a buffer, added $H_3O^+^$ reacts with…', choices: ['the conjugate base', 'the weak acid', 'water', 'the metal ion'], answer: 0, explain: 'Added **acid** is neutralized by the **conjugate base**.' },
     { id: 'l09-q16', skill: 'l09.blood', type: 'mc', prompt: 'Lung failure that prevents CO₂ from being exhaled causes…', choices: ['respiratory acidosis (pH drops)', 'respiratory alkalosis (pH rises)', 'no change', 'ketoacidosis'], answer: 0, explain: 'CO₂ builds up → more H₂CO₃ → more H₃O⁺ → **acidosis**.' },
+    { id: 'l09-q18', skill: 'l09.bronsted', type: 'mc', prompt: 'Practice from class: in $HSO_4^−^ + H_3O^+^ → H_2SO_4 + H_2O$, which species is the **acid**?', choices: ['H₃O⁺', 'HSO₄⁻', 'H₂SO₄', 'H₂O'], answer: 0, shuffle: false, explain: '$H_3O^+^$ **loses** an H⁺ (becoming $H_2O$) → it is the acid. $HSO_4^−^$ gains the H⁺ → it is the base.' },
+    { id: 'l09-q19', skill: 'l09.ka', type: 'order', prompt: 'Practice from class: order these acids from **weakest to strongest** by their Ka values.', items: ['Ka = 0.021', 'Ka = 0.0035', 'Ka = 0.12', 'Ka = 0.000034', 'Ka = 1.5 × 10⁻⁴'], answer: [3, 4, 1, 0, 2], explain: 'Smaller Ka = weaker: **0.000034 < 1.5 × 10⁻⁴ (0.00015) < 0.0035 < 0.021 < 0.12**.' },
+    { id: 'l09-q20', skill: 'l09.ka', type: 'mc', prompt: 'Using Table 9.3, which is the **weakest** acid?', choices: ['HPO₄²⁻ (Ka 2.2 × 10⁻¹³)', 'HCO₃⁻ (Ka 5.6 × 10⁻¹¹)', 'HF (Ka 7.2 × 10⁻⁴)', 'HSO₄⁻ (Ka 1.2 × 10⁻²)'], answer: 0, explain: 'The **smallest Ka** (most negative exponent, 10⁻¹³) is the weakest acid.' },
+    { id: 'l09-q21', skill: 'l09.ph', type: 'mc', prompt: 'Which part of the body has the **lowest** pH?', choices: ['stomach (1.6–1.8)', 'small intestine (8.5)', 'blood (7.4)', 'saliva (5.8–7.1)'], answer: 0, explain: 'The **stomach** is strongly acidic; the small intestine is basic.' },
+    { id: 'l09-q22', skill: 'l09.blood', type: 'mc', prompt: 'A patient\'s breathing rate slows down. What happens to blood $[CO_2]$ and pH?', choices: ['[CO₂] rises, pH falls', '[CO₂] falls, pH rises', 'both rise', 'no change'], answer: 0, explain: 'Slower breathing → CO₂ builds up → drives $CO_2 + 2H_2O ⇌ H_3O^+^ + HCO_3^−^$ right → more H₃O⁺ → **lower pH** (respiratory acidosis).' },
+    { id: 'l09-q23', skill: 'l09.buffers', type: 'mc', prompt: 'Why does a buffer\'s pH barely change when a little acid is added?', choices: ['The ratio [HA]/[A⁻] changes only slightly, so [H₃O⁺] barely changes', 'The acid evaporates', 'Water absorbs all the H⁺', 'The Ka changes to compensate'], answer: 0, explain: 'The conjugate base uses up the added acid; [HA]/[A⁻] shifts only a little, and $[H_3O^+^]$ = Ka × [HA]/[A⁻] barely moves.' },
     { id: 'l09-q17', skill: 'l09.blood', type: 'mc', prompt: 'Normal blood pH is…', choices: ['7.35–7.45', '6.35–6.45', '7.00 exactly', '8.35–8.45'], answer: 0, explain: '**7.35–7.45**, kept steady by the H₂CO₃/HCO₃⁻ buffer.' },
   ],
   cards: [
@@ -166,6 +179,8 @@ export default {
     { id: 'l09-k13', front: 'Main blood buffer', back: '**H₂CO₃ / HCO₃⁻**; blood pH 7.35–7.45.' },
     { id: 'l09-k14', front: 'Respiratory acidosis', back: 'Can\'t exhale enough CO₂ (lung disease) → **pH falls**.' },
     { id: 'l09-k15', front: 'Respiratory alkalosis', back: '**Hyperventilation** → too little CO₂ → **pH rises**.' },
+    { id: 'l09-k16', front: 'pH in the body', back: 'stomach **1.6–1.8** · blood **7.4** · small intestine **8.5** · saliva 5.8–7.1 · urine 4.6–8.0.' },
+    { id: 'l09-k17', front: 'Weakest acids in Table 9.3', back: 'HCO₃⁻ (5.6 × 10⁻¹¹) and HPO₄²⁻ (2.2 × 10⁻¹³) — tiny Ka = very weak.' },
   ],
   keyTerms: [
     { term: 'Brønsted–Lowry acid', def: 'A proton (H⁺) donor.' },

@@ -21,12 +21,22 @@ export const COURSE = {
   school: 'IU South Bend',
   textbook: 'Smith, General, Organic & Biological Chemistry',
   // Bump when content changes so the app can show "what's new".
-  contentVersion: '2026.10.12',
+  contentVersion: '2026.10.13',
   lectures: LECTURES,
 };
 
 // Shown on the "What's new" screen after an update. Newest first.
 export const CHANGELOG = [
+  {
+    version: '2026.10.13',
+    title: 'Every lecture checked against the slides',
+    items: [
+      'Lectures 1–10 now include every worked example and practice problem from the slides (Sample Problems 11.4, 14.6, 16.1 and 17.1, the "circle the main product" and "which are chiral?" sets, and more)',
+      'Slide data added: boiling points, the full Ka and buffer tables, pH in the body, vitamin names, and the ether anesthetics (isoflurane, enflurane, methoxyflurane)',
+      'About 60 new practice questions and 30 new flashcards built from the slides',
+      'Steroid hormones and cholesterol are now drawn the way the textbook draws them',
+    ],
+  },
   {
     version: '2026.10.12',
     title: 'New: Lectures 11 & 12 (amines and the body)',

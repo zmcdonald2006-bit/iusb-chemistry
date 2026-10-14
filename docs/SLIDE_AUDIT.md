@@ -1,4 +1,8 @@
-# Gaps found (slides vs app)
+# Slide audit (Lectures 1–10)
+
+Each lecture's slides were compared with the app on 2026-10-12/13. Every gap listed below has been added to the app (Lectures 11–12 were built from their slides directly). Keep this list when adding future lectures: compare text **and** slide images, since many practice problems exist only as pictures.
+
+## Gaps found (slides vs app) — all fixed
 ## L03
 - s14: classify-carbon practice compound is CH3CH2CH2C(CH3)(CH(CH3)2)CH2CH(CH3)CH3 = SMILES CCCC(C)(C(C)C)CC(C)C (1°:6, 2°:3, 3°:2, 4°:1). App example labelled "Practice from class" uses a different compound -> replace / add slide's.
 - s15: pentane, neopentane (2,2-dimethylpropane), isopentane (2-methylbutane) classify; common names neo/iso not in app.

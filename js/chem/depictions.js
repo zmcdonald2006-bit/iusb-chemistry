@@ -15,7 +15,43 @@ const LOWER = [[-0.866, -1.0], [-0.866, -2.0], [0, -2.5], [0.866, -2.0]]; // C5,
 const FURAN_O = [-1.5, 0.0];
 const BRIDGE = [[2, 3]]; // C16–C15, drawn bold
 
+// The steroid skeleton (Lecture 2 cholesterol; Lecture 4 sex hormones and birth-control drugs), drawn the
+// textbook way: rings A, B and C as hexagons, ring D as a pentagon, angular methyls pointing straight up.
+// Keys are the standard steroid carbon numbers.
+const STEROID = {
+  C1: [0, 1], C2: [-0.866, 0.5], C3: [-0.866, -0.5], C4: [0, -1], C5: [0.866, -0.5], C10: [0.866, 0.5],
+  C6: [1.732, -1], C7: [2.598, -0.5], C8: [2.598, 0.5], C9: [1.732, 1],
+  C11: [1.732, 2], C12: [2.598, 2.5], C13: [3.464, 2], C14: [3.464, 1],
+  C15: [4.415, 0.691], C16: [5.003, 1.5], C17: [4.415, 2.309],
+  C18: [3.464, 3], C19: [0.866, 1.5], O3: [-1.732, -1],
+};
+const steroid = (order, extra = {}) => order.map((k) => extra[k] || STEROID[k]);
+const UP17 = [4.415, 3.309];  // a group drawn straight up from C17
+const OUT17 = [4.724, 3.26];  // a group drawn up-and-out from C17
+
 export const DEPICTIONS = {
+  // cholesterol: the C17 side chain zig-zags to the right
+  'CC(C)CCCC(C)C1CCC2C1(C)CCC1C2CC=C2CC(O)CCC12C': {
+    coords: steroid(['C26', 'C25', 'C27', 'C24', 'C23', 'C22', 'C20', 'C21', 'C17', 'C16', 'C15', 'C14', 'C13', 'C18', 'C12', 'C11', 'C9', 'C8', 'C7', 'C6', 'C5', 'C4', 'C3', 'O3', 'C2', 'C1', 'C10', 'C19'], {
+      C20: OUT17, C21: [4.42, 4.21], C22: [5.69, 3.0], C23: [6.56, 3.5], C24: [7.53, 3.24], C25: [8.4, 3.74], C26: [9.37, 3.48], C27: [8.4, 4.74],
+    }),
+  },
+  // estradiol (aromatic ring A, no C19 methyl)
+  'CC12CCC3c4ccc(O)cc4CCC3C1CCC2O': {
+    coords: steroid(['C18', 'C13', 'C12', 'C11', 'C9', 'C10', 'C1', 'C2', 'C3', 'O3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C14', 'C15', 'C16', 'C17', 'O17'], { O17: OUT17 }),
+  },
+  // ethynylestradiol: OH up, C≡CH to the right on C17
+  'CC12CCC3c4ccc(O)cc4CCC3C1CCC2(O)C#C': {
+    coords: steroid(['C18', 'C13', 'C12', 'C11', 'C9', 'C10', 'C1', 'C2', 'C3', 'O3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C14', 'C15', 'C16', 'C17', 'O17', 'C20', 'C21'], { O17: UP17, C20: [5.38, 2.57], C21: [6.345, 2.83] }),
+  },
+  // progesterone: C=O on C3, C4=C5, acetyl on C17
+  'CC(=O)C1CCC2C1(C)CCC1C2CCC2=CC(=O)CCC12C': {
+    coords: steroid(['C21', 'C20', 'O20', 'C17', 'C16', 'C15', 'C14', 'C13', 'C18', 'C12', 'C11', 'C9', 'C8', 'C7', 'C6', 'C5', 'C4', 'C3', 'O3', 'C2', 'C1', 'C10', 'C19'], { C20: OUT17, O20: [4.2, 4.11], C21: [5.69, 3.52] }),
+  },
+  // norethindrone (19-nor: no methyl on C10)
+  'CC12CCC3C(CCC4=CC(=O)CCC34)C1CCC2(O)C#C': {
+    coords: steroid(['C18', 'C13', 'C12', 'C11', 'C9', 'C8', 'C7', 'C6', 'C5', 'C4', 'C3', 'O3', 'C2', 'C1', 'C10', 'C14', 'C15', 'C16', 'C17', 'O17', 'C20', 'C21'], { O17: UP17, C20: [5.38, 2.57], C21: [6.345, 2.83] }),
+  },
   // morphine
   'CN1CCC23C4C1CC5=C2C(=C(C=C5)O)OC3C(C=C4)O': {
     coords: [...MORPHINAN, [-1.732, 2.5], FURAN_O, ...LOWER, [-1.732, -2.5]],

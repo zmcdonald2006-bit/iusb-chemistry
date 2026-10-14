@@ -36,7 +36,13 @@ export default {
       blocks: [
         { t: 'steps', title: 'HOW TO name a carboxylic acid', items: ['Find the longest chain **containing the COOH** carbon.', 'Number the chain so the **COOH carbon is C1** (the "1" is not written).', 'Change the -e of the alkane to **-oic acid**.', 'Apply all the other naming rules.'] },
         {
-          t: 'example', title: 'Sample Problem 17.1 style', prompt: 'Name this carboxylic acid.',
+          t: 'example', title: 'Sample Problem 17.1', prompt: 'Write the IUPAC name of $CH_3CH(CH_3)CH(CH_3)CH_2CH_2COOH$.',
+          mol: { smiles: 'CC(C)C(C)CCC(=O)O', numbers: 'auto', name: '4,5-dimethylhexanoic acid' },
+          steps: ['Find the longest chain containing the COOH: **6 C** → hexane → hexan**oic acid**.', 'Number so the **COOH carbon is C1** (count from the right).', 'Two methyl substituents, on **C4 and C5**.'],
+          answer: '**4,5-dimethylhexanoic acid**',
+        },
+        {
+          t: 'example', title: 'Another example', prompt: 'Name this carboxylic acid.',
           mol: { smiles: 'CCC(C)CC(C)C(=O)O', numbers: 'auto', name: '2,4-dimethylhexanoic acid' },
           steps: ['Longest chain including the COOH carbon: 6 C → hexan**oic acid**.', 'COOH carbon = C1; methyls on C2 and C4.'],
           answer: '**2,4-dimethylhexanoic acid**',
@@ -76,6 +82,8 @@ export default {
         { t: 'p', text: '**α-Hydroxy acids** (an OH on the α carbon) are in skin care products that claim to smooth fine lines. They remove the outer layer of older skin cells, revealing newer cells underneath.' },
         { t: 'mols', items: [{ smiles: 'OCC(=O)O', caption: 'glycolic acid' }, { smiles: 'CC(O)C(=O)O', caption: 'lactic acid' }] },
         { t: 'p', text: 'Three common pain relievers that are also anti-inflammatory (NSAIDs) contain a carboxyl group. They work by **blocking the synthesis of prostaglandins**, compounds responsible for pain and inflammation.' },
+        { t: 'callout', kind: 'key', title: 'What aspirin blocks', text: 'In the body, enzymes convert **arachidonic acid** (a 20-carbon carboxylic acid with four cis C=C) into **prostaglandins** like **PGF₂α**, which cause pain and inflammation. **Aspirin blocks this process.**' },
+        { t: 'mol', smiles: 'CCCCCC(O)/C=C/C1C(O)CC(O)C1C/C=C\\CCCC(=O)O', caption: 'PGF₂α, a prostaglandin (note its carboxyl group)' },
         { t: 'mols', items: [{ smiles: 'CC(=O)Oc1ccccc1C(=O)O', caption: 'aspirin' }, { smiles: 'CC(C)Cc1ccc(cc1)C(C)C(=O)O', caption: 'ibuprofen' }, { smiles: 'COc1ccc2cc(ccc2c1)C(C)C(=O)O', caption: 'naproxen' }] },
       ],
     },
@@ -85,6 +93,8 @@ export default {
       minutes: 9,
       blocks: [
         { t: 'p', text: 'Carboxylic acids are **proton (H⁺) donors** — but they are **weak acids** compared with inorganic acids like HCl or H₂SO₄. Only a **small percentage** ionizes in water.' },
+        { t: 'callout', kind: 'key', title: 'General reaction', text: '$RCOOH + H_2O ⇌ RCOO^−^ + H_3O^+^$\nThe proton on the O–H is removed, leaving a **carboxylate anion** (RCOO⁻).' },
+        { t: 'rxn', from: 'CC(=O)O', reagent: 'NaOH', to: 'CC(=O)[O-].[Na+]', caption: 'from class: acetic acid + Na⁺OH⁻ → sodium acetate + H–O–H (the proton is transferred from the acid to the base)' },
         { t: 'callout', kind: 'key', title: 'Reaction with bases', text: '**RCOOH + NaOH → RCOO⁻ Na⁺ + H₂O**\nThe acid donates its proton to OH⁻ (which accepts it), making water and a **carboxylate salt**.' },
         { t: 'rxn', from: 'CCCCCCCC(=O)O', reagent: 'NaOH', to: 'CCCCCCCC(=O)[O-].[Na+]', caption: 'octanoic acid (water insoluble) → sodium octanoate (water soluble) + H₂O' },
         { t: 'p', text: 'Carboxylate salts are **ionic solids** and are **water soluble**, so this reaction turns a water-insoluble acid into a water-soluble salt.' },
@@ -149,6 +159,10 @@ export default {
     { id: 'l10-q13', skill: 'l10.soap', type: 'mc', prompt: 'In a micelle, where does the grease end up?', choices: ['in the nonpolar interior, among the tails', 'on the outer surface', 'dissolved in the water between micelles', 'bonded to the Na⁺ ions'], answer: 0, explain: 'Nonpolar grease dissolves among the **nonpolar tails inside**; ionic heads face the water.' },
     { id: 'l10-q14', skill: 'l10.health', type: 'mc', prompt: 'NSAIDs like aspirin, ibuprofen and naproxen relieve pain by…', choices: ['blocking prostaglandin synthesis', 'killing bacteria', 'reducing blood pH', 'forming disulfide bonds'], answer: 0, explain: 'They block the synthesis of **prostaglandins**, which cause pain and inflammation.' },
     { id: 'l10-q15', skill: 'l10.health', type: 'mc', prompt: 'In the stomach, aspirin exists mainly as…', choices: ['the neutral acid (RCOOH)', 'the carboxylate ion (RCOO⁻)', 'a salt with Na⁺', 'an ester only'], answer: 0, explain: 'The stomach is acidic, so aspirin stays **neutral**; in the basic intestines it becomes **ionic**.' },
+    { id: 'l10-q17', skill: 'l10.naming', type: 'name', prompt: 'Sample Problem 17.1: write the IUPAC name.', figure: { smiles: 'CC(C)C(C)CCC(=O)O' }, name: { smiles: 'CC(C)C(C)CCC(=O)O' }, explain: '6-carbon chain with the COOH as C1; methyls on C4 and C5 → **4,5-dimethylhexanoic acid**.' },
+    { id: 'l10-q18', skill: 'l10.health', type: 'mc', prompt: 'Aspirin relieves pain by blocking the conversion of arachidonic acid into…', choices: ['prostaglandins (like PGF₂α)', 'cholesterol', 'acetic acid', 'collagen'], answer: 0, explain: 'Prostaglandins such as **PGF₂α** are made from arachidonic acid and cause pain and inflammation; aspirin blocks their synthesis.' },
+    { id: 'l10-q19', skill: 'l10.salts', type: 'mc', prompt: 'What is the product of acetic acid + NaOH (besides water)?', choices: ['sodium acetate', 'sodium acetic acid', 'ethanol', 'acetate ester'], answer: 0, explain: 'The acid gives its H⁺ to OH⁻: **sodium acetate** ($CH_3COO^−^Na^+^$) + $H_2O$.' },
+    { id: 'l10-q20', skill: 'l10.salts', type: 'mc', prompt: 'When a carboxylic acid loses its proton in water, the ion that forms is called a…', choices: ['carboxylate anion', 'hydroxide ion', 'carbonyl cation', 'hydronium ion'], answer: 0, explain: '$RCOOH + H_2O ⇌$ **$RCOO^−^$ (carboxylate anion)** $+ H_3O^+^$.' },
     { id: 'l10-q16', skill: 'l10.health', type: 'mc', prompt: 'α-Hydroxy acids in skin care work by…', choices: ['removing the outer layer of old skin cells', 'blocking prostaglandins', 'adding moisture from fat', 'killing bacteria'], answer: 0, explain: 'They **exfoliate** the outer layer, revealing newer cells.' },
   ],
   cards: [
@@ -168,6 +182,8 @@ export default {
     { id: 'l10-k14', front: 'α-Hydroxy acids', back: 'Skin care (glycolic, lactic acid): remove old outer skin cells.' },
     { id: 'l10-k15', front: 'Aspirin in the stomach vs intestines', back: 'Stomach (acidic): **neutral**. Intestines (basic): **ionic**. Crosses membranes in the neutral form.' },
     { id: 'l10-k16', front: 'Name this', mol: 'CC(=O)[O-].[Na+]', back: '**Sodium acetate** (sodium ethanoate).' },
+    { id: 'l10-k17', front: 'Name this', mol: 'CC(C)C(C)CCC(=O)O', back: '**4,5-dimethylhexanoic acid** (Sample Problem 17.1).' },
+    { id: 'l10-k18', front: 'Arachidonic acid → ?', back: '→ **prostaglandins** (e.g. PGF₂α), which cause pain and inflammation. **Aspirin blocks this.**' },
   ],
   keyTerms: [
     { term: 'carboxylic acid', def: 'A compound containing a COOH (carboxyl) group.' },
