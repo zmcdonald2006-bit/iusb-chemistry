@@ -232,6 +232,20 @@ export const NURSING = [
     id: 'n-l14-nsaid', lecture: 'l14', section: 'eicosanoids', title: 'NSAIDs and the stomach',
     text: 'Because NSAIDs block COX-1, teach patients to take them **with food**, and watch for **GI bleeding** (black, tarry stools). They can also harm the kidneys, so they\'re used cautiously in older adults.',
   },
+
+  // Lecture 15 — Carbohydrates
+  {
+    id: 'n-l15-glucose', lecture: 'l15', section: 'common', title: 'Recognizing low blood sugar',
+    text: 'Below about **70 mg/dL** is **hypoglycemia**: shakiness, sweating, confusion, a fast heart rate. A conscious patient gets **15 g of fast sugar** (juice, glucose tablets) and a recheck in 15 minutes. An unconscious patient gets IV **dextrose** (glucose) or glucagon — never food by mouth.',
+  },
+  {
+    id: 'n-l15-a1c', lecture: 'l15', section: 'common', title: 'The A1C test',
+    text: 'Glucose slowly attaches to hemoglobin in red blood cells, so the **hemoglobin A1C** shows average blood sugar over about **3 months**. An A1C of **6.5% or higher** is used to diagnose diabetes.',
+  },
+  {
+    id: 'n-l15-galactosemia', lecture: 'l15', section: 'common', title: 'Newborn screening',
+    text: '**Galactosemia** is on the newborn screening panel. Babies who have it must avoid galactose, which means **no breast milk or regular formula** (lactose = glucose + galactose); they get a **soy-based** formula instead.',
+  },
 ];
 
 export const nursingFor = (lecture, section) => NURSING.filter((n) => n.lecture === lecture && n.section === section);

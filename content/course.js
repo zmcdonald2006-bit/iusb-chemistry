@@ -14,8 +14,9 @@ import l11 from './lectures/l11.js';
 import l12 from './lectures/l12.js';
 import l13 from './lectures/l13.js';
 import l14 from './lectures/l14.js';
+import l15 from './lectures/l15.js';
 
-export const LECTURES = [l01, l02, l03, l04, l05, l06, l07, l08, l09, l10, l11, l12, l13, l14];
+export const LECTURES = [l01, l02, l03, l04, l05, l06, l07, l08, l09, l10, l11, l12, l13, l14, l15];
 
 export const COURSE = {
   code: 'C102',
