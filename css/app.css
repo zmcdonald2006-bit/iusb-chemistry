@@ -124,7 +124,7 @@ sub, sup { font-size: .72em; line-height: 0; }
 .tiny { font-size: .78rem; }
 .center { text-align: center; }
 .nowrap { white-space: nowrap; }
-.f { white-space: nowrap; }
+.f { overflow-wrap: break-word; } /* a formula stays whole unless it's wider than the screen by itself */
 .hidden { display: none !important; }
 
 /* ---------- App shell ---------- */
@@ -318,7 +318,7 @@ a.list-item:hover { text-decoration: none; background: var(--surface-2); }
 .lec-card h3 { margin: 2px 0 2px; }
 .section-list .list-item .done { color: var(--ok); }
 .section-list .list-item .li-icon.done { background: var(--ok-soft); color: var(--ok); }
-.skill-row { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.skill-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; overflow-wrap: anywhere; gap: 4px 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
 .skill-row:last-child { border-bottom: 0; }
 .skill-row .bar { grid-column: 1 / -1; }
 

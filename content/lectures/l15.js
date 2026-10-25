@@ -73,7 +73,7 @@ export default {
       title: 'Chirality, Fischer projections, D and L',
       minutes: 10,
       blocks: [
-        { t: 'p', text: '**All carbohydrates have one or more chirality centers** (Lecture 7: a carbon with four different groups). The C=O carbon and the CH₂OH carbons are **never** chirality centers.' },
+        { t: 'p', text: '**All carbohydrates have one or more chirality centers** (Lecture 7: a carbon with four different groups) — the one exception is **dihydroxyacetone**, which has none. The C=O carbon and the CH₂OH carbons are **never** chirality centers.' },
         {
           t: 'example', title: 'Practice from class: how many chirality centers?', prompt: 'Count the chirality centers in the aldotetrose, ketopentose, aldohexose and ketohexose above.',
           steps: ['Only carbons drawn as a **cross** (H on one side, OH on the other) count.', 'Aldotetrose: 2 · ketopentose: 2 · aldohexose (glucose): 4 · ketohexose (fructose): 3.'],

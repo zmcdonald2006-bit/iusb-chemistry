@@ -23,6 +23,8 @@ const FA_SMILES = {
   'linolenic acid': 'CC/C=C\\C/C=C\\C/C=C\\CCCCCCCC(=O)O', 'palmitoleic acid': 'CCCCCC/C=C\\CCCCCCCC(=O)O',
 };
 const fa = (f) => `${f.name} (${f.c} C, ${f.db} C=C)`;
+const deg = (t) => `${String(t).replace('-', '−')} °C`; // a real minus sign
+const an = (w) => (/^[aeiou]/i.test(w) ? 'an' : 'a');
 
 const LIPID_KINDS = [
   { name: 'waxes', hyd: true }, { name: 'triacylglycerols', hyd: true }, { name: 'phospholipids', hyd: true },
@@ -56,22 +58,22 @@ const LIPO = [
 ];
 
 const HORMONES = [
-  { name: 'estradiol', cls: 'estrogen', job: 'regulates the menstrual cycle; made in the ovaries' },
-  { name: 'estrone', cls: 'estrogen', job: 'female secondary sex characteristics; made in the ovaries' },
-  { name: 'progesterone', cls: 'progestin', job: 'the "pregnancy hormone": prepares the uterus' },
-  { name: 'testosterone', cls: 'androgen', job: 'male secondary sex characteristics; made in the testes' },
-  { name: 'androsterone', cls: 'androgen', job: 'male secondary sex characteristics; made in the testes' },
-  { name: 'aldosterone', cls: 'adrenal cortical steroid', job: 'regulates blood pressure and volume via Na⁺ and K⁺' },
-  { name: 'cortisol', cls: 'adrenal cortical steroid', job: 'anti-inflammatory; regulates carbohydrate metabolism' },
-  { name: 'cortisone', cls: 'adrenal cortical steroid', job: 'anti-inflammatory; regulates carbohydrate metabolism' },
+  { name: 'estradiol', cls: 'estrogen', job: 'It regulates the menstrual cycle and is made in the ovaries.' },
+  { name: 'estrone', cls: 'estrogen', job: 'It controls female secondary sex characteristics and is made in the ovaries.' },
+  { name: 'progesterone', cls: 'progestin', job: 'It is the "pregnancy hormone": it prepares the uterus for a fertilized egg.', clue: 'is the "pregnancy hormone" that prepares the uterus' },
+  { name: 'testosterone', cls: 'androgen', job: 'It controls male secondary sex characteristics and is made in the testes.', clue: 'controls male secondary sex characteristics and is made in the testes' },
+  { name: 'androsterone', cls: 'androgen', job: 'It controls male secondary sex characteristics and is made in the testes.' },
+  { name: 'aldosterone', cls: 'adrenal cortical steroid', job: 'It regulates blood pressure and volume by controlling Na⁺ and K⁺.', clue: 'regulates blood pressure and volume by controlling Na⁺ and K⁺' },
+  { name: 'cortisol', cls: 'adrenal cortical steroid', job: 'It is anti-inflammatory and regulates carbohydrate metabolism.', clue: 'is anti-inflammatory and regulates carbohydrate metabolism' },
+  { name: 'cortisone', cls: 'adrenal cortical steroid', job: 'It is anti-inflammatory and regulates carbohydrate metabolism.' },
 ];
 const H_CLASSES = ['estrogen', 'progestin', 'androgen', 'adrenal cortical steroid'];
 
 const VITAMINS = [
-  { v: 'vitamin A', fact: 'is made from β-carotene and is needed for vision' }, { v: 'vitamin A', fact: 'deficiency causes night blindness' },
-  { v: 'vitamin D', fact: 'can be made from cholesterol and regulates calcium' }, { v: 'vitamin D', fact: 'deficiency causes rickets' },
-  { v: 'vitamin E', fact: 'is an antioxidant that protects unsaturated fatty acids' }, { v: 'vitamin E', fact: 'deficiency (rare) causes neurological problems' },
-  { v: 'vitamin K', fact: 'regulates synthesis of clotting proteins (prothrombin)' }, { v: 'vitamin K', fact: 'deficiency causes excessive or fatal bleeding' },
+  { v: 'vitamin A', fact: 'is made from β-carotene and is needed for vision' }, { v: 'vitamin A', fact: 'causes night blindness when it\'s lacking' },
+  { v: 'vitamin D', fact: 'can be made from cholesterol and regulates calcium' }, { v: 'vitamin D', fact: 'causes rickets when it\'s lacking' },
+  { v: 'vitamin E', fact: 'is an antioxidant that protects unsaturated fatty acids' }, { v: 'vitamin E', fact: 'causes neurological problems (rarely) when it\'s lacking' },
+  { v: 'vitamin K', fact: 'regulates synthesis of clotting proteins (prothrombin)' }, { v: 'vitamin K', fact: 'causes excessive or fatal bleeding when it\'s lacking' },
 ];
 const V_NAMES = ['vitamin A', 'vitamin D', 'vitamin E', 'vitamin K'];
 
@@ -115,7 +117,7 @@ export const biomoleculeGenerators = [
       const why = hi.db !== lo.db ? `${cap(hi.name)} has **fewer C=C** (${hi.db} vs ${lo.db}); each C=C lowers the melting point.` : `Both have ${hi.db} C=C, so the **longer chain** (${hi.c} C vs ${lo.c} C) melts higher.`;
       return mcq('Which fatty acid has the **higher** melting point?', [fa(a), fa(b)], a === hi ? 0 : 1, {
         skill: 'l13.fatty-acids', shuffle: false,
-        explain: `${why} (${hi.name} ${hi.mp} °C, ${lo.name} ${lo.mp} °C.)`,
+        explain: `${why} (${cap(hi.name)} ${deg(hi.mp)}, ${lo.name} ${deg(lo.mp)}.)`,
       });
     },
   },
@@ -127,7 +129,7 @@ export const biomoleculeGenerators = [
       const sat = f.db === 0;
       return mcq(`Is ${name} saturated or unsaturated?`, ['saturated', 'unsaturated'], sat ? 0 : 1, {
         skill: 'l13.fatty-acids', shuffle: false, figure: { smiles: FA_SMILES[name] },
-        explain: sat ? `**Saturated**: no C=C in the chain (mp ${f.mp} °C).` : `**Unsaturated**: ${f.db} cis C=C in the chain (mp ${f.mp} °C). More C=C → lower melting point.`,
+        explain: sat ? `**Saturated**: no C=C in the chain (mp ${deg(f.mp)}).` : `**Unsaturated**: ${f.db} cis C=C in the chain (mp ${deg(f.mp)}). More C=C → lower melting point.`,
       });
     },
   },
@@ -149,7 +151,7 @@ export const biomoleculeGenerators = [
       return {
         type: 'tf', skill: 'l13.lipids', answer: k.hyd,
         prompt: `True or false: **${k.name}** are hydrolyzable lipids.`,
-        explain: k.hyd ? `**True.** ${cap(k.name)} contain ester bonds that water can split. Hydrolyzable: waxes, triacylglycerols, phospholipids.` : `**False.** ${cap(k.name)} are **nonhydrolyzable** (with steroids, fat-soluble vitamins and eicosanoids).`,
+        explain: k.hyd ? `**True.** ${cap(k.name)} contain ester bonds that water can split. Hydrolyzable: waxes, triacylglycerols, phospholipids.` : `**False.** ${cap(k.name)} are **nonhydrolyzable**: water can\'t split them into smaller molecules. Nonhydrolyzable lipids: steroids, fat-soluble vitamins, eicosanoids.`,
       };
     },
   },
@@ -157,12 +159,12 @@ export const biomoleculeGenerators = [
     id: 'l13-fat-oil', skill: 'l13.tags', title: 'Fat or oil?',
     make(r) {
       const clues = [
-        { c: 'made mostly of saturated fatty acids', fat: true }, { c: 'made from fatty acids with many C=C', fat: false },
+        { c: 'a triacylglycerol made mostly of saturated fatty acids', fat: true }, { c: 'a triacylglycerol made from fatty acids with many C=C', fat: false },
         { c: 'most animal fats', fat: true }, { c: 'most vegetable oils', fat: false },
         { c: 'a polyunsaturated triacylglycerol', fat: false }, { c: 'a triacylglycerol of three stearic acids', fat: true },
       ];
       const x = r.pick(clues);
-      return mcq(`At room temperature, ${x.c} would be…`, ['solid (a fat)', 'liquid (an oil)'], x.fat ? 0 : 1, {
+      return mcq(`At room temperature, which describes ${x.c}?`, ['solid (a fat)', 'liquid (an oil)'], x.fat ? 0 : 1, {
         skill: 'l13.tags', shuffle: false,
         explain: x.fat ? 'Saturated chains pack well → higher melting point → **solid fat**.' : 'C=C bonds (cis kinks) lower the melting point → **liquid oil**.',
       });
@@ -216,18 +218,18 @@ export const biomoleculeGenerators = [
     id: 'l14-hormone', skill: 'l14.hormones', title: 'Which class of steroid hormone?',
     make(r) {
       const h = r.pick(HORMONES);
-      return mcq(`**${cap(h.name)}** is a(n)…`, H_CLASSES, H_CLASSES.indexOf(h.cls), {
-        skill: 'l14.hormones', shuffle: false, explain: `${cap(h.name)} is a(n) **${h.cls}**: it ${h.job}.`,
+      return mcq(`What kind of steroid hormone is **${h.name}**?`, H_CLASSES, H_CLASSES.indexOf(h.cls), {
+        skill: 'l14.hormones', shuffle: false, explain: `${cap(h.name)} is ${an(h.cls)} **${h.cls}**. ${h.job}`,
       });
     },
   },
   {
     id: 'l14-hormone-job', skill: 'l14.hormones', title: 'Which hormone does this?',
     make(r) {
-      const picks = [HORMONES[2], HORMONES[5], HORMONES[3], HORMONES[6]];
+      const picks = HORMONES.filter((x) => x.clue);
       const h = r.pick(picks);
-      const opts = ['progesterone', 'aldosterone', 'testosterone', 'cortisol'];
-      return mcq(`Which hormone: **${h.job}**?`, opts, opts.indexOf(h.name), { skill: 'l14.hormones', shuffle: false, explain: `**${cap(h.name)}** (${h.cls}).` });
+      const opts = picks.map((x) => x.name);
+      return mcq(`Which hormone **${h.clue}**?`, opts, opts.indexOf(h.name), { skill: 'l14.hormones', shuffle: false, explain: `**${cap(h.name)}**, ${an(h.cls)} ${h.cls}. ${h.job}` });
     },
   },
   {
@@ -267,7 +269,7 @@ export const biomoleculeGenerators = [
       wrongs.add(`${s.ketose ? 'keto' : 'aldo'}${PREFIX[otherN]}ose`);
       return mcq('Classify this monosaccharide.', [s.kind, ...wrongs], 0, {
         skill: 'l15.classify', figure: { sugars: [s.spec] },
-        explain: `The C=O is at **${s.ketose ? 'C2 (ketone)' : 'C1 (CHO, aldehyde)'}** → **${s.ketose ? 'keto' : 'aldo'}**; it has **${s.n} carbons** → **${PREFIX[s.n]}ose**. So it\'s an **${s.kind}**.`,
+        explain: `The C=O is at **${s.ketose ? 'C2 (ketone)' : 'C1 (CHO, aldehyde)'}** → **${s.ketose ? 'keto' : 'aldo'}**; it has **${s.n} carbons** → **${PREFIX[s.n]}ose**. So it\'s ${an(s.kind)} **${s.kind}**.`,
       });
     },
   },

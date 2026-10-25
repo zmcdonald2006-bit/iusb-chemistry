@@ -145,13 +145,14 @@ export default {
           t: 'table', head: ['Vitamin', 'Source / origin', 'Job', 'Deficiency causes'],
           rows: [
             ['**A**', 'liver, fish, dairy; made from **β-carotene**', '**vision**; healthy **mucous membranes**', '**night blindness**, dry eyes and skin'],
-            ['**D**', 'made from **cholesterol**; in many foods, especially **milk**', 'helps regulate **Ca** (and K) metabolism', '**rickets** (bone malformation)'],
+            ['**D**', 'made from **cholesterol**; in many foods, especially **milk**', 'helps regulate **Ca** and K metabolism (slide wording)', '**rickets** (bone malformation)'],
             ['**E**', 'diet', '**antioxidant**: protects unsaturated fatty-acid side chains from oxidation', 'numerous **neurological problems** (rare)'],
             ['**K**', 'diet', 'regulates synthesis of **clotting proteins** (prothrombin)', '**excessive or fatal bleeding**'],
           ],
+          caption: 'Vitamin D: the slide says it regulates Ca and K. Most references say **calcium and phosphorus** — if it comes up, use your professor\'s wording.',
         },
         { t: 'mols', items: [{ smiles: 'CC1=C(/C=C/C(C)=C/C=C/C(C)=C/CO)C(C)(C)CCC1', caption: 'vitamin A (retinol)' }, { smiles: 'CC(C)CCCC(C)CCCC(C)CCCC(C)=CCC1=C(C)C(=O)c2ccccc2C1=O', caption: 'vitamin K' }] },
-        { t: 'callout', kind: 'memory', title: 'Memory trick', text: '**A**: eyes (**A** for "**a**ye"). **D**: bones (**D**airy, rickets). **E**: antioxidant (**E**ats free radicals). **K**: clotting (**K**oagulation, from German *Koagulation*).' },
+        { t: 'callout', kind: 'memory', title: 'Memory trick', text: '**A**: vision (carrots → β-carotene → vitamin **A**). **D**: bones (**D**airy, rickets). **E**: antioxidant (**E**ats free radicals). **K**: clotting (**K**oagulation, from German *Koagulation*).' },
       ],
     },
     {

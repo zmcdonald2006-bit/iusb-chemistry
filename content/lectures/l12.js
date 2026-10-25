@@ -9,7 +9,7 @@ export default {
   summary: 'Why drugs are sold as ammonium salts, how nerve signals cross a synapse, what agonists and antagonists do, the big amine messengers (acetylcholine, dopamine, norepinephrine, serotonin, epinephrine, histamine), and the drugs built to copy or block them.',
   skills: [
     { id: 'l12.salts', title: 'Ammonium salts as drugs', desc: 'Why drugs are sold as salts; the amine form; quaternary salts.' },
-    { id: 'l12.nervous', title: 'Nervous system & synapses', desc: 'CNS/PNS, afferent/efferent, sympathetic/parasympathetic; synapses.' },
+    { id: 'l12.nervous', title: 'Nervous system & synapses', desc: 'CNS and PNS, afferent and efferent, sympathetic and parasympathetic; synapses.' },
     { id: 'l12.agonists', title: 'Agonists & antagonists', desc: 'Mimic or boost a neurotransmitter vs block it.' },
     { id: 'l12.neurotransmitters', title: 'Neurotransmitters', desc: 'Acetylcholine, nicotine addiction, dopamine, norepinephrine, serotonin & SSRIs.' },
     { id: 'l12.epinephrine', title: 'Epinephrine & related drugs', desc: 'Fight or flight, 2-phenylethylamine drugs, asthma drugs.' },

@@ -83,7 +83,7 @@ export default {
           ],
         },
         { t: 'mols', items: [{ smiles: 'CCCCC/C=C\\C/C=C\\CCCCCCCC(=O)O', caption: 'linoleic acid (omega-6)' }, { smiles: 'CC/C=C\\C/C=C\\C/C=C\\CCCCCCCC(=O)O', caption: 'linolenic acid (omega-3)' }] },
-        { t: 'callout', kind: 'warn', title: 'Count from the right end', text: 'The omega number counts from the **CH₃ end**, not from the COOH carbon (which is how you\'d number the acid for its IUPAC name).' },
+        { t: 'callout', kind: 'warn', title: 'Count from the CH₃ end', text: 'The omega number counts from the **CH₃ end**, not from the COOH carbon (which is how you\'d number the acid for its IUPAC name).' },
       ],
     },
     {
