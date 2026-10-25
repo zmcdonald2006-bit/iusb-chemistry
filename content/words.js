@@ -2,7 +2,7 @@
 //
 // ✏️ Safe to edit and extend:
 //   word     4–9 letters, A–Z only (written in capitals)
-//   lecture  'l01'…'l10'; section: the lesson section the "Read the notes" button opens
+//   lecture  'l01'…'l15'; section: the lesson section the "Read the notes" button opens
 //   clue     shown only if she taps "Show clue" (must not contain the word itself)
 //   smiles   optional structure drawn after the word is solved
 // The tests check every entry. Adding words changes which word comes up on future days, but never
@@ -215,4 +215,42 @@ export const WORDS = [
   { word: 'ALBUTEROL', lecture: 'l12', section: 'pea', clue: 'A bronchodilator inhaler (Ventolin) shaped like epinephrine.', smiles: 'CC(C)(C)NCC(O)c1ccc(O)c(CO)c1' },
   { word: 'HISTAMINE', lecture: 'l12', section: 'histamine', clue: 'The amine behind allergy symptoms and stomach acid.', smiles: 'NCCc1c[nH]cn1' },
   { word: 'ALLEGRA', lecture: 'l12', section: 'histamine', clue: 'A nonsedating antihistamine (fexofenadine).' },
+
+  // Lecture 13 — Lipids
+  { word: 'LIPID', lecture: 'l13', section: 'intro', clue: 'A biomolecule that dissolves in organic solvents but not in water.' },
+  { word: 'OMEGA', lecture: 'l13', section: 'omega', clue: 'Linolenic acid is a ___-3 fatty acid; linoleic acid is a ___-6.' },
+  { word: 'LIPASE', lecture: 'l13', section: 'hydrolysis', clue: 'The enzyme that hydrolyzes triacylglycerols in the body.' },
+  { word: 'ADIPOSE', lecture: 'l13', section: 'hydrolysis', clue: 'Cells that store fat; their number stays constant.' },
+  { word: 'LARD', lecture: 'l13', section: 'soap', clue: 'Hog fat, one source for making soap.' },
+  { word: 'TALLOW', lecture: 'l13', section: 'soap', clue: 'Fat from cows or sheep, used to make soap.' },
+  { word: 'LECITHIN', lecture: 'l13', section: 'phospholipids', clue: 'Phosphatidylcholine.' },
+  { word: 'CEPHALIN', lecture: 'l13', section: 'phospholipids', clue: 'Phosphatidylethanolamine.' },
+  { word: 'BILAYER', lecture: 'l13', section: 'phospholipids', clue: 'Two layers of phospholipids, tails inside: the cell membrane.' },
+
+  // Lecture 14 — Lipids and the body
+  { word: 'OLESTRA', lecture: 'l14', section: 'olestra', clue: 'The "fake fat" that lipases can\'t digest (Olean).' },
+  { word: 'STEROID', lecture: 'l14', section: 'cholesterol', clue: 'A lipid with four fused rings, like cholesterol.' },
+  { word: 'STATIN', lecture: 'l14', section: 'cholesterol', clue: 'A drug class (Lipitor, Zocor) that blocks cholesterol synthesis.' },
+  { word: 'LIPITOR', lecture: 'l14', section: 'cholesterol', clue: 'Trade name of atorvastatin.' },
+  { word: 'ESTROGEN', lecture: 'l14', section: 'hormones', clue: 'Class of female sex hormones made in the ovaries, like estradiol.' },
+  { word: 'ANDROGEN', lecture: 'l14', section: 'hormones', clue: 'Class of male sex hormones, like testosterone.' },
+  { word: 'CORTISOL', lecture: 'l14', section: 'hormones', clue: 'An adrenal cortical steroid that fights inflammation.' },
+  { word: 'RICKETS', lecture: 'l14', section: 'vitamins', clue: 'Bone malformation caused by too little vitamin D.' },
+  { word: 'CELEBREX', lecture: 'l14', section: 'eicosanoids', clue: 'A drug that blocks only COX-2, sparing the stomach.' },
+
+  // Lecture 15 — Carbohydrates
+  { word: 'ALDOSE', lecture: 'l15', section: 'mono', clue: 'A monosaccharide with its C=O at C1 (an aldehyde).' },
+  { word: 'KETOSE', lecture: 'l15', section: 'mono', clue: 'A monosaccharide with its C=O at C2.' },
+  { word: 'HEXOSE', lecture: 'l15', section: 'mono', clue: 'A monosaccharide with six carbons, like glucose.' },
+  { word: 'PENTOSE', lecture: 'l15', section: 'mono', clue: 'A monosaccharide with five carbons.' },
+  { word: 'FISCHER', lecture: 'l15', section: 'fischer', clue: 'The cross-shaped projection used to draw sugars.' },
+  { word: 'DEXTROSE', lecture: 'l15', section: 'common', clue: 'Another name for glucose, the blood sugar.' },
+  { word: 'INSULIN', lecture: 'l15', section: 'common', clue: 'Hormone that lets glucose into cells.' },
+  { word: 'GLYCOGEN', lecture: 'l15', section: 'common', clue: 'The polysaccharide that stores excess glucose.' },
+  { word: 'FRUCTOSE', lecture: 'l15', section: 'common', clue: 'Ketohexose in honey, about twice as sweet as table sugar.' },
+  { word: 'LACTOSE', lecture: 'l15', section: 'common', clue: 'Milk sugar, a disaccharide.' },
+  { word: 'SUCROSE', lecture: 'l15', section: 'common', clue: 'Table sugar: glucose + fructose.' },
+  { word: 'DIABETES', lecture: 'l15', section: 'common', clue: 'Disease of too little insulin or insulin resistance.' },
+  { word: 'ANOMER', lecture: 'l15', section: 'cyclic', clue: 'α or β form of a cyclic sugar.' },
+  { word: 'HAWORTH', lecture: 'l15', section: 'glucose-ring', clue: '___ projection: a flat drawing of a sugar ring.' },
 ];

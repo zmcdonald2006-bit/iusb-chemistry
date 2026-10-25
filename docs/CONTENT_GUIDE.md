@@ -72,6 +72,7 @@ Section ids appear in links (`#/learn/l11/naming`), so keep them short and stabl
 | `check` | `q: question` | A quick check inside the notes. It also joins the practice pool |
 | `rxn` | `from`, `reagent`, `to`, `caption?` | Reaction drawing. `from`/`to` are SMILES or arrays of SMILES |
 | `tetra` | `items: [{ groups: [top, left, wedge, dash], caption? }]`, `caption?` | 3-D tetrahedral drawings (chirality) |
+| `sugars` | `items: [{ sugar: 'D-glucose', caption?, mark?, numbers? }]`, `caption?` | Fischer and Haworth projections of sugars (Lecture 15). Ready-made names are in `SUGARS` in [js/chem/sugars.js](../js/chem/sugars.js); a custom Fischer item is `{ top, rows: [['H','OH'], 'C=O', …], bottom }` |
 | `compare` | `items: [{ title, text }]` | Side-by-side boxes |
 | `link` | `href: '#/…'`, `text` | In-app button link |
 
@@ -127,7 +128,7 @@ Every question has `id` (unique across the course, e.g. `l11-q01`), `skill`, `ty
 | `match` | `left`, `right`, `answer: [right index for each left]` | |
 | `atoms` | `figure: { smiles }`, `selectable?: [atom…]`, `answer: [atom…]` | "Tap every chirality center…" |
 
-Figures: `{ smiles, numbers?, highlight? }`, `{ mols: [...] }`, `{ rxn: { from, reagent, to? } }`, or `{ tetras: [...] }`.
+Figures: `{ smiles, numbers?, highlight? }`, `{ mols: [...] }`, `{ rxn: { from, reagent, to? } }`, `{ tetras: [...] }`, or `{ sugars: [...] }` (Fischer/Haworth, same items as the `sugars` block).
 
 ```js
 { id: 'l05-q07', skill: 'l05.naming', type: 'name', prompt: 'Name this alcohol.',

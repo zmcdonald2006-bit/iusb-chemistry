@@ -24,12 +24,22 @@ export const COURSE = {
   school: 'IU South Bend',
   textbook: 'Smith, General, Organic & Biological Chemistry',
   // Bump when content changes so the app can show "what's new".
-  contentVersion: '2026.10.13',
+  contentVersion: '2026.10.25',
   lectures: LECTURES,
 };
 
 // Shown on the "What's new" screen after an update. Newest first.
 export const CHANGELOG = [
+  {
+    version: '2026.10.25',
+    title: 'New: Lectures 13, 14 & 15 (lipids and carbohydrates)',
+    items: [
+      'Lecture 13, Lipids: fatty acids and melting points, omega-3s, triacylglycerols, fats vs oils, trans fats, lipases, soap and phospholipids',
+      'Lecture 14, Lipids & the Body: olestra, cell membranes and transport, cholesterol with LDL and HDL, steroid hormones, vitamins A, D, E and K, prostaglandins and COX enzymes',
+      'Lecture 15, Carbohydrates: aldoses and ketoses, Fischer projections, D and L sugars, glucose and diabetes, and the α and β ring forms, with new sugar drawings',
+      'New Sea Lion Splash decks (Lipid Lagoon and Sugar Shoals), 33 new Word Splash words and 10 new nursing connections',
+    ],
+  },
   {
     version: '2026.10.13',
     title: 'Every lecture checked against the slides',

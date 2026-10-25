@@ -1,6 +1,6 @@
 # Chem Companion — C102 study guide
 
-A study app for **C102 Elementary Chemistry II at IU South Bend** (Smith, *General, Organic & Biological Chemistry*), Lectures 1–12.
+A study app for **C102 Elementary Chemistry II at IU South Bend** (Smith, *General, Organic & Biological Chemistry*), Lectures 1–15.
 
 It's a static web app with no build step and no dependencies. It works offline, installs to a phone's home screen, and stores progress on the device.
 
@@ -23,7 +23,7 @@ It's a static web app with no build step and no dependencies. It works offline, 
   - If she knows the answer, she can swipe right or tap **Dash** to rush the rings in for bonus points.
   - Each run has 3 lives. Misses show the explanation and go to the Mistakes notebook.
   - Fish caught along the way unlock outfits and oceans.
-  - There are 13 decks, from Foundations (Lectures 1–4) to amines and neurotransmitters, all drawn from the same question generators as Practice.
+  - There are 15 decks, from Foundations (Lectures 1–4) to lipids and sugars, all drawn from the same question generators as Practice.
   - A whole run counts toward mastery as one result per skill, scored by accuracy. Fast game answers count, but they can't outweigh careful quiz answers.
   - Slow / Chill / Normal / Fast speeds. Slow gives about twice the normal time and barely speeds up. Sound effects and vibration can be turned off in the game menu. Android phones vibrate fully; iPhones allow only a light tap, on iOS 18 or newer.
 - **Name Lab**: type any compound name from class and see the structure it describes, the correct IUPAC name, the formula and the chirality centers. If a name is wrong, it explains why.
