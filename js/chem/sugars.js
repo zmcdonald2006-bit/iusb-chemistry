@@ -92,17 +92,19 @@ export function renderFischer(spec, opts = {}) {
 const RINGS = {
   // six-membered (pyranose): O at the back right, C1 on the right, C5 at the back left
   6: {
-    pts: { O: [0.55, -0.42], C1: [1.12, 0.12], C2: [0.55, 0.62], C3: [-0.55, 0.62], C4: [-1.12, 0.12], C5: [-0.55, -0.42] },
+    pts: { O: [0.55, -0.5], C1: [1.15, 0.1], C2: [0.55, 0.7], C3: [-0.55, 0.7], C4: [-1.15, 0.1], C5: [-0.55, -0.5] },
     order: ['C5', 'O', 'C1', 'C2', 'C3', 'C4'],
     bold: [['C1', 'C2'], ['C2', 'C3'], ['C3', 'C4']],
     carbons: ['C1', 'C2', 'C3', 'C4', 'C5'],
+    inner: { C2: 0, C3: 0, C5: 1 }, // bonds that point into the ring (0 = up, 1 = down) are drawn short
   },
   // five-membered (furanose): O at the back, the anomeric carbon (C2 of fructose) on the right
   5: {
-    pts: { O: [0, -0.5], C1: [0.95, -0.08], C2: [0.6, 0.62], C3: [-0.6, 0.62], C4: [-0.95, -0.08] },
+    pts: { O: [0, -0.6], C1: [1.25, -0.05], C2: [0.55, 0.78], C3: [-0.55, 0.78], C4: [-1.25, -0.05] },
     order: ['O', 'C1', 'C2', 'C3', 'C4'],
     bold: [['C1', 'C2'], ['C2', 'C3'], ['C3', 'C4']],
     carbons: ['C1', 'C2', 'C3', 'C4'],
+    inner: { C2: 0, C3: 0 },
   },
 };
 
@@ -150,12 +152,17 @@ export function renderHaworth(spec, opts = {}) {
     pair.forEach((g, k) => {
       if (!g) return;
       const dir = k === 0 ? -1 : 1;
-      const end = p.y + dir * L;
+      const end = p.y + dir * (T.inner && T.inner[c] === k ? S * 0.2 : L);
       parts.push(`<line class="bond" x1="${r2(p.x)}" y1="${r2(p.y)}" x2="${r2(p.x)}" y2="${r2(end - dir * fs * 0.15)}"/>`);
       const ty = end + dir * fs * 0.55;
       const w = textWidth(g, fs);
-      parts.push(`<text class="atom grp ${elClass(g)}" x="${r2(p.x)}" y="${r2(ty + fs * 0.36)}" font-size="${fs}" text-anchor="middle">${fmt(g)}</text>`);
-      grow(p.x - w / 2, ty - fs * 0.6, p.x + w / 2, ty + fs * 0.6);
+      // carbons at the far left/right of the ring write their labels outward, away from the ring
+      const side = Math.abs(p.x) > 0.9 * S ? Math.sign(p.x) : 0;
+      const anchor = side > 0 ? 'start' : side < 0 ? 'end' : 'middle';
+      const tx = p.x - side * fs * 0.35;
+      parts.push(`<text class="atom grp ${elClass(g)}" x="${r2(tx)}" y="${r2(ty + fs * 0.36)}" font-size="${fs}" text-anchor="${anchor}">${fmt(g)}</text>`);
+      const x0 = side > 0 ? tx : side < 0 ? tx - w : tx - w / 2;
+      grow(x0, ty - fs * 0.6, x0 + w, ty + fs * 0.6);
     });
     if (spec.numbers && spec.numbers[i] != null) {
       const out = { x: p.x + (p.x >= 0 ? fs * 0.55 : -fs * 0.55), y: p.y + fs * 0.25 };
