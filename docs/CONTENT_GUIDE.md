@@ -16,7 +16,7 @@ How to add lectures, questions and flashcards. All course content lives in `cont
 
 1. **Copy a lecture file:** `content/lectures/l10.js` → `content/lectures/l11.js`. Then change `id: 'l11'` and `number: 11`, and replace the content.
 2. **Register it** in [content/course.js](../content/course.js): import it and append it to `LECTURES`. Ids must be `l01, l02, …` in order.
-3. **Announce it:** bump `COURSE.contentVersion` (e.g. `'2026.11.03'`) and add a `CHANGELOG` entry at the top. She'll see it as "What's new".
+3. **Announce it:** bump `COURSE.contentVersion` (e.g. `'2026.11.03'`) and add a `CHANGELOG` entry at the top with the same version. After the update she gets a "What's new" pop-up showing that entry. Write the items for her, in plain words. The tests check that the newest entry matches `contentVersion`. Use a suffix (`'2026.11.03.2'`) for a second update on the same day.
 4. **Exam date** (optional): she can add exams in the app under *Exams*. Nothing to do in code.
 5. Run the tests, then `ruby tools/build-sw.rb` (adds the new file to the offline cache). Commit and push.
 

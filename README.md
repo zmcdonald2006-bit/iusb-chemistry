@@ -77,7 +77,11 @@ Saved data carries a schema version, so future updates migrate old data instead 
 
 If the tests fail, nothing is published, so a broken update never reaches her phone.
 
-When an update is published, open copies of the app show a **"A new version is ready. Refresh"** prompt.
+When an update is published:
+
+- **It installs by itself at a calm moment.** That's when the app is opened or brought back to the screen, or when she next lands on an overview page. It never interrupts a quiz, lesson or game. She can also tap **Refresh** on the "A new version is ready" message.
+- **Then a "What's new" pop-up lists what changed**, once per device. It comes from the newest `CHANGELOG` entry, and older updates she missed are listed by title.
+- **Every update stays listed under More → What's new.**
 
 ## Working on it locally
 
@@ -116,7 +120,7 @@ The service worker is turned off on localhost by default, so reloads stay simple
 New lectures, more questions, fixed typos: see **[docs/CONTENT_GUIDE.md](docs/CONTENT_GUIDE.md)**. The short version:
 
 1. Edit or add files in `content/lectures/`.
-2. Bump `contentVersion` in [content/course.js](content/course.js) and add a `CHANGELOG` entry. She'll see a "What's new" note.
+2. Bump `contentVersion` in [content/course.js](content/course.js) and add a `CHANGELOG` entry with the same version. She'll see it in the "What's new" pop-up. The tests fail if the newest entry doesn't match `contentVersion`.
 3. Run the tests.
 4. Run `ruby tools/build-sw.rb` to refresh the offline file list. CI also does this when it deploys, and `ruby tools/build-sw.rb --check` tells you whether it's stale.
 5. Commit and push.

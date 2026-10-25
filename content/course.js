@@ -38,6 +38,8 @@ export const CHANGELOG = [
       'Lecture 14, Lipids & the Body: olestra, cell membranes and transport, cholesterol with LDL and HDL, steroid hormones, vitamins A, D, E and K, prostaglandins and COX enzymes',
       'Lecture 15, Carbohydrates: aldoses and ketoses, Fischer projections, D and L sugars, glucose and diabetes, and the α and β ring forms, with new sugar drawings',
       'New Sea Lion Splash decks (Lipid Lagoon and Sugar Shoals), 33 new Word Splash words and 10 new nursing connections',
+      'After each update, a "What\'s new" pop-up shows what changed. Every update is listed under More → What\'s new',
+      'Fixes: long formulas and the Lecture 12 overview no longer run off narrow phone screens, and a few practice questions are worded more clearly',
     ],
   },
   {
@@ -107,6 +109,19 @@ export const CHANGELOG = [
     ],
   },
 ];
+
+// The updates this device hasn't seen yet, newest first (at most `max`). Nothing for a first visit.
+export function changesSince(seen, max = 3) {
+  if (!seen) return [];
+  const i = CHANGELOG.findIndex((c) => c.version === seen);
+  return CHANGELOG.slice(0, i < 0 ? 1 : i).slice(0, max);
+}
+
+// '2026.10.01.3' → 'October 1, 2026'
+export function changeDate(version) {
+  const [y, m, d] = version.split('.').map(Number);
+  return new Date(y, m - 1, d, 12).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+}
 
 export function lectureById(id) {
   return LECTURES.find((l) => l.id === id) || null;

@@ -7,10 +7,11 @@ import { deckCounts } from './state/srs.js';
 import { openMistakes } from './state/progress.js';
 import { newMilestones } from './state/milestones.js';
 import { createSession, sessionRecord } from './quiz/session.js';
-import { COURSE, CHANGELOG, allCards } from '../content/course.js';
+import { COURSE, changesSince, allCards } from '../content/course.js';
 import * as messages from '../content/messages.js';
 import { APP_VERSION } from './version.js';
 import { ROUTES } from './routes.js';
+import { whatsNewPopup } from './views/about.js';
 import { initCloud } from './cloud/index.js';
 import { createFeedback } from './state/feedback.js';
 import { setFeedbackService } from './ui/confused.js';
@@ -196,6 +197,8 @@ const router = createRouter(ROUTES, async ({ route, params, query, path }) => {
   const h1 = main.querySelector('h1');
   if (h1 && document.activeElement === document.body) { h1.setAttribute('tabindex', '-1'); h1.focus({ preventScroll: true }); }
   studyRoute = /^\/(learn\/[^/]+\/[^/]+|quiz|cards\/review|bootcamp|game\/play)/.test(path);
+  // a calm page: install an update that was waiting, or show what the last one changed
+  if (!applyWaitingUpdate()) showWhatsNew();
 });
 
 // Keep nav badges fresh when data changes.
@@ -216,6 +219,8 @@ window.addEventListener('pagehide', () => store.flush());
 // Pick up progress saved by another tab instead of overwriting it, and redraw overview pages
 // (never a quiz or lesson in progress) when coming back to this tab.
 const PASSIVE_ROUTE = /^\/(progress|learn(\/[^/]+)?|practice|mistakes|cards|bootcamp|exams|more|games?)?$/;
+// On an overview page with no dialog open: a good moment to update or show a pop-up.
+const isCalm = () => PASSIVE_ROUTE.test(currentPath) && !document.querySelector('.modal-backdrop:not(.gate-backdrop)');
 let viewStale = false;
 function pickUpOtherTabs() {
   if (store.reload()) viewStale = true;
@@ -271,7 +276,7 @@ if (app.cloud.enabled) {
 window.addEventListener('storage', (e) => { if (e.key === STORAGE_KEY || e.key === null) pickUpOtherTabs(); });
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) store.flush();
-  else pickUpOtherTabs();
+  else { pickUpOtherTabs(); showWhatsNew(); }
 });
 window.addEventListener('pageshow', (e) => { if (e.persisted) pickUpOtherTabs(); });
 
@@ -289,13 +294,23 @@ async function afterStart() {
     runOnboarding(app);
     return;
   }
-  if (st.meta.lastSeenVersion && st.meta.lastSeenVersion !== COURSE.contentVersion) {
-    const latest = CHANGELOG[0];
-    toast(`Updated: ${latest.title}`, { action: "What's new", onAction: () => router.navigate('#/about'), timeout: 8000 });
-  }
-  if (st.meta.lastSeenVersion !== COURSE.contentVersion) store.update((s) => { s.meta.lastSeenVersion = COURSE.contentVersion; }, { silent: true });
+  pendingWhatsNew = changesSince(st.meta.lastSeenVersion);
+  if (pendingWhatsNew.length) showWhatsNew();
+  else if (st.meta.lastSeenVersion !== COURSE.contentVersion) markSeen();
   requestPersistence();
   backupReminder();
+}
+
+// After an update: a pop-up listing what changed, once per device. It waits for a calm moment
+// (not in the middle of a quiz, lesson or game) and counts as seen only once it has been shown.
+let pendingWhatsNew = [];
+function markSeen() { store.update((s) => { s.meta.lastSeenVersion = COURSE.contentVersion; }, { silent: true }); }
+function showWhatsNew() {
+  if (!pendingWhatsNew.length || document.hidden || !isCalm() || document.querySelector('.modal-backdrop')) return;
+  const entries = pendingWhatsNew;
+  pendingWhatsNew = [];
+  markSeen();
+  whatsNewPopup(app, entries);
 }
 
 async function requestPersistence() {
@@ -316,17 +331,34 @@ function backupReminder() {
 }
 
 // ---- Service worker (offline + updates) --------------------------------------------------------------
+let waitingWorker = null;
+function applyWaitingUpdate() {
+  if (!waitingWorker || !isCalm()) return false;
+  waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+  waitingWorker = null;
+  return true;
+}
+
 function registerSW() {
   if (!('serviceWorker' in navigator) || location.protocol === 'file:') return;
   if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) && !localStorage.getItem('cc-sw-dev')) return; // keep dev reloads simple
   navigator.serviceWorker.register('./sw.js').then((reg) => {
+    let backAt = 0;
+    let checkedAt = Date.now();
     const promptUpdate = (worker) => {
-      // Found right after opening, and not in the middle of something: just switch to the new version.
-      const justOpened = performance.now() < 15000;
-      const busy = !PASSIVE_ROUTE.test(currentPath) || document.querySelector('.modal-backdrop:not(.gate-backdrop)');
-      if (justOpened && !busy) { worker.postMessage({ type: 'SKIP_WAITING' }); return; }
-      toast('A new version is ready.', { action: 'Refresh', onAction: () => worker.postMessage({ type: 'SKIP_WAITING' }), timeout: 0 });
+      // Found right after opening (or coming back to) the app, and not in the middle of something:
+      // just switch to the new version. Otherwise it installs on the next overview page she opens.
+      waitingWorker = worker;
+      const justOpened = performance.now() < 15000 || Date.now() - backAt < 15000;
+      if (justOpened && applyWaitingUpdate()) return;
+      toast('A new version is ready.', { action: 'Refresh', onAction: () => { waitingWorker = null; worker.postMessage({ type: 'SKIP_WAITING' }); }, timeout: 0 });
     };
+    // A home-screen app can sit open in the background for days: look for an update when it comes back.
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) return;
+      backAt = Date.now();
+      if (backAt - checkedAt > 5 * 60 * 1000) { checkedAt = backAt; reg.update().catch(() => {}); }
+    });
     if (reg.waiting && navigator.serviceWorker.controller) promptUpdate(reg.waiting);
     reg.addEventListener('updatefound', () => {
       const w = reg.installing;

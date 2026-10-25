@@ -1,7 +1,7 @@
 // Content integrity: every lecture, question, card and structure is checked.
 import { describe, it, expect } from './harness.js';
 import { validateQuestion } from './helpers.js';
-import { LECTURES, allAuthoredQuestions, allCards, glossary, CHANGELOG, COURSE, lectureById, skillById } from '../content/course.js';
+import { LECTURES, allAuthoredQuestions, allCards, glossary, CHANGELOG, COURSE, lectureById, skillById, changesSince, changeDate } from '../content/course.js';
 import { EDGES } from '../js/views/reactions.js';
 import { FAMILIES, REACTIONS, TYPES, REAGENTS } from '../content/reactions.js';
 import { NURSING } from '../content/nursing.js';
@@ -68,6 +68,25 @@ describe('Course structure', () => {
     });
     expect(!!COURSE.contentVersion).toBe(true);
     expect(CHANGELOG.length).toBeGreaterThan(0);
+  });
+  it('has a "What\'s new" entry for the current version, newest first', () => {
+    // Every release bumps contentVersion and adds an entry, so the update pop-up has something to say.
+    expect(CHANGELOG[0].version).toBe(COURSE.contentVersion);
+    const key = (v) => v.split('.').map((n) => n.padStart(4, '0')).join('.');
+    CHANGELOG.forEach((c, i) => {
+      if (!/^\d{4}\.\d{2}\.\d{2}(\.\d+)?$/.test(c.version)) throw new Error(`bad changelog version ${c.version}`);
+      if (!c.title || !c.items || !c.items.length) throw new Error(`changelog ${c.version} needs a title and items`);
+      if (i && !(key(CHANGELOG[i - 1].version) > key(c.version))) throw new Error(`changelog out of order at ${c.version}`);
+    });
+  });
+  it('lists the updates a device has not seen', () => {
+    expect(changesSince('')).toEqual([]);
+    expect(changesSince(COURSE.contentVersion)).toEqual([]);
+    expect(changesSince(CHANGELOG[1].version)).toEqual([CHANGELOG[0]]);
+    expect(changesSince(CHANGELOG[3].version).length).toBe(3);
+    expect(changesSince(CHANGELOG[5].version).length).toBe(3);
+    expect(changesSince('2020.01.01')).toEqual([CHANGELOG[0]]);
+    expect(/2026/.test(changeDate('2026.10.01.3'))).toBe(true);
   });
   it('has unique skill ids that belong to their lecture', () => {
     const seen = new Set();

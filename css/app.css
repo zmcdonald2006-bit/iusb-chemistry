@@ -552,6 +552,11 @@ table.t tr:last-child td { border-bottom: 0; }
 @media (min-width: 640px) { .modal { border-radius: 22px; } }
 .modal h2 { margin-bottom: 8px; }
 .modal .btn-row { margin-top: 18px; }
+.whats-new { max-height: calc(92vh - 190px); overflow-y: auto; overscroll-behavior: contain; padding-right: 6px; }
+.whats-new h3 { font-size: 1.02rem; }
+.whats-new ul { margin: 8px 0 0; padding-left: 20px; }
+.whats-new li + li { margin-top: 4px; }
+.whats-new-entry + .whats-new-entry { border-top: 1px solid var(--border); margin-top: 14px; padding-top: 14px; }
 @keyframes fade { from { opacity: 0; } }
 @keyframes slideup { from { transform: translateY(24px); opacity: .6; } }
 .toasts { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--nav-h) + var(--safe-b) + 14px); z-index: 120; display: flex; flex-direction: column; gap: 8px; width: min(92vw, 440px); }

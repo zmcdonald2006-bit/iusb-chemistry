@@ -188,7 +188,8 @@ export function modal({ title, body, actions = [], dismissible = true, onClose =
   document.body.appendChild(backdrop);
   setTimeout(() => {
     const first = dialog.querySelector('input, select, textarea') || dialog.querySelector('.btn:not(.secondary)') || dialog.querySelector('button');
-    if (first) first.focus();
+    // a long dialog opens at its top, not scrolled down to its buttons
+    if (first) first.focus({ preventScroll: !first.matches('input, select, textarea') });
   }, 30);
   return { close, dialog };
 }
