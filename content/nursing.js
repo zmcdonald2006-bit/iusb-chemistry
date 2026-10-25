@@ -214,6 +214,24 @@ export const NURSING = [
     id: 'n-l13-propofol', lecture: 'l13', section: 'phospholipids', title: 'The milky anesthetic',
     text: 'The IV sedative **propofol** is so insoluble in water that it\'s given as a white **lipid emulsion** of soybean oil, glycerol and egg **lecithin**. Because it\'s fat-based and supports bacterial growth, use strict sterile technique.',
   },
+
+  // Lecture 14 — Lipids and the body
+  {
+    id: 'n-l14-statins', lecture: 'l14', section: 'cholesterol', title: 'Statin teaching points',
+    text: 'Teach patients on statins to report **unexplained muscle pain or weakness** (a sign of muscle breakdown). Liver enzymes may be checked, and some statins work best taken **in the evening**, when the body makes most of its cholesterol.',
+  },
+  {
+    id: 'n-l14-steroids', lecture: 'l14', section: 'hormones', title: 'Never stop steroids suddenly',
+    text: 'Long-term **prednisone** shuts down the body\'s own cortisol production. Stopping it suddenly can cause an **adrenal crisis**, so it\'s **tapered** slowly. Watch blood glucose too: these steroids raise blood sugar.',
+  },
+  {
+    id: 'n-l14-vitk', lecture: 'l14', section: 'vitamins', title: 'Vitamin K and newborns',
+    text: 'Newborns get a **vitamin K injection** at birth because they have little vitamin K and can bleed dangerously. Vitamin K is also the **antidote for warfarin**, and patients on warfarin should keep their intake of leafy greens **consistent**.',
+  },
+  {
+    id: 'n-l14-nsaid', lecture: 'l14', section: 'eicosanoids', title: 'NSAIDs and the stomach',
+    text: 'Because NSAIDs block COX-1, teach patients to take them **with food**, and watch for **GI bleeding** (black, tarry stools). They can also harm the kidneys, so they\'re used cautiously in older adults.',
+  },
 ];
 
 export const nursingFor = (lecture, section) => NURSING.filter((n) => n.lecture === lecture && n.section === section);
