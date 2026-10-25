@@ -389,7 +389,7 @@ function choiceText(q, i) {
 }
 function questionText(q) {
   const f = q.figure;
-  const fig = !f ? '' : f.smiles ? ` [structure: ${f.smiles}]` : f.rxn ? ` [reaction: ${f.rxn.from} + ${f.rxn.reagent || ''}]` : '';
+  const fig = !f ? '' : f.smiles ? ` [structure: ${f.smiles}]` : f.rxn ? ` [reaction: ${f.rxn.from} + ${f.rxn.reagent || ''}]` : f.sugars ? ` [sugar: ${f.sugars.map((x) => x.sugar || x.caption || 'drawing').join(', ')}]` : '';
   return `${q.prompt}${fig}`;
 }
 function describeResponse(q, r) {

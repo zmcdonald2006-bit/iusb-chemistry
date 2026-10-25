@@ -200,6 +200,20 @@ export const NURSING = [
     id: 'n-l12-benadryl', lecture: 'l12', section: 'histamine', title: 'Benadryl and older adults',
     text: 'Diphenhydramine reaches the brain, so in **older adults** it can cause confusion, drowsiness and **falls**. It\'s generally avoided in that age group.',
   },
+
+  // Lecture 13 — Lipids
+  {
+    id: 'n-l13-triglycerides', lecture: 'l13', section: 'health', title: 'Triglycerides on a lipid panel',
+    text: 'The "triglycerides" on a patient\'s **lipid panel** are these triacylglycerols. Blood is usually drawn after a **9–12 hour fast**, because a recent meal raises triglyceride levels for hours.',
+  },
+  {
+    id: 'n-l13-omega3', lecture: 'l13', section: 'omega', title: 'Fish oil and bleeding',
+    text: 'Omega-3 fish-oil supplements are popular for heart health, but in high doses they can **thin the blood**. Ask about them before surgery and in patients on **anticoagulants** like warfarin.',
+  },
+  {
+    id: 'n-l13-propofol', lecture: 'l13', section: 'phospholipids', title: 'The milky anesthetic',
+    text: 'The IV sedative **propofol** is so insoluble in water that it\'s given as a white **lipid emulsion** of soybean oil, glycerol and egg **lecithin**. Because it\'s fat-based and supports bacterial growth, use strict sterile technique.',
+  },
 ];
 
 export const nursingFor = (lecture, section) => NURSING.filter((n) => n.lecture === lecture && n.section === section);

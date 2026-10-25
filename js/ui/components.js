@@ -1,6 +1,7 @@
 // Reusable UI pieces.
 import { h, icon, iconSvg, md, mdi, clear } from './dom.js';
 import { renderMolecule, renderTetrahedral } from '../chem/render.js';
+import { renderSugar } from '../chem/sugars.js';
 import { nameCompound } from '../chem/namer.js';
 import { LEVELS } from '../state/progress.js';
 
@@ -108,12 +109,26 @@ export function tetraView(items, caption) {
   return h('div', {}, wrap, mdi(caption, 'div', 'caption'));
 }
 
-// Figure for a question: {smiles}, {mols}, {rxn}, {tetras}
+// Fischer and Haworth projections of sugars (Lecture 15): items are { sugar: 'D-glucose', caption } or full specs
+export function sugarsView(items, caption) {
+  const wrap = h('div', { class: 'mols' });
+  for (const it of items) {
+    const box = h('figure', { class: 'mol-box', style: { margin: '0' } });
+    box.appendChild(h('div', { class: 'mol', html: renderSugar(it, { title: it.caption || it.sugar }) }));
+    if (it.caption) box.appendChild(mdi(it.caption, 'figcaption', 'mol-caption'));
+    wrap.appendChild(box);
+  }
+  if (!caption) return wrap;
+  return h('div', {}, wrap, mdi(caption, 'div', 'caption'));
+}
+
+// Figure for a question: {smiles}, {mols}, {rxn}, {tetras}, {sugars}
 export function figureView(fig, opts = {}) {
   if (!fig) return null;
   if (fig.rxn) return rxnView(fig.rxn);
   if (fig.mols) return molsView(fig.mols);
   if (fig.tetras) return tetraView(fig.tetras);
+  if (fig.sugars) return sugarsView(fig.sugars);
   if (fig.smiles) return molView({ ...fig, ...opts });
   return null;
 }

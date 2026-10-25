@@ -3,6 +3,7 @@ import { checkAnswer, answerText } from '../js/quiz/checkers.js';
 import { parseSmiles } from '../js/chem/smiles.js';
 import { canonicalKey } from '../js/chem/analyze.js';
 import { renderMolecule } from '../js/chem/render.js';
+import { renderSugar } from '../js/chem/sugars.js';
 
 // The response a perfect student would give.
 export function perfectResponse(q) {
@@ -27,6 +28,7 @@ export function validateQuestion(q) {
     if (q.figure.smiles) figs.push(q.figure.smiles);
     for (const m of q.figure.mols || []) figs.push(m.smiles);
     if (q.figure.rxn) { figs.push(q.figure.rxn.from); if (q.figure.rxn.to) figs.push(q.figure.rxn.to); }
+    for (const sg of q.figure.sugars || []) { try { renderSugar(sg); } catch (e) { fail(`sugar figure fails: ${e.message}`); } }
   }
   for (const s of figs) {
     try { parseSmiles(s); renderMolecule(s, { highlight: q.figure.highlight }); } catch (e) { fail(`figure "${s}" fails: ${e.message}`); }

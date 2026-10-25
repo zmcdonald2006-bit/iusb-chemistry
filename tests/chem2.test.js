@@ -171,3 +171,28 @@ describe('Hand-placed drawings', () => {
     }
   });
 });
+
+describe('Sugar drawings (Fischer & Haworth)', () => {
+  it('draw every ready-made sugar', async () => {
+    const { SUGARS, renderSugar } = await import('../js/chem/sugars.js');
+    for (const name of Object.keys(SUGARS)) {
+      const svg = renderSugar({ sugar: name, mark: [0], numbers: true });
+      if (!svg.startsWith('<svg') || !svg.includes('</svg>')) throw new Error(`${name}: bad SVG`);
+      if (/NaN|undefined/.test(svg)) throw new Error(`${name}: NaN/undefined in SVG`);
+    }
+    expect(renderSugar({ sugar: 'D-glucose' })).toContain('fischer');
+    expect(renderSugar({ sugar: 'β-D-glucose' })).toContain('haworth');
+  });
+  it('mirror sugars: every OH flips between D- and L-glucose', async () => {
+    const { SUGARS } = await import('../js/chem/sugars.js');
+    const d = SUGARS['D-glucose'].rows, l = SUGARS['L-glucose'].rows;
+    const n = (g) => (g === 'HO' ? 'OH' : g);
+    d.forEach((r, i) => { if (n(r[0]) !== n(l[i][1]) || n(r[1]) !== n(l[i][0])) throw new Error(`row ${i} not mirrored`); });
+  });
+  it('rejects an unknown sugar name', async () => {
+    const { renderSugar } = await import('../js/chem/sugars.js');
+    let threw = false;
+    try { renderSugar({ sugar: 'D-unobtainose' }); } catch { threw = true; }
+    expect(threw).toBeTruthy();
+  });
+});

@@ -10,12 +10,13 @@ import { parseSmiles } from '../js/chem/smiles.js';
 import { sameMolecule } from '../js/chem/analyze.js';
 import { nameCompound } from '../js/chem/namer.js';
 import { renderMolecule, renderTetrahedral } from '../js/chem/render.js';
+import { renderSugar } from '../js/chem/sugars.js';
 import { generatorsForSkill, getGenerator } from '../js/quiz/generators.js';
 import * as rx from '../js/chem/reactions.js';
 import { markup } from '../js/lib/markup.js';
 import { normalizeQuestion } from '../js/quiz/bank.js';
 
-const BLOCK_TYPES = new Set(['p', 'h', 'list', 'callout', 'mol', 'mols', 'table', 'steps', 'example', 'check', 'rxn', 'tetra', 'compare', 'link']);
+const BLOCK_TYPES = new Set(['p', 'h', 'list', 'callout', 'mol', 'mols', 'table', 'steps', 'example', 'check', 'rxn', 'tetra', 'sugars', 'compare', 'link']);
 const CALLOUT_KINDS = new Set(['key', 'tip', 'warn', 'exam', 'memory', 'life']);
 
 function textsOf(obj, out = []) {
@@ -114,6 +115,7 @@ describe('Lesson sections', () => {
             checkSmiles(b.from, where);
             for (const t of [].concat(b.to || [])) checkSmiles(t, where);
           }
+          if (b.t === 'sugars') b.items.forEach((x) => { if (!renderSugar(x).includes('<svg')) throw new Error(`${where}: sugar drawing failed`); });
           if (b.t === 'tetra') b.items.forEach((x) => { if (x.groups.length !== 4) throw new Error(`${where}: tetra needs 4 groups`); renderTetrahedral(x.groups, x); });
           if (b.t === 'table') b.rows.forEach((r) => { if (r.length !== b.head.length) throw new Error(`${where}: row length ${r.length} ≠ ${b.head.length}`); });
           if (b.t === 'link' && !/^#\//.test(b.href)) throw new Error(`${where}: links must be in-app (#/…)`);

@@ -28,6 +28,8 @@ const STEROID = {
 const steroid = (order, extra = {}) => order.map((k) => extra[k] || STEROID[k]);
 const UP17 = [4.415, 3.309];  // a group drawn straight up from C17
 const OUT17 = [4.724, 3.26];  // a group drawn up-and-out from C17
+// adrenal cortical steroids: OH/C=O on C11 drawn up-left; C17 carries OH (right) and the C(=O)CH2OH side chain (up)
+const CORTICOID = { O11: [0.866, 2.5], O17: [5.4, 2.48], C20: UP17, O20: [3.65, 3.95], C21: [5.28, 3.81], O21: [6.15, 3.31] };
 
 export const DEPICTIONS = {
   // cholesterol: the C17 side chain zig-zags to the right
@@ -47,6 +49,41 @@ export const DEPICTIONS = {
   // progesterone: C=O on C3, C4=C5, acetyl on C17
   'CC(=O)C1CCC2C1(C)CCC1C2CCC2=CC(=O)CCC12C': {
     coords: steroid(['C21', 'C20', 'O20', 'C17', 'C16', 'C15', 'C14', 'C13', 'C18', 'C12', 'C11', 'C9', 'C8', 'C7', 'C6', 'C5', 'C4', 'C3', 'O3', 'C2', 'C1', 'C10', 'C19'], { C20: OUT17, O20: [4.2, 4.11], C21: [5.69, 3.52] }),
+  },
+  // --- Lecture 14 steroid hormones (same skeleton, same carbon numbers) ---
+  // testosterone: C=O on C3, C4=C5, OH on C17
+  'CC12CCC3C(CCC4=CC(=O)CCC34C)C1CCC2O': {
+    coords: steroid(['C18', 'C13', 'C12', 'C11', 'C9', 'C8', 'C7', 'C6', 'C5', 'C4', 'C3', 'O3', 'C2', 'C1', 'C10', 'C19', 'C14', 'C15', 'C16', 'C17', 'O17'], { O17: OUT17 }),
+  },
+  // androsterone: OH on C3, C=O on C17
+  'CC12CCC3C(CCC4CC(O)CCC34C)C1CCC2=O': {
+    coords: steroid(['C18', 'C13', 'C12', 'C11', 'C9', 'C8', 'C7', 'C6', 'C5', 'C4', 'C3', 'O3', 'C2', 'C1', 'C10', 'C19', 'C14', 'C15', 'C16', 'C17', 'O17'], { O17: OUT17 }),
+  },
+  // estrone: like estradiol with C=O on C17
+  'CC12CCC3c4ccc(O)cc4CCC3C1CCC2=O': {
+    coords: steroid(['C18', 'C13', 'C12', 'C11', 'C9', 'C10', 'C1', 'C2', 'C3', 'O3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C14', 'C15', 'C16', 'C17', 'O17'], { O17: OUT17 }),
+  },
+  // nandrolone (an anabolic steroid: testosterone without the C19 methyl)
+  'CC12CCC3C(CCC4=CC(=O)CCC34)C1CCC2O': {
+    coords: steroid(['C18', 'C13', 'C12', 'C11', 'C9', 'C8', 'C7', 'C6', 'C5', 'C4', 'C3', 'O3', 'C2', 'C1', 'C10', 'C14', 'C15', 'C16', 'C17', 'O17'], { O17: OUT17 }),
+  },
+  // cortisol: OH on C11, OH on C17, C(=O)CH2OH side chain
+  'CC12CC(O)C3C(CCC4=CC(=O)CCC34C)C1CCC2(O)C(=O)CO': {
+    coords: steroid(['C18', 'C13', 'C12', 'C11', 'O11', 'C9', 'C8', 'C7', 'C6', 'C5', 'C4', 'C3', 'O3', 'C2', 'C1', 'C10', 'C19', 'C14', 'C15', 'C16', 'C17', 'O17', 'C20', 'O20', 'C21', 'O21'], CORTICOID),
+  },
+  // cortisone: C=O on C11 instead of OH
+  'CC12CC(=O)C3C(CCC4=CC(=O)CCC34C)C1CCC2(O)C(=O)CO': {
+    coords: steroid(['C18', 'C13', 'C12', 'C11', 'O11', 'C9', 'C8', 'C7', 'C6', 'C5', 'C4', 'C3', 'O3', 'C2', 'C1', 'C10', 'C19', 'C14', 'C15', 'C16', 'C17', 'O17', 'C20', 'O20', 'C21', 'O21'], CORTICOID),
+  },
+  // prednisone: cortisone with an extra C1=C2 double bond
+  'CC12CC(=O)C3C(CCC4=CC(=O)C=CC34C)C1CCC2(O)C(=O)CO': {
+    coords: steroid(['C18', 'C13', 'C12', 'C11', 'O11', 'C9', 'C8', 'C7', 'C6', 'C5', 'C4', 'C3', 'O3', 'C2', 'C1', 'C10', 'C19', 'C14', 'C15', 'C16', 'C17', 'O17', 'C20', 'O20', 'C21', 'O21'], CORTICOID),
+  },
+  // aldosterone: C18 is a CHO, OH on C11, C(=O)CH2OH on C17
+  'O=CC12CC(O)C3C(CCC4=CC(=O)CCC34C)C1CCC2C(=O)CO': {
+    coords: steroid(['O18', 'C18', 'C13', 'C12', 'C11', 'O11', 'C9', 'C8', 'C7', 'C6', 'C5', 'C4', 'C3', 'O3', 'C2', 'C1', 'C10', 'C19', 'C14', 'C15', 'C16', 'C17', 'C20', 'O20', 'C21', 'O21'], {
+      O18: [2.598, 3.5], O11: [0.866, 2.5], C20: OUT17, O20: [4.2, 4.11], C21: [5.69, 3.52], O21: [6.56, 3.02],
+    }),
   },
   // norethindrone (19-nor: no methyl on C10)
   'CC12CCC3C(CCC4=CC(=O)CCC34)C1CCC2(O)C#C': {
