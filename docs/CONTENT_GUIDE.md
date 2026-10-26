@@ -117,7 +117,7 @@ Every question has `id` (unique across the course, e.g. `l11-q01`), `skill`, `ty
 | `type` | Fields | Answer format |
 |---|---|---|
 | `mc` | `choices: [text…]`, `answer` | index of the right choice; choices are shuffled unless `shuffle: false` |
-| `struct` | `choices: [{ smiles }…]`, `answer` | "Which structure is…" with drawn choices |
+| `struct` | `choices: [{ smiles }…]` or `[{ sugar: spec }…]`, `answer` | "Which structure is…" with drawn choices. `sugar` takes a Fischer or Haworth spec (see the `sugars` block); rings are shown one per row |
 | `tf` | `answer` | `true` / `false` |
 | `multi` | `choices`, `answer: [i, j…]` | "Select all that apply" |
 | `num` | `answer`, `tol?` or `rel?`, `decimals?`, `placeholder?` | number; default tolerance 0.5% |
@@ -125,7 +125,7 @@ Every question has `id` (unique across the course, e.g. `l11-q01`), `skill`, `ty
 | `formula` | `answer: 'C4H10O'` | any element order accepted |
 | `name` | `name: { smiles }`, `figure` | Type an IUPAC name; graded by the chemistry engine with specific feedback (wrong chain, numbering, alphabetical order…). Common names are accepted unless `name.iupacOnly: true` |
 | `order` | `items`, `answer: [indices in correct order]` | |
-| `match` | `left`, `right`, `answer: [right index for each left]` | |
+| `match` | `left`, `right`, `answer: [right index for each left]` | Tap-to-pair on screen; the right side is shuffled for her. Pairs must be one-to-one (the tests check) |
 | `atoms` | `figure: { smiles }`, `selectable?: [atom…]`, `answer: [atom…]` | "Tap every chirality center…" |
 
 Figures: `{ smiles, numbers?, highlight? }`, `{ mols: [...] }`, `{ rxn: { from, reagent, to? } }`, `{ tetras: [...] }`, or `{ sugars: [...] }` (Fischer/Haworth, same items as the `sugars` block).

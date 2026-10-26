@@ -4,6 +4,7 @@
 // Most of these are fact drills built from small tables of slide facts; the sugar generators build
 // random Fischer projections, so their questions never run out.
 import { mcq } from './common.js';
+import { SUGARS } from '../../chem/sugars.js';
 
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
 
@@ -76,6 +77,19 @@ const VITAMINS = [
   { v: 'vitamin K', fact: 'regulates synthesis of clotting proteins (prothrombin)' }, { v: 'vitamin K', fact: 'causes excessive or fatal bleeding when it\'s lacking' },
 ];
 const V_NAMES = ['vitamin A', 'vitamin D', 'vitamin E', 'vitamin K'];
+const V_MATCH = {
+  'vitamin A': ['needed for vision; made from β-carotene', 'night blindness'],
+  'vitamin D': ['regulates calcium; can be made from cholesterol', 'rickets'],
+  'vitamin E': ['an antioxidant that protects unsaturated fatty acids', 'neurological problems (rare)'],
+  'vitamin K': ['regulates the synthesis of clotting proteins', 'excessive or fatal bleeding'],
+};
+const H_MATCH = [
+  ['estradiol', 'regulates the menstrual cycle'],
+  ['progesterone', 'the "pregnancy hormone": prepares the uterus'],
+  ['testosterone', 'controls male secondary sex characteristics'],
+  ['aldosterone', 'regulates blood pressure and volume through Na⁺ and K⁺'],
+  ['cortisol', 'anti-inflammatory; regulates carbohydrate metabolism'],
+];
 
 // ---- Lecture 15: random Fischer projections ---------------------------------------------------
 
@@ -105,6 +119,145 @@ const SUGAR_FACTS = [
   { s: 'builds up in galactosemia', a: 'galactose' }, { s: 'differs from glucose only at C4', a: 'galactose' },
 ];
 const SUGARS3 = ['glucose', 'fructose', 'galactose'];
+
+// ---- Lecture 15: Fischer ↔ Haworth ------------------------------------------------------------
+// A random D-aldohexose (six-membered ring) or D-2-ketohexose (five-membered ring, like fructose).
+// The rule from class: a group on the RIGHT of the Fischer projection points DOWN in the Haworth
+// projection, a group on the LEFT points UP, and in a D sugar the CH₂OH on the last ring carbon points up.
+const flipRow = (row) => (row[1] === 'OH' ? ['HO', 'H'] : ['H', 'OH']);
+const ringPair = (row) => (row[1] === 'OH' ? ['H', 'OH'] : ['OH', 'H']); // [up, down]
+const side = (row) => (row[1] === 'OH' ? 'right' : 'left');
+const KNOWN_RINGS = [
+  { name: 'D-glucose', ketose: false, free: SUGAR_ROWS('D-glucose') },
+  { name: 'D-galactose', ketose: false, free: SUGAR_ROWS('D-galactose') },
+  { name: 'D-fructose', ketose: true, free: SUGAR_ROWS('D-fructose') },
+];
+function SUGAR_ROWS(name) {
+  // the free chirality centers (all but the last, C5) of a slide sugar, as [left, right] rows
+  return SUGARS[name].rows.filter((x) => Array.isArray(x)).slice(0, -1);
+}
+function randomRingSugar(r) {
+  const ketose = r.chance(0.35);
+  const free = Array.from({ length: ketose ? 2 : 3 }, () => (r.chance(0.5) ? ['H', 'OH'] : ['HO', 'H']));
+  const s = { ketose, free, alpha: r.chance(0.5) };
+  const known = KNOWN_RINGS.find((k) => k.ketose === ketose && JSON.stringify(k.free) === JSON.stringify(free));
+  s.name = known ? known.name : null;
+  s.first = ketose ? 3 : 2; // number of the first free carbon
+  return s;
+}
+function fischerOf(s, { free = s.free, last = ['H', 'OH'], numbers = false } = {}) {
+  return { top: s.ketose ? 'CH2OH' : 'CHO', rows: [...(s.ketose ? ['C=O'] : []), ...free, last], bottom: 'CH2OH', ...(numbers ? { numbers: true } : {}) };
+}
+function haworthOf(s, { alpha = s.alpha, free = s.free, numbers = false } = {}) {
+  const anomer = s.ketose ? (alpha ? ['CH2OH', 'OH'] : ['OH', 'CH2OH']) : (alpha ? ['H', 'OH'] : ['OH', 'H']);
+  const spec = { ring: s.ketose ? 5 : 6, subs: [anomer, ...free.map(ringPair), ['CH2OH', 'H']] };
+  if (numbers) spec.numbers = s.ketose ? [2, 3, 4, 5] : [1, 2, 3, 4, 5];
+  return spec;
+}
+const flipOne = (free, i) => free.map((row, j) => (j === i ? flipRow(row) : row));
+const ringDesc = (sp) => `Haworth ${sp.ring}-ring, up/down: ${sp.subs.map((p) => p.join('/')).join(', ')}`;
+const fischerDesc = (sp) => `Fischer: ${sp.rows.map((x) => (Array.isArray(x) ? `${x[0]}|${x[1]}` : x)).join(', ')}`;
+function ringSteps(s, back = false) {
+  const steps = s.free.map((row, i) => (back
+    ? `C${s.first + i}: OH ${side(row) === 'right' ? 'down → right' : 'up → left'}`
+    : `C${s.first + i}: OH on the ${side(row)} → ${side(row) === 'right' ? 'down' : 'up'}`));
+  return steps.join('; ');
+}
+
+// ---- Lecture 13: triacylglycerols, hydrolysis and soap ------------------------------------------
+// Each fatty acid's chain written from the carbonyl carbon outward (to build a triacylglycerol),
+// and its tail as a condensed formula (RCOOH = tail + COOH).
+const ACYL = {
+  'lauric acid': { chain: 'C'.repeat(11), tail: 'CH₃(CH₂)₁₀', tri: 'trilaurin' },
+  'palmitic acid': { chain: 'C'.repeat(15), tail: 'CH₃(CH₂)₁₄', tri: 'tripalmitin' },
+  'stearic acid': { chain: 'C'.repeat(17), tail: 'CH₃(CH₂)₁₆', tri: 'tristearin' },
+  'palmitoleic acid': { chain: 'CCCCCCC/C=C\\CCCCCC', tail: 'CH₃(CH₂)₅CH=CH(CH₂)₇', tri: 'tripalmitolein' },
+  'oleic acid': { chain: 'CCCCCCC/C=C\\CCCCCCCC', tail: 'CH₃(CH₂)₇CH=CH(CH₂)₇', tri: 'triolein' },
+  'linoleic acid': { chain: 'CCCCCCC/C=C\\C/C=C\\CCCCC', tail: 'CH₃(CH₂)₄CH=CHCH₂CH=CH(CH₂)₇', tri: 'trilinolein' },
+  'linolenic acid': { chain: 'CCCCCCC/C=C\\C/C=C\\C/C=C\\CC', tail: 'CH₃CH₂CH=CHCH₂CH=CHCH₂CH=CH(CH₂)₇', tri: 'trilinolenin' },
+};
+const ACIDS = Object.keys(ACYL);
+const saltName = (acid) => `sodium ${acid.replace(/ic acid$/, 'ate')}`;
+// A random triacylglycerol: simple (one fatty acid three times) or mixed (two or three different ones).
+function randomTag(r) {
+  const simple = r.chance(0.45);
+  const acids = simple ? Array(3).fill(r.pick(ACIDS)) : (() => {
+    const [a, b, c] = r.shuffle(ACIDS);
+    return r.chance(0.5) ? [a, b, a] : [a, b, c];
+  })();
+  // written like the drawings in the notes: chain 1 from its CH₃ end, then glycerol, then chains 3 and 2
+  const smiles = `${FA_SMILES[acids[0]]}CC(COC(=O)${ACYL[acids[2]].chain})OC(=O)${ACYL[acids[1]].chain}`;
+  const counts = new Map();
+  for (const a of acids) counts.set(a, (counts.get(a) || 0) + 1);
+  const list = (f) => [...counts].map(([a, n]) => `${n > 1 ? `${n} ` : ''}${f(a)}`).join(' + ');
+  const caption = simple ? `${ACYL[acids[0]].tri} (from 3 ${acids[0]})` : `a mixed triacylglycerol (from ${list((a) => a)})`;
+  return { acids, simple, smiles, caption, list, kinds: [...counts.keys()] };
+}
+const TAG_CONDITIONS = [
+  { how: 'This triacylglycerol is hydrolyzed with **H₂O and H₂SO₄** (acid).', soap: false },
+  { how: 'In the body, **lipases** hydrolyze this triacylglycerol.', soap: false },
+  { how: 'This triacylglycerol is saponified with **NaOH**.', soap: true },
+];
+const TAG_WHY = 'All three **ester bonds** break and glycerol comes back. With **acid** (H₂SO₄) or **lipases**, each chain comes off as a **fatty acid** (RCOOH). With **NaOH** (saponification), each comes off as its **sodium salt** (RCOO⁻ Na⁺), which is **soap**.';
+
+// ---- Matching ----------------------------------------------------------------------------------
+// pairs = [[left, right], …] with distinct right sides; the question screen shuffles the right side.
+function matchq(prompt, pairs, { skill, why = '' } = {}) {
+  return {
+    type: 'match', skill, prompt, left: pairs.map((p) => p[0]), right: pairs.map((p) => p[1]), answer: pairs.map((_, i) => i),
+    explain: `${pairs.map(([a, b]) => `**${a}** → ${b}`).join('; ')}.${why ? ` ${why}` : ''}`,
+  };
+}
+function matchFrom(r, pool, n, prompt, skill, why) {
+  const picks = r.shuffle(pool).slice(0, n);
+  return matchq(prompt, picks, { skill, why });
+}
+
+const MATCH_HYDROLYSIS = [
+  ['saponification', 'basic hydrolysis with NaOH, which makes soap'],
+  ['lipases', 'the enzymes that hydrolyze triacylglycerols in the body'],
+  ['soap', 'a metal salt of a fatty acid'],
+  ['adipose cells', 'where the body stores triacylglycerols'],
+  ['fat (triacylglycerol)', '9 kcal of energy per gram'],
+  ['protein or carbohydrate', '4 kcal of energy per gram'],
+  ['acid hydrolysis of a fat', 'gives glycerol + 3 fatty acids'],
+];
+const MATCH_CHOLESTEROL = [
+  ['LDL', '"bad" cholesterol: carries it from the liver to the tissues'],
+  ['HDL', '"good" cholesterol: carries it back to the liver'],
+  ['statins', 'block the enzymes that make cholesterol'],
+  ['plaque', 'cholesterol deposited on artery walls'],
+  ['cholesterol', 'a steroid made in the liver; part of cell membranes'],
+  ['healthy total serum cholesterol', 'below 200 mg/dL'],
+];
+const MATCH_COX = [
+  ['COX-1', 'makes the usual, everyday prostaglandins'],
+  ['COX-2', 'makes extra prostaglandins in inflammation'],
+  ['aspirin and ibuprofen', 'block both COX-1 and COX-2'],
+  ['Celebrex', 'blocks only COX-2'],
+  ['prostaglandins', 'carboxylic acids with a five-membered ring'],
+  ['eicosanoids', 'act locally, where they are made'],
+];
+const MATCH_CYCLIC = [
+  ['hemiacetal', 'a carbon with one OR and one OH'],
+  ['acetal', 'a carbon with two OR groups'],
+  ['anomeric carbon', 'the new chirality center made when the ring forms'],
+  ['α anomer', 'the anomeric OH points down'],
+  ['β anomer', 'the anomeric OH points up'],
+  ['mutarotation', 'α ⇌ open chain ⇌ β equilibrium'],
+];
+const MATCH_FISCHER = [
+  ['Fischer projection', 'chirality centers drawn as crosses'],
+  ['horizontal bonds', 'point toward you'],
+  ['vertical bonds', 'point away from you'],
+  ['D sugar', 'farthest-down OH on the right'],
+  ['L sugar', 'farthest-down OH on the left'],
+  ['D- and L-glucose', 'enantiomers (mirror images)'],
+];
+const MATCH_CLASS = [
+  ['glyceraldehyde', 'aldotriose'], ['dihydroxyacetone', 'ketotriose'], ['erythrose', 'aldotetrose'],
+  ['glucose', 'aldohexose'], ['fructose', 'ketohexose'],
+];
 
 export const biomoleculeGenerators = [
   // ----- L13 -----
@@ -193,6 +346,78 @@ export const biomoleculeGenerators = [
       return mcq(x.q, [x.a, ...x.o], 0, { skill: 'l13.phospholipids', explain: x.e });
     },
   },
+  {
+    id: 'l13-tag-products', skill: 'l13.hydrolysis', title: 'Hydrolysis or soap: what forms?',
+    make(r) {
+      const t = randomTag(r);
+      const c = r.pick(TAG_CONDITIONS);
+      const acids = t.list((a) => a), salts = t.list(saltName);
+      const main = t.acids[0];
+      const choices = [
+        `glycerol + ${c.soap ? salts : acids}`,
+        `glycerol + ${c.soap ? acids : salts}`,
+        `glucose + ${c.soap ? salts : acids}`,
+        t.simple ? `glycerol + 1 ${c.soap ? saltName(main) : main}` : `glycerol + 3 ${c.soap ? saltName(main) : main}`,
+      ];
+      return mcq(`${c.how} What forms?`, choices, 0, {
+        skill: 'l13.hydrolysis', figure: { smiles: t.smiles, caption: t.caption },
+        hint: 'Acid or lipases give fatty **acids**. NaOH gives fatty acid **salts** (soap).',
+        explain: `${TAG_WHY} Here that's **${choices[0]}**.`,
+      });
+    },
+  },
+  {
+    id: 'l13-soap-formula', skill: 'l13.hydrolysis', title: 'Pick the product (condensed formula)',
+    make(r) {
+      const t = randomTag(r);
+      const soap = r.chance(0.6);
+      const a = r.pick(t.kinds);
+      // a fatty acid that isn't in this one, preferably with a different number of C=C (easy to tell apart)
+      const db = (x) => (ACYL[x].tail.match(/=/g) || []).length;
+      const others = ACIDS.filter((x) => !t.kinds.includes(x));
+      const clear = others.filter((x) => !t.kinds.some((k) => db(k) === db(x)));
+      const b = r.pick(clear.length ? clear : others);
+      const acid = (x) => `${ACYL[x].tail}COOH`, salt = (x) => `${ACYL[x].tail}COO⁻ Na⁺`;
+      const choices = [soap ? salt(a) : acid(a), soap ? acid(a) : salt(a), soap ? salt(b) : acid(b), `${ACYL[a].tail}CH₂OH`];
+      return mcq(`This triacylglycerol is ${soap ? 'heated with **NaOH** (saponification)' : 'hydrolyzed with **H₂O and H₂SO₄**'}. Which of these is one of the products?`, choices, 0, {
+        skill: 'l13.hydrolysis', figure: { smiles: t.smiles, caption: t.caption },
+        explain: `${soap ? `With NaOH each fatty acid comes off as its **sodium salt**, RCOO⁻ Na⁺ (soap): **${saltName(a)}**, ${choices[0]}.` : `With acid, each chain comes off as the free **fatty acid**, RCOOH: **${a}**, ${choices[0]}.`} ${cap(b)} isn't in this triacylglycerol, and hydrolysis never turns a chain into an alcohol (CH₂OH). The other product is glycerol.`,
+      });
+    },
+  },
+  {
+    id: 'l13-tag-reagent', skill: 'l13.hydrolysis', title: 'Which reagent?',
+    make(r) {
+      const opts = ['NaOH (saponification)', 'H₂O with H₂SO₄', 'lipases', 'H₂ with Pd'];
+      const x = r.pick([
+        { what: 'glycerol + 3 fatty acid salts (soap)', a: 0, e: '**Saponification**: basic hydrolysis with **NaOH** gives glycerol + the sodium salts of the fatty acids, which are soap.' },
+        { what: 'glycerol + 3 fatty acids, in the lab', a: 1, e: 'Water with an **acid** catalyst (H₂SO₄) breaks the three esters → glycerol + 3 fatty acids.' },
+        { what: 'glycerol + 3 fatty acids, in the body', a: 2, e: 'In the body, the enzymes that hydrolyze triacylglycerols are **lipases**.' },
+        { what: 'a more saturated, more solid fat, starting from an oil', a: 3, e: 'Adding **H₂ (Pd catalyst)** to C=C bonds is **hydrogenation** (Lecture 4). Partial hydrogenation is how most trans fats are made.' },
+      ]);
+      return mcq(`What turns a triacylglycerol into **${x.what}**?`, opts, x.a, { skill: 'l13.hydrolysis', shuffle: false, explain: x.e });
+    },
+  },
+  {
+    id: 'l13-match-fa', skill: 'l13.fatty-acids', title: 'Match fatty acids',
+    make(r) {
+      if (r.chance(0.5)) {
+        const pool = FATTY.filter((f) => f.c === 18 || f.name === 'arachidonic acid');
+        const picks = r.shuffle(pool).slice(0, 4).sort((a, b) => a.db - b.db);
+        return matchq('Match each fatty acid with its number of C=C bonds.', picks.map((f) => [`${f.name} (${f.c} C)`, `${f.db} C=C`]), {
+          skill: 'l13.fatty-acids', why: 'Saturated (stearic) has none; oleic 1, linoleic 2, linolenic 3, arachidonic 4.',
+        });
+      }
+      const picks = r.shuffle(FATTY).slice(0, 4);
+      return matchq('Match each fatty acid with its melting point.', picks.map((f) => [fa(f), deg(f.mp)]), {
+        skill: 'l13.fatty-acids', why: 'More C=C → lower melting point; with the same number of C=C, the longer chain melts higher.',
+      });
+    },
+  },
+  {
+    id: 'l13-match-hydrolysis', skill: 'l13.hydrolysis', title: 'Match: hydrolysis, soap & energy',
+    make(r) { return matchFrom(r, MATCH_HYDROLYSIS, 4, 'Match each term with what it means.', 'l13.hydrolysis'); },
+  },
   // ----- L14 -----
   {
     id: 'l14-transport', skill: 'l14.membranes', title: 'How does it cross the membrane?',
@@ -257,6 +482,41 @@ export const biomoleculeGenerators = [
       return mcq(x.q, [x.a, ...x.o], 0, { skill: 'l14.eicosanoids', explain: x.e });
     },
   },
+  {
+    id: 'l14-match-vitamin', skill: 'l14.vitamins', title: 'Match the vitamins',
+    make(r) {
+      const deficiency = r.chance(0.5);
+      const pairs = r.shuffle(V_NAMES).slice(0, r.chance(0.5) ? 4 : 3).map((v) => [v, V_MATCH[v][deficiency ? 1 : 0]]);
+      return matchq(deficiency ? 'Match each vitamin with what happens when it\'s lacking.' : 'Match each vitamin with its job.', pairs, { skill: 'l14.vitamins' });
+    },
+  },
+  {
+    id: 'l14-match-hormone', skill: 'l14.hormones', title: 'Match the hormones',
+    make(r) {
+      if (r.chance(0.5)) {
+        const pairs = H_CLASSES.map((c) => { const x = r.pick(HORMONES.filter((h) => h.cls === c)); return [x.name, c]; });
+        return matchq('Match each steroid hormone with its class.', r.shuffle(pairs), { skill: 'l14.hormones' });
+      }
+      return matchFrom(r, H_MATCH, 4, 'Match each hormone with what it does.', 'l14.hormones');
+    },
+  },
+  {
+    id: 'l14-match-transport', skill: 'l14.membranes', title: 'Match: crossing the membrane',
+    make(r) {
+      const pairs = HOWS.map((how) => [r.pick(TRANSPORT.filter((t) => t.how === how)).what, how]);
+      return matchq('Match each substance with how it crosses the cell membrane.', r.shuffle(pairs), {
+        skill: 'l14.membranes', why: 'Small molecules diffuse straight through; glucose needs a carrier protein; Cl⁻ and HCO₃⁻ use channels; ions moved against their gradient need energy (active transport).',
+      });
+    },
+  },
+  {
+    id: 'l14-match-cholesterol', skill: 'l14.cholesterol', title: 'Match: cholesterol & lipoproteins',
+    make(r) { return matchFrom(r, MATCH_CHOLESTEROL, 4, 'Match each term with its description.', 'l14.cholesterol'); },
+  },
+  {
+    id: 'l14-match-cox', skill: 'l14.eicosanoids', title: 'Match: prostaglandins & NSAIDs',
+    make(r) { return matchFrom(r, MATCH_COX, 4, 'Match each term with its description.', 'l14.eicosanoids'); },
+  },
   // ----- L15 -----
   {
     id: 'l15-classify', skill: 'l15.classify', title: 'Classify the sugar',
@@ -317,5 +577,71 @@ export const biomoleculeGenerators = [
         explain: '**Glucose**: blood sugar (dextrose), stored as glycogen. **Fructose**: ketohexose in honey, part of sucrose, ~twice as sweet. **Galactose**: part of lactose, differs from glucose at C4; builds up in galactosemia.',
       });
     },
+  },
+  {
+    id: 'l15-haworth', skill: 'l15.cyclic', title: 'Fischer → Haworth',
+    make(r) {
+      const s = randomRingSugar(r);
+      const correct = haworthOf(s);
+      const singles = r.shuffle(s.free.map((_, i) => haworthOf(s, { free: flipOne(s.free, i) })));
+      const wrong = [haworthOf(s, { free: s.free.map(flipRow) }), haworthOf(s, { alpha: !s.alpha }), ...singles];
+      const key = (x) => JSON.stringify(x.subs);
+      const seen = new Set([key(correct)]);
+      const picks = [correct];
+      for (const w of wrong) if (picks.length < 4 && !seen.has(key(w))) { seen.add(key(w)); picks.push(w); }
+      if (picks.length < 4) return null;
+      const anomer = s.alpha ? 'α' : 'β';
+      const what = s.name ? `this sugar (${s.name})` : `this ${s.ketose ? 'ketohexose' : 'aldohexose'}`;
+      const anomeric = s.ketose ? 'C2' : 'C1';
+      return {
+        type: 'struct', skill: 'l15.cyclic', shuffle: true,
+        prompt: `Which Haworth projection is the **${anomer} ring form** of ${what}?`,
+        figure: { sugars: [fischerOf(s, { numbers: true })] },
+        choices: picks.map((sp) => ({ sugar: sp, desc: ringDesc(sp) })),
+        answer: 0,
+        hint: 'Right in the Fischer projection → **down** in the ring; left → **up**. In a D sugar the CH₂OH on C5 points up. α = anomeric OH down, β = up.',
+        explain: `Turn each Fischer group into the ring: **right → down, left → up**. ${ringSteps(s)}. C5 (a D sugar): its CH₂OH points **up**. ${anomeric}, the anomeric carbon: **${anomer} → OH ${s.alpha ? 'down' : 'up'}**${s.ketose ? ` (its CH₂OH ${s.alpha ? 'up' : 'down'})` : ''}.`,
+      };
+    },
+  },
+  {
+    id: 'l15-ring-to-fischer', skill: 'l15.cyclic', title: 'Haworth → Fischer',
+    make(r) {
+      const s = randomRingSugar(r);
+      const correct = fischerOf(s);
+      const mirror = fischerOf(s, { free: s.free.map(flipRow), last: ['HO', 'H'] });
+      const picks = [correct, mirror, fischerOf(s, { free: s.free.map(flipRow) }), fischerOf(s, { free: flipOne(s.free, r.int(0, s.free.length - 1)) })];
+      const what = s.name ? ` (${s.name})` : '';
+      return {
+        type: 'struct', skill: 'l15.cyclic', shuffle: true,
+        prompt: `This is a ring form of a sugar${what}. Which Fischer projection is its **open-chain** form?`,
+        figure: { sugars: [haworthOf(s, { numbers: true })] },
+        choices: picks.map((sp) => ({ sugar: sp, desc: fischerDesc(sp) })),
+        answer: 0,
+        hint: 'Work backwards: **down → right**, **up → left**. A CH₂OH pointing up on C5 means a D sugar (OH on the right at C5).',
+        explain: `Read the ring backwards: **down → right, up → left**. ${ringSteps(s, true)}. C5's CH₂OH points up → **D sugar** → OH on the **right** at C5. The anomeric OH (α or β) doesn't matter: in the open chain ${s.ketose ? 'C2 is the C=O again' : 'C1 is the CHO again'}.`,
+      };
+    },
+  },
+  {
+    id: 'l15-match-sugar', skill: 'l15.common', title: 'Match: glucose, fructose, galactose',
+    make(r) {
+      const pairs = SUGARS3.map((name) => [name, r.pick(SUGAR_FACTS.filter((x) => x.a === name)).s.replace(/^is /, '')]);
+      return matchq('Match each monosaccharide with a fact about it.', r.shuffle(pairs), { skill: 'l15.common' });
+    },
+  },
+  {
+    id: 'l15-match-class', skill: 'l15.classify', title: 'Match: classify the sugars',
+    make(r) {
+      return matchFrom(r, MATCH_CLASS, 4, 'Match each sugar with its classification.', 'l15.classify', 'Aldo = aldehyde (CHO at C1), keto = ketone (C=O at C2); tri-, tetr-, hex- = 3, 4, 6 carbons.');
+    },
+  },
+  {
+    id: 'l15-match-fischer', skill: 'l15.fischer', title: 'Match: Fischer projections, D & L',
+    make(r) { return matchFrom(r, MATCH_FISCHER, 4, 'Match each term with its description.', 'l15.fischer'); },
+  },
+  {
+    id: 'l15-match-cyclic', skill: 'l15.cyclic', title: 'Match: rings and anomers',
+    make(r) { return matchFrom(r, MATCH_CYCLIC, 4, 'Match each term with its description.', 'l15.cyclic'); },
   },
 ];

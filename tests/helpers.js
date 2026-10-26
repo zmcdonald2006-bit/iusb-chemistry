@@ -42,9 +42,13 @@ export function validateQuestion(q) {
     case 'struct': {
       if (q.choices.length < 2) fail('needs ≥2 structure choices');
       if (!(q.answer >= 0 && q.answer < q.choices.length)) fail('answer out of range');
-      const keys = q.choices.map((c) => (c.smiles ? canonicalKey(c.smiles) : `t:${c.text}`));
+      const keys = q.choices.map((c) => (c.sugar ? `g:${JSON.stringify(c.sugar)}` : c.smiles ? canonicalKey(c.smiles) : `t:${c.text}`));
       if (new Set(keys).size !== keys.length) fail('duplicate structures');
-      for (const c of q.choices) if (c.smiles) renderMolecule(c.smiles);
+      for (const c of q.choices) {
+        if (c.smiles) renderMolecule(c.smiles);
+        if (c.sugar) { try { renderSugar(c.sugar); } catch (e) { fail(`sugar choice fails: ${e.message}`); } }
+        if (!c.smiles && !c.sugar && !c.text) fail('structure choice needs smiles, sugar or text');
+      }
       break;
     }
     case 'multi':
@@ -71,6 +75,9 @@ export function validateQuestion(q) {
     case 'match':
       if (!Array.isArray(q.left) || !Array.isArray(q.right) || q.answer.length !== q.left.length) fail('match needs left/right and one answer per left item');
       if (q.answer.some((i) => i < 0 || i >= q.right.length)) fail('match answer out of range');
+      if (new Set(q.answer).size !== q.answer.length) fail('match answers must be one-to-one');
+      if (new Set(q.right).size !== q.right.length || new Set(q.left).size !== q.left.length) fail(`duplicate match items ${JSON.stringify([q.left, q.right])}`);
+      if (q.left.length < 2) fail('match needs ≥2 pairs');
       break;
     case 'formula': case 'text':
       if (!q.answer) fail('missing answer');

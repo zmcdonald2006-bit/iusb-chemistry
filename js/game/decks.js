@@ -8,7 +8,7 @@ const NAMES_1 = ['l03-name-mc', 'l04-name-mc'];
 const NAMES_2 = ['l05-name-mc', 'l06e-name-mc', 'l06h-name-mc', 'l06t-name-mc', 'l08-name-mc', 'l10-name-mc', 'l11-name-mc'];
 const PRODUCTS = ['l04-hydrogenation', 'l04-halogenation', 'l04-hydrohalogenation', 'l04-hydration', 'l05-dehydration', 'l05-oxidation', 'l06-disulfide', 'l08-oxidation', 'l08-reduction', 'l10-neutralize', 'l11-salt'];
 const AMINES = ['l11-classify', 'l11-vs-alcohol', 'l11-shape', 'l11-name-mc', 'l11-hbond', 'l11-salt', 'l11-alkaloid', 'l11-conjugate'];
-const LIPIDS = ['l13-mp', 'l13-sat', 'l13-omega', 'l13-hydrolyzable', 'l13-fat-oil', 'l13-food', 'l13-phospho', 'l14-transport', 'l14-lipo', 'l14-hormone', 'l14-hormone-job', 'l14-vitamin', 'l14-cox'];
+const LIPIDS = ['l13-mp', 'l13-sat', 'l13-omega', 'l13-hydrolyzable', 'l13-fat-oil', 'l13-food', 'l13-phospho', 'l13-tag-products', 'l13-tag-reagent', 'l14-transport', 'l14-lipo', 'l14-hormone', 'l14-hormone-job', 'l14-vitamin', 'l14-cox'];
 const SUGARS = ['l15-classify', 'l15-dl', 'l15-centers', 'l15-anomer', 'l15-which-sugar'];
 const BODY = ['l12-agonist', 'l12-messenger', 'l12-precursor', 'l12-pea', 'l12-nervous', 'l12-amine-form', 'l12-drug-ep', 'l12-drug-ssri', 'l12-drug-hist'];
 

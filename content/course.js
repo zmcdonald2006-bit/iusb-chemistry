@@ -24,12 +24,21 @@ export const COURSE = {
   school: 'IU South Bend',
   textbook: 'Smith, General, Organic & Biological Chemistry',
   // Bump when content changes so the app can show "what's new".
-  contentVersion: '2026.10.25',
+  contentVersion: '2026.10.26',
   lectures: LECTURES,
 };
 
 // Shown on the "What's new" screen after an update. Newest first.
 export const CHANGELOG = [
+  {
+    version: '2026.10.26',
+    title: 'New ways to practice lipids and sugars',
+    items: [
+      'Fischer ↔ Haworth: see a Fischer projection and pick its α or β ring, or see a ring and pick its open chain, with a fresh sugar every time',
+      'Triacylglycerol reactions: what hydrolysis, lipases and saponification (NaOH) turn a fat into, with the fatty acid vs fatty acid salt trap',
+      'Matching is now tap-to-pair: tap a row, then tap its answer. There are new matching sets for vitamins, hormones, membranes, cholesterol, NSAIDs, sugars and fatty acids',
+    ],
+  },
   {
     version: '2026.10.25',
     title: 'New: Lectures 13, 14 & 15 (lipids and carbohydrates)',

@@ -3,6 +3,7 @@ import { h, icon, iconSvg, md, mdi, clear } from './dom.js';
 import { figureView, molView } from './components.js';
 import { checkAnswer, answerText } from '../quiz/checkers.js';
 import { renderMolecule } from '../chem/render.js';
+import { renderSugar } from '../chem/sugars.js';
 import { makeRng } from '../lib/random.js';
 import { skillById } from '../../content/course.js';
 import { formulaHtml } from '../chem/condensed.js';
@@ -93,14 +94,17 @@ export function questionView(q, opts = {}) {
   const choiceButtons = [];
   function buildChoices() {
     const multi = q.type === 'multi';
-    const wrap = h('div', { class: q.type === 'struct' ? 'struct-choices' : 'choices', role: multi ? 'group' : 'radiogroup' });
+    // sugar rings are wide: one per row so they stay readable on a phone
+    const rings = q.type === 'struct' && q.choices.some((c) => c.sugar && c.sugar.ring);
+    const wrap = h('div', { class: q.type === 'struct' ? `struct-choices${rings ? ' wide' : ''}` : 'choices', role: multi ? 'group' : 'radiogroup' });
     order.forEach((orig, disp) => {
       const c = q.choices[orig];
       const btn = h('button', { type: 'button', class: `choice ${q.type === 'struct' ? 'struct-choice' : ''}`, 'aria-pressed': 'false', dataset: { orig: String(orig) } });
       if (multi) btn.appendChild(h('span', { class: 'check-box', html: iconSvg('check') }));
       else btn.appendChild(h('span', { class: 'key' }, LETTERS[disp]));
       if (q.type === 'struct') {
-        if (c.smiles) btn.appendChild(h('div', { class: 'mol', html: renderMolecule(c.smiles, { scale: 28 }) }));
+        if (c.sugar) btn.appendChild(h('div', { class: 'mol', html: renderSugar(c.sugar, { scale: c.sugar.ring ? 52 : 32 }) }));
+        else if (c.smiles) btn.appendChild(h('div', { class: 'mol', html: renderMolecule(c.smiles, { scale: 28 }) }));
         else btn.appendChild(h('span', { class: 'nr' }, c.text));
         btn.setAttribute('aria-label', `Choice ${LETTERS[disp]}${c.text ? `: ${c.text}` : ''}`);
       } else {
@@ -191,19 +195,64 @@ export function questionView(q, opts = {}) {
     render();
   }
 
-  const matchSelects = [];
+  // Matching: tap a row, then tap its answer below. The next empty row is picked automatically;
+  // tapping a filled row puts its answer back.
+  let matchRows = [];
+  let matchChips = [];
+  let matchActive = 0;
+  let renderMatch = null;
   function buildMatch() {
     const rightOrder = makeRng(`match:${q.id}`).shuffle([...q.right.keys()]);
     response = q.left.map(() => -1);
-    q.left.forEach((l, i) => {
-      const sel = h('select', { class: 'input', 'aria-label': `Match for ${l}` }, h('option', { value: '-1' }, 'Choose…'), rightOrder.map((ri) => h('option', { value: String(ri) }, q.right[ri])));
-      sel.addEventListener('change', () => {
-        response[i] = +sel.value;
-        setReady(response.every((x) => x >= 0));
+    const list = h('div', { class: 'match-list' });
+    const pool = h('div', { class: 'match-pool', role: 'group', 'aria-label': 'Answers' });
+    const help = h('div', { class: 'hint match-help' });
+    matchRows = q.left.map((l, i) => {
+      const slot = h('div', { class: 'match-slot' });
+      const fix = h('div', { class: 'match-fix hidden' });
+      const btn = h('button', { type: 'button', class: 'match-row' }, h('span', { class: 'match-n' }, String(i + 1)), h('div', { class: 'grow' }, mdi(l, 'div', 'match-left'), slot, fix));
+      btn.addEventListener('click', () => {
+        if (answered) return;
+        if (response[i] >= 0) response[i] = -1; // put its answer back
+        matchActive = i;
+        renderMatch();
       });
-      matchSelects.push(sel);
-      body.appendChild(h('div', { class: 'match-row' }, mdi(l, 'div'), sel));
+      list.appendChild(btn);
+      return { btn, slot, fix };
     });
+    matchChips = rightOrder.map((ri) => {
+      const chip = h('button', { type: 'button', class: 'match-chip' }, mdi(q.right[ri]));
+      chip.addEventListener('click', () => {
+        if (answered) return;
+        response[matchActive] = ri;
+        const next = response.findIndex((x) => x < 0);
+        if (next >= 0) matchActive = next;
+        renderMatch();
+      });
+      pool.appendChild(chip);
+      return { chip, ri };
+    });
+    renderMatch = () => {
+      const used = new Set(response.filter((x) => x >= 0));
+      const full = used.size === q.left.length;
+      matchRows.forEach(({ btn, slot }, i) => {
+        const r = response[i];
+        const on = !answered && !full && i === matchActive;
+        btn.classList.toggle('active', on);
+        btn.classList.toggle('filled', r >= 0);
+        btn.disabled = answered;
+        clear(slot).appendChild(r >= 0 ? mdi(q.right[r], 'span', 'match-pick') : h('span', { class: 'faint' }, on ? 'Tap its answer below' : 'Tap to choose'));
+        btn.setAttribute('aria-label', `${i + 1}. ${q.left[i]}: ${r >= 0 ? q.right[r] : 'no answer yet'}${on ? ' (choosing now)' : ''}`);
+      });
+      matchChips.forEach(({ chip, ri }) => { chip.classList.toggle('hidden', used.has(ri)); chip.disabled = answered; });
+      pool.classList.toggle('hidden', full || answered);
+      help.textContent = answered ? '' : full ? 'All matched. Tap a row to change it, or check your answer.' : `Choosing for ${matchActive + 1}: ${plain(q.left[matchActive])}`;
+      setReady(full);
+    };
+    body.appendChild(list);
+    body.appendChild(help);
+    body.appendChild(pool);
+    renderMatch();
   }
 
   let noneBtn = null;
@@ -269,7 +318,7 @@ export function questionView(q, opts = {}) {
   function lock() {
     choiceButtons.forEach((b) => { b.disabled = true; });
     if (input) input.readOnly = true;
-    matchSelects.forEach((s) => { s.disabled = true; });
+    if (renderMatch) renderMatch();
     if (noneBtn) noneBtn.disabled = true;
     if (body.renderOrder) body.renderOrder();
   }
@@ -295,7 +344,11 @@ export function questionView(q, opts = {}) {
         else if (v === response) b.classList.add('wrong');
       });
     } else if (q.type === 'match') {
-      matchSelects.forEach((s, i) => s.closest('.match-row').classList.add(response[i] === q.answer[i] ? 'correct' : 'wrong'));
+      matchRows.forEach(({ btn, fix }, i) => {
+        const right = response[i] === q.answer[i];
+        btn.classList.add(right ? 'correct' : 'wrong');
+        if (!right) { clear(fix).append(icon('check'), mdi(q.right[q.answer[i]])); fix.classList.remove('hidden'); }
+      });
     } else if (q.type === 'atoms') {
       atomsBox.redraw({ highlight: q.answer, highlightClass: 'ok-hl', selected: response, selectable: false });
     }
@@ -318,7 +371,7 @@ export function questionView(q, opts = {}) {
         fb.appendChild(cmp);
       }
       const at = answerText(q);
-      if (at && !['struct', 'atoms', 'mc', 'multi', 'tf'].includes(q.type)) fb.appendChild(h('div', { class: 'fb-answer' }, 'Answer: ', mdi(at)));
+      if (at && !['struct', 'atoms', 'mc', 'multi', 'tf', 'match'].includes(q.type)) fb.appendChild(h('div', { class: 'fb-answer' }, 'Answer: ', mdi(at)));
       if (q.type === 'atoms') fb.appendChild(h('div', { class: 'fb-answer' }, q.answer.length ? 'Correct atoms are shaded green.' : 'The answer was: none.'));
       if (res.tips && res.tips.length > 1) fb.appendChild(h('ul', {}, res.tips.slice(1).map((t) => h('li', {}, mdi(t)))));
       if (TYPED.has(q.type) && opts.onOverride) {
@@ -370,7 +423,7 @@ export function questionView(q, opts = {}) {
     else if (q.type === 'tf') choiceButtons.forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.val === 'true') === r)));
     else if (input) input.value = r ?? '';
     else if (q.type === 'order') { orderPicked = [...(r || [])]; }
-    else if (q.type === 'match') matchSelects.forEach((s, i) => { s.value = String((r || [])[i] ?? -1); });
+    else if (q.type === 'match') { response = q.left.map((_, i) => (r || [])[i] ?? -1); if (renderMatch) renderMatch(); }
   }
 
   return {
@@ -385,7 +438,7 @@ export function questionView(q, opts = {}) {
 function choiceText(q, i) {
   const c = q.choices && q.choices[i];
   if (c == null) return '';
-  return typeof c === 'string' ? c : c.text || c.smiles || '';
+  return typeof c === 'string' ? c : c.text || c.smiles || c.desc || '';
 }
 function questionText(q) {
   const f = q.figure;
@@ -416,3 +469,4 @@ function initialResponse(q) {
 }
 
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+const plain = (t) => String(t).replace(/\*\*|__|`/g, '');
