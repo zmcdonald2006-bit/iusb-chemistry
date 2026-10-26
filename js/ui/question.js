@@ -242,7 +242,7 @@ export function questionView(q, opts = {}) {
         btn.classList.toggle('filled', r >= 0);
         btn.disabled = answered;
         clear(slot).appendChild(r >= 0 ? mdi(q.right[r], 'span', 'match-pick') : h('span', { class: 'faint' }, on ? 'Tap its answer below' : 'Tap to choose'));
-        btn.setAttribute('aria-label', `${i + 1}. ${q.left[i]}: ${r >= 0 ? q.right[r] : 'no answer yet'}${on ? ' (choosing now)' : ''}`);
+        btn.setAttribute('aria-label', `${i + 1}. ${plain(q.left[i])}: ${r >= 0 ? plain(q.right[r]) : 'no answer yet'}${on ? ' (choosing now)' : ''}`);
       });
       matchChips.forEach(({ chip, ri }) => { chip.classList.toggle('hidden', used.has(ri)); chip.disabled = answered; });
       pool.classList.toggle('hidden', full || answered);

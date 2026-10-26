@@ -37,8 +37,9 @@ export function queryWords(q) {
 function blockText(b) {
   const out = [];
   const add = (...xs) => { for (const x of xs) if (typeof x === 'string' && x) out.push(x); };
-  add(b.title, b.text, b.caption, b.q && b.q.prompt);
-  if (Array.isArray(b.items)) for (const it of b.items) { if (typeof it === 'string') add(it); else if (it) add(it.title, it.text, it.caption); }
+  add(b.title, b.text, b.caption, b.name, b.q && b.q.prompt);
+  // drawings count too: a sugar drawn by name, a structure's name or caption
+  if (Array.isArray(b.items)) for (const it of b.items) { if (typeof it === 'string') add(it); else if (it) add(it.title, it.text, it.caption, it.name, typeof it.sugar === 'string' ? it.sugar : null); }
   if (Array.isArray(b.head)) add(...b.head);
   if (Array.isArray(b.rows)) for (const r of b.rows) if (Array.isArray(r)) add(...r);
   if (b.t === 'example') { add(b.prompt, b.answer); for (const s of b.steps || []) add(typeof s === 'string' ? s : s && s.text); }

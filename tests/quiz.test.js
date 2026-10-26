@@ -78,3 +78,57 @@ describe('Question generators', () => {
     expect(a.name.smiles).toBe(b.name.smiles);
   });
 });
+
+// Independent re-derivations of the Lecture 13 and 15 answers, from the figure alone.
+describe('Biomolecule answers', () => {
+  const up = (row) => (row[0] === 'HO' ? 'OH' : 'H'); // a group on the left of a Fischer projection points up
+  const down = (row) => (row[1] === 'OH' ? 'OH' : 'H');
+  it('Fischer → Haworth: right = down, left = up, CH₂OH up, α = OH down', () => {
+    for (let i = 0; i < 300; i++) {
+      const q = makeGenerated('l15-haworth', `chk${i}`);
+      const f = q.figure.sugars[0];
+      const ketose = f.top === 'CH2OH';
+      const centers = f.rows.filter((x) => Array.isArray(x));
+      const last = centers[centers.length - 1];
+      expect(last[1]).toBe('OH'); // always a D sugar
+      const alpha = /α ring/.test(q.prompt);
+      if (!alpha && !/β ring/.test(q.prompt)) throw new Error(`no anomer in "${q.prompt}"`);
+      const anomer = ketose ? (alpha ? ['CH2OH', 'OH'] : ['OH', 'CH2OH']) : (alpha ? ['H', 'OH'] : ['OH', 'H']);
+      const want = JSON.stringify([anomer, ...centers.slice(0, -1).map((r) => [up(r), down(r)]), ['CH2OH', 'H']]);
+      const hits = q.choices.map((c, k) => (JSON.stringify(c.sugar.subs) === want ? k : -1)).filter((k) => k >= 0);
+      expect(hits.length).toBe(1);
+      expect(hits[0]).toBe(q.answer);
+      expect(q.choices[q.answer].sugar.ring).toBe(ketose ? 5 : 6);
+    }
+  });
+  it('Haworth → Fischer: down = right, up = left, and a D sugar', () => {
+    for (let i = 0; i < 300; i++) {
+      const q = makeGenerated('l15-ring-to-fischer', `chk${i}`);
+      const ring = q.figure.sugars[0];
+      const ketose = ring.ring === 5;
+      const inner = ring.subs.slice(1, -1).map(([u]) => (u === 'OH' ? ['HO', 'H'] : ['H', 'OH']));
+      const want = JSON.stringify([...(ketose ? ['C=O'] : []), ...inner, ['H', 'OH']]);
+      const hits = q.choices.map((c, k) => (JSON.stringify(c.sugar.rows) === want ? k : -1)).filter((k) => k >= 0);
+      expect(hits.length).toBe(1);
+      expect(hits[0]).toBe(q.answer);
+      expect(q.choices[q.answer].sugar.top).toBe(ketose ? 'CH2OH' : 'CHO');
+    }
+  });
+  it('triacylglycerol products: acid or lipase → fatty acids, NaOH → salts', () => {
+    for (let i = 0; i < 300; i++) {
+      const q = makeGenerated('l13-tag-products', `chk${i}`);
+      const soap = /NaOH/.test(q.prompt);
+      const right = q.choices[q.answer];
+      expect(right.startsWith('glycerol + ')).toBe(true);
+      expect(/sodium/.test(right)).toBe(soap);
+      expect(/ acid/.test(right)).toBe(!soap);
+      // three chains in, three chains out
+      const n = right.replace('glycerol + ', '').split(' + ').reduce((a, p) => a + (/^\d /.test(p) ? +p[0] : 1), 0);
+      expect(n).toBe(3);
+      expect((q.figure.smiles.match(/C\(=O\)O/g) || []).length + (q.figure.smiles.match(/OC\(=O\)/g) || []).length).toBeGreaterThan(2);
+      const f = makeGenerated('l13-soap-formula', `chk${i}`);
+      expect(/COO⁻ Na⁺$/.test(f.choices[f.answer])).toBe(/NaOH/.test(f.prompt));
+      expect(/COOH$/.test(f.choices[f.answer])).toBe(!/NaOH/.test(f.prompt));
+    }
+  });
+});
