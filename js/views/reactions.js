@@ -115,7 +115,7 @@ function mapSvg() {
 // ---- Page --------------------------------------------------------------------------------------------
 let quizMode = false; // remembered while the app is open
 
-export default function reactions({ app, main }) {
+export default function reactions({ app, main, query = {} }) {
   main.appendChild(pageHead({ title: 'Reaction map', sub: 'Every reaction in the course: how the families connect, how to spot each reaction, and how to draw the product.' }));
 
   let family = null; // node id picked on the map
@@ -249,6 +249,7 @@ export default function reactions({ app, main }) {
   }
 
   drawList();
+  if (query.rx) setTimeout(() => show(query.rx), 80); // linked from search
 }
 
 function matches(r, fam) {

@@ -22,6 +22,7 @@ import gamePlay from './views/gameplay.js';
 import gamesHub from './views/games.js';
 import wordsView from './views/words.js';
 import review from './views/review.js';
+import searchView from './views/search.js';
 
 export const ROUTES = [
   { path: '/', view: home, title: '' },
@@ -29,6 +30,7 @@ export const ROUTES = [
   { path: '/learn/:lid', view: lectureOverview },
   { path: '/learn/:lid/:sid', view: sectionReader },
   { path: '/bootcamp', view: bootcamp, title: 'Foundations Bootcamp' },
+  { path: '/search', view: searchView, title: 'Search' },
   { path: '/review', view: review, title: 'Review sheets' },
   { path: '/review/:lids', view: review, title: 'Review sheet' },
   { path: '/practice', view: practiceHub, title: 'Practice' },

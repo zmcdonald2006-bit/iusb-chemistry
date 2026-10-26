@@ -7,6 +7,7 @@ import { lectureById } from '../../content/course.js';
 import { nursingFor } from '../../content/nursing.js';
 import { confusedButton } from '../ui/confused.js';
 import { normalizeQuestion } from '../quiz/bank.js';
+import { norm, queryWords } from '../lib/search.js';
 
 // ---- Lecture list ---------------------------------------------------------------------------------
 export function learnList({ app, main }) {
@@ -86,7 +87,7 @@ export function lectureOverview({ app, main, params }) {
 }
 
 // ---- Section reader ----------------------------------------------------------------------------------
-export function sectionReader({ app, main, params }) {
+export function sectionReader({ app, main, params, query = {} }) {
   const l = lectureById(params.lid);
   const idx = l ? l.sections.findIndex((s) => s.id === params.sid) : -1;
   if (!l || idx < 0) { main.appendChild(emptyState('book', 'Section not found', '', h('a', { class: 'btn', href: '#/learn' }, 'All lectures'))); return; }
@@ -116,6 +117,7 @@ export function sectionReader({ app, main, params }) {
       ? h('a', { class: 'btn', href: `#/learn/${l.id}/${next.id}`, onclick: markRead }, 'Done — next', icon('chevRight'))
       : h('a', { class: 'btn', href: `#/practice/lecture/${l.id}`, onclick: markRead }, icon('target'), 'Done — practice this lecture')));
   main.appendChild(art);
+  if (query.hl) setTimeout(() => findInSection(art, query.hl), 60); // linked from search
 
   // Mark as read after reaching the end of the page for a moment
   const sentinel = h('div', { style: { height: '1px' } });
@@ -127,6 +129,21 @@ export function sectionReader({ app, main, params }) {
   }) : null;
   if (io) io.observe(sentinel);
   return () => { if (io) io.disconnect(); clearTimeout(timer); views.forEach((v) => v.destroy && v.destroy()); };
+}
+
+// Scroll to the first block that mentions every searched word (or, failing that, any of them) and flash it.
+function findInSection(art, q) {
+  const words = queryWords(q);
+  const blocks = [...art.querySelectorAll('.blk')];
+  const text = blocks.map((b) => norm(b.textContent));
+  let i = text.findIndex((t) => words.every((w) => t.includes(w)));
+  if (i < 0) i = text.findIndex((t) => words.some((w) => t.includes(w)));
+  if (i < 0) return;
+  const b = blocks[i];
+  b.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  b.classList.remove('found');
+  void b.offsetWidth;
+  b.classList.add('found');
 }
 
 // ---- Content blocks ----------------------------------------------------------------------------------

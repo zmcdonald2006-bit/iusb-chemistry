@@ -32,12 +32,13 @@ export const COURSE = {
 export const CHANGELOG = [
   {
     version: '2026.10.26',
-    title: 'New ways to practice lipids and sugars',
+    title: 'Search, review sheets, and new ways to practice',
     items: [
       'Fischer ↔ Haworth: see a Fischer projection and pick its α or β ring, or see a ring and pick its open chain, with a fresh sugar every time',
       'Triacylglycerol reactions: what hydrolysis, lipases and saponification (NaOH) turn a fat into, with the fatty acid vs fatty acid salt trap',
       'Matching is now tap-to-pair: tap a row, then tap its answer. There are new matching sets for vitamins, hormones, membranes, cholesterol, NSAIDs, sugars and fatty acids',
       'Review sheets: every lecture on one page (rules, memory tricks, traps and key terms), with a Print button. Find them on each lecture, on your exams, and under More',
+      'Search everything: tap the magnifying glass at the top to search the notes, key terms, flashcards, reactions and nursing notes. A result takes you straight to that spot in the notes',
       'Fix: bullet points inside a few note boxes (like "D or L?") now show as real lists',
     ],
   },

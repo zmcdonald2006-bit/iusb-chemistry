@@ -11,7 +11,9 @@ It's a static web app with no build step and no dependencies. It works offline, 
 - **Practice**:
   - By lecture, by skill, mixed, weakest skills, mistakes only, or a timed practice exam.
   - Unlimited auto-generated questions for naming, drawing, reactions, chirality, pH, boiling-point order and more. The generated questions come from a built-in chemistry engine, so every answer is computed, not typed by hand.
+  - Fischer ↔ Haworth sugar rings, triacylglycerol hydrolysis vs saponification, and tap-to-pair matching sets (vitamins, hormones, membranes, cholesterol, NSAIDs, sugars, fatty acids), all freshly generated.
   - Wrong answers go to a **Mistakes** notebook. A mistake leaves the notebook after she gets that question right twice.
+- **Search** (the magnifying glass in the top bar): one search box for the notes, key terms, flashcards, reactions and nursing notes. It ignores capitals, subscripts and Greek letters (CH₃ = ch3, α = alpha), highlights the matches, and a notes result opens that section scrolled to the matching paragraph.
 - **Review sheets**: each lecture on one page, built from its notes: the rules, exam tips, memory tricks, traps and key terms, with the step-by-step methods and tables in a fold-out part. An exam's lectures can be combined into one sheet. Each box links back to its part of the notes, and the sheet prints cleanly (two columns, fold-outs opened).
 - **Flashcards** with spaced repetition (Again / Hard / Good / Easy).
 - **Games** (More → Games), two study games that share one **fish wallet**. Fish buy outfits and oceans in the wardrobe. Each device counts what it earns and the totals are combined, so fish earned on a phone and a laptop always add up.
@@ -94,7 +96,7 @@ ruby tools/serve.rb
 
 Then open <http://localhost:8080>. The server disables caching, so edits show up on reload.
 
-Run the tests (~550 tests: chemistry engine, every question generator × 150 seeds, content integrity, state and migrations, router, cloud sync, feedback reports):
+Run the tests (~660 tests: chemistry engine, every question generator × 150 seeds, content integrity, state and migrations, router, cloud sync, feedback reports):
 
 ```bash
 /System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Helpers/jsc -m tests/run.js

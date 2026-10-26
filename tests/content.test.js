@@ -2,6 +2,7 @@
 import { describe, it, expect } from './harness.js';
 import { validateQuestion } from './helpers.js';
 import { sheetParts } from '../js/lib/review.js';
+import { buildIndex, search, highlight } from '../js/lib/search.js';
 import { LECTURES, allAuthoredQuestions, allCards, glossary, CHANGELOG, COURSE, lectureById, skillById, changesSince, changeDate } from '../content/course.js';
 import { EDGES } from '../js/views/reactions.js';
 import { FAMILIES, REACTIONS, TYPES, REAGENTS } from '../content/reactions.js';
@@ -273,5 +274,40 @@ describe('Messages', () => {
     expect(messages.cheers.length).toBeGreaterThan(0);
     expect(messages.comfort.length).toBeGreaterThan(0);
     for (const v of Object.values(messages.milestones)) if (!v) throw new Error('empty milestone');
+  });
+});
+
+describe('Search', () => {
+  const idx = buildIndex({ lectures: LECTURES, cards: allCards(), reactions: REACTIONS, nursing: NURSING });
+  const top = (q) => search(idx, q)[0];
+  it('finds notes, terms, cards and reactions', () => {
+    for (const q of ['micelle', 'saponification', 'Fischer projection', 'LDL', 'Markovnikov', 'buffer', 'lipase']) {
+      if (!search(idx, q).length) throw new Error(`no results for "${q}"`);
+    }
+    expect(search(idx, 'saponification').some((r) => r.item.type === 'term')).toBe(true);
+    expect(search(idx, 'hydrogenation').some((r) => r.item.type === 'reaction')).toBe(true);
+    expect(top('hemiacetal').item.title.toLowerCase()).toContain('hemiacetal');
+  });
+  it('ignores case, sub/superscripts and Greek letters', () => {
+    expect(search(idx, 'ch3cooh').length).toBeGreaterThan(0);
+    expect(search(idx, 'alpha anomer').length).toBe(search(idx, 'α anomer').length);
+    expect(search(idx, 'H3O+').length).toBeGreaterThan(0);
+    expect(search(idx, 'zzqxj').length).toBe(0);
+  });
+  it('links every result somewhere real', () => {
+    const lecIds = new Set(LECTURES.map((l) => l.id));
+    for (const it of idx) {
+      const m = it.href.match(/^#\/learn\/(l\d\d)(?:\/([\w-]+))?$/);
+      if (m) {
+        if (!lecIds.has(m[1])) throw new Error(`bad link ${it.href}`);
+        if (m[2] && !LECTURES.find((l) => l.id === m[1]).sections.some((s) => s.id === m[2])) throw new Error(`bad section link ${it.href}`);
+      } else if (!/^#\/(reactions\?rx=[\w-]+|cards\/review\?deck=l\d\d|reference\/nursing)$/.test(it.href)) throw new Error(`unexpected link ${it.href}`);
+    }
+  });
+  it('highlights matches in the original text', () => {
+    const parts = highlight('Soaps form **micelles** in water.', 'micelle');
+    expect(parts.filter((p) => p.mark).map((p) => p.text).join('|')).toBe('micelle');
+    const sub = highlight('acetic acid, CH₃COOH', 'ch3cooh');
+    expect(sub.filter((p) => p.mark).map((p) => p.text).join('')).toBe('CH₃COOH');
   });
 });
