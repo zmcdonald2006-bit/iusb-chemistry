@@ -44,19 +44,24 @@ export function inline(text) {
   return s;
 }
 
-// Block-level: paragraphs, bullet lists, line breaks.
+// Block-level: paragraphs, bullet lists, line breaks. Within a paragraph, each run of "- " lines
+// becomes a bullet list and each run of "1. " lines a numbered list; other lines stay text.
+const BULLET = /^\s*[-•]\s+/;
+const NUMBERED = /^\s*\d+[.)]\s+/;
 export function markup(text) {
   if (text == null) return '';
   const paras = String(text).split(/\n{2,}/);
   return paras.map((p) => {
-    const lines = p.split('\n');
-    if (lines.every((l) => /^\s*[-•]\s+/.test(l))) {
-      return `<ul>${lines.map((l) => `<li>${inline(l.replace(/^\s*[-•]\s+/, ''))}</li>`).join('')}</ul>`;
+    const runs = [];
+    for (const line of p.split('\n')) {
+      const type = BULLET.test(line) ? 'ul' : NUMBERED.test(line) ? 'ol' : 'p';
+      const body = type === 'ul' ? line.replace(BULLET, '') : type === 'ol' ? line.replace(NUMBERED, '') : line;
+      const last = runs[runs.length - 1];
+      if (last && last.type === type) last.lines.push(body); else runs.push({ type, lines: [body] });
     }
-    if (lines.every((l) => /^\s*\d+[.)]\s+/.test(l))) {
-      return `<ol>${lines.map((l) => `<li>${inline(l.replace(/^\s*\d+[.)]\s+/, ''))}</li>`).join('')}</ol>`;
-    }
-    return `<p>${lines.map(inline).join('<br>')}</p>`;
+    return runs.map((r) => (r.type === 'p'
+      ? `<p>${r.lines.map(inline).join('<br>')}</p>`
+      : `<${r.type}>${r.lines.map((l) => `<li>${inline(l)}</li>`).join('')}</${r.type}>`)).join('');
   }).join('');
 }
 

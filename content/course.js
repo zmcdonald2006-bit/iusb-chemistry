@@ -37,6 +37,8 @@ export const CHANGELOG = [
       'Fischer ↔ Haworth: see a Fischer projection and pick its α or β ring, or see a ring and pick its open chain, with a fresh sugar every time',
       'Triacylglycerol reactions: what hydrolysis, lipases and saponification (NaOH) turn a fat into, with the fatty acid vs fatty acid salt trap',
       'Matching is now tap-to-pair: tap a row, then tap its answer. There are new matching sets for vitamins, hormones, membranes, cholesterol, NSAIDs, sugars and fatty acids',
+      'Review sheets: every lecture on one page (rules, memory tricks, traps and key terms), with a Print button. Find them on each lecture, on your exams, and under More',
+      'Fix: bullet points inside a few note boxes (like "D or L?") now show as real lists',
     ],
   },
   {

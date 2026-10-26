@@ -250,4 +250,14 @@ describe('Progress', () => {
     markSectionRead(st, 'l01', 's1', T0);
     expect(nextUnreadSection(st, course).lecture.id).toBe('l02');
   });
+  it('suggests the review sheet in the last two days before an exam', () => {
+    const course = { lectures: [{ id: 'l01', number: 1, title: 'Intro', skills: [{ id: 'l01.a', title: 'A' }], sections: [{ id: 's1', title: 'S1' }] }] };
+    const st = defaultState(T0);
+    const today = dayKey(T0);
+    st.exams.push({ id: 'e1', title: 'Exam 1', date: addDays(today, 5), lectures: ['l01'] });
+    expect(recommendations(st, course, [], { today, now: T0 }).some((r) => r.kind === 'sheet')).toBe(false);
+    st.exams[0].date = addDays(today, 2);
+    const sheet = recommendations(st, course, [], { today, now: T0 }).find((r) => r.kind === 'sheet');
+    expect(sheet.href).toBe('#/review/l01');
+  });
 });

@@ -35,7 +35,8 @@ function examCard(app, e, today, past = false) {
     past ? null : h('div', { class: 'btn-row' },
       h('a', { class: 'btn small', href: `#/practice/exam?lectures=${lecs.map((l) => l.id).join(',')}` }, icon('target'), 'Practice exam'),
       h('a', { class: 'btn small secondary', href: `#/practice/custom?lectures=${lecs.map((l) => l.id).join(',')}&count=15` }, icon('play'), 'Practice set'),
-      h('a', { class: 'btn small secondary', href: `#/cards/review?deck=${lecs.map((l) => l.id).join(',')}&cram=1` }, icon('cards'), 'Cram cards')));
+      h('a', { class: 'btn small secondary', href: `#/cards/review?deck=${lecs.map((l) => l.id).join(',')}&cram=1` }, icon('cards'), 'Cram cards'),
+      h('a', { class: 'btn small secondary', href: `#/review/${lecs.map((l) => l.id).join(',')}` }, icon('sheet'), 'Review sheet')));
 }
 
 export function editExam(app, exam) {

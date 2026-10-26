@@ -33,6 +33,8 @@ describe('Markup', () => {
     expect(markup('a\n\nb')).toBe('<p>a</p><p>b</p>');
     expect(markup('- one\n- two')).toBe('<ul><li>one</li><li>two</li></ul>');
     expect(markup('1. one\n2. two')).toBe('<ol><li>one</li><li>two</li></ol>');
+    expect(markup('Rule:\n- one\n- two\nEnd')).toBe('<p>Rule:</p><ul><li>one</li><li>two</li></ul><p>End</p>');
+    expect(markup('a\nb')).toBe('<p>a<br>b</p>');
     expect(plain('**Hi** $H_2O$')).toBe('Hi H2O');
   });
 });

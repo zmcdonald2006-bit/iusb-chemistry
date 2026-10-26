@@ -1,6 +1,7 @@
 // Content integrity: every lecture, question, card and structure is checked.
 import { describe, it, expect } from './harness.js';
 import { validateQuestion } from './helpers.js';
+import { sheetParts } from '../js/lib/review.js';
 import { LECTURES, allAuthoredQuestions, allCards, glossary, CHANGELOG, COURSE, lectureById, skillById, changesSince, changeDate } from '../content/course.js';
 import { EDGES } from '../js/views/reactions.js';
 import { FAMILIES, REACTIONS, TYPES, REAGENTS } from '../content/reactions.js';
@@ -78,6 +79,15 @@ describe('Course structure', () => {
       if (!c.title || !c.items || !c.items.length) throw new Error(`changelog ${c.version} needs a title and items`);
       if (i && !(key(CHANGELOG[i - 1].version) > key(c.version))) throw new Error(`changelog out of order at ${c.version}`);
     });
+  });
+  it('gives every lecture a review sheet with rules and key terms', () => {
+    for (const l of LECTURES) {
+      const p = sheetParts(l);
+      const rules = p.groups.find((g) => g.id === 'rules');
+      if (!rules || rules.items.length < 2) throw new Error(`${l.id}: review sheet needs ≥2 rule boxes`);
+      if (p.terms.length < 4) throw new Error(`${l.id}: review sheet needs ≥4 key terms`);
+      for (const g of p.groups) for (const { block } of g.items) if (!block.text) throw new Error(`${l.id}: empty box on the review sheet`);
+    }
   });
   it('lists the updates a device has not seen', () => {
     expect(changesSince('')).toEqual([]);

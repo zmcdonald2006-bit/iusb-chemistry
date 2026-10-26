@@ -51,7 +51,8 @@ export function lectureOverview({ app, main, params }) {
     h('div', { class: 'btn-row' },
       h('a', { class: 'btn', href: `#/learn/${l.id}/${next.id}` }, icon('book'), p.read ? (p.read === p.totalSections ? 'Review notes' : 'Continue reading') : 'Start reading'),
       h('a', { class: 'btn secondary', href: `#/practice/lecture/${l.id}` }, icon('target'), 'Practice'),
-      h('a', { class: 'btn secondary', href: `#/cards/review?deck=${l.id}` }, icon('cards'), 'Cards'))));
+      h('a', { class: 'btn secondary', href: `#/cards/review?deck=${l.id}` }, icon('cards'), 'Cards'),
+      h('a', { class: 'btn secondary', href: `#/review/${l.id}` }, icon('sheet'), 'Review sheet'))));
 
   if (l.tested) {
     main.appendChild(h('div', { class: 'callout memory', style: { marginTop: '12px' } }, h('div', { class: 'co-title' }, icon('heart'), 'You\'ve already been tested on this'), md('Great time to **rebuild** it: these ideas come back in every later lecture (and on the final). Look for the **"Where students lose points"** boxes, then drill your weakest skill below.')));

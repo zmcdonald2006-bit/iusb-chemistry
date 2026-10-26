@@ -39,7 +39,7 @@ applyTheme();
 // ---- Shell ----------------------------------------------------------------------------------
 const NAV_MAIN = [
   { href: '#/', label: 'Home', icon: 'home', match: (p) => p === '/' },
-  { href: '#/learn', label: 'Learn', icon: 'book', match: (p) => p.startsWith('/learn') || p.startsWith('/bootcamp') },
+  { href: '#/learn', label: 'Learn', icon: 'book', match: (p) => /^\/(learn|bootcamp|review)/.test(p) },
   { href: '#/practice', label: 'Practice', icon: 'target', match: (p) => /^\/(practice|quiz|results|mistakes|game|words)/.test(p) },
   { href: '#/cards', label: 'Cards', icon: 'cards', match: (p) => p.startsWith('/cards'), badge: () => dueCount() },
   { href: '#/more', label: 'More', icon: 'more', match: (p) => /^\/(more|reactions|lab|reference|tools|progress|settings|about|exams)/.test(p) },
@@ -49,6 +49,7 @@ const NAV_SIDE = [
   { href: '#/', label: 'Home', icon: 'home', match: (p) => p === '/' },
   { href: '#/learn', label: 'Lectures', icon: 'book', match: (p) => p.startsWith('/learn') },
   { href: '#/bootcamp', label: 'Foundations Bootcamp', icon: 'spark', match: (p) => p.startsWith('/bootcamp') },
+  { href: '#/review', label: 'Review sheets', icon: 'sheet', match: (p) => p.startsWith('/review') },
   { href: '#/practice', label: 'Practice', icon: 'target', match: (p) => /^\/(practice|quiz|results)/.test(p) },
   { href: '#/cards', label: 'Flashcards', icon: 'cards', match: (p) => p.startsWith('/cards'), badge: () => dueCount() },
   { href: '#/mistakes', label: 'Mistakes', icon: 'redo', match: (p) => p.startsWith('/mistakes'), badge: () => openMistakes(store.get()).length },
@@ -196,7 +197,7 @@ const router = createRouter(ROUTES, async ({ route, params, query, path }) => {
   }
   const h1 = main.querySelector('h1');
   if (h1 && document.activeElement === document.body) { h1.setAttribute('tabindex', '-1'); h1.focus({ preventScroll: true }); }
-  studyRoute = /^\/(learn\/[^/]+\/[^/]+|quiz|cards\/review|bootcamp|game\/play)/.test(path);
+  studyRoute = /^\/(learn\/[^/]+\/[^/]+|quiz|cards\/review|bootcamp|game\/play|review\/)/.test(path);
   // a calm page: install an update that was waiting, or show what the last one changed
   if (!applyWaitingUpdate()) showWhatsNew();
 });

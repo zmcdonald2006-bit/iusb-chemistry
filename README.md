@@ -12,6 +12,7 @@ It's a static web app with no build step and no dependencies. It works offline, 
   - By lecture, by skill, mixed, weakest skills, mistakes only, or a timed practice exam.
   - Unlimited auto-generated questions for naming, drawing, reactions, chirality, pH, boiling-point order and more. The generated questions come from a built-in chemistry engine, so every answer is computed, not typed by hand.
   - Wrong answers go to a **Mistakes** notebook. A mistake leaves the notebook after she gets that question right twice.
+- **Review sheets**: each lecture on one page, built from its notes: the rules, exam tips, memory tricks, traps and key terms, with the step-by-step methods and tables in a fold-out part. An exam's lectures can be combined into one sheet. Each box links back to its part of the notes, and the sheet prints cleanly (two columns, fold-outs opened).
 - **Flashcards** with spaced repetition (Again / Hard / Good / Easy).
 - **Games** (More → Games), two study games that share one **fish wallet**. Fish buy outfits and oceans in the wardrobe. Each device counts what it earns and the totals are combined, so fish earned on a phone and a laptop always add up.
 - **Word Splash**, a Wordle-style game with chemistry words from every lecture:

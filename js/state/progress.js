@@ -133,6 +133,9 @@ export function recommendations(state, course, allCards, { today = dayKey(), now
       subtitle: weak ? `Weakest spot: ${weak.skill.title} (${Math.round(weak.stats.p * 100)}%)` : 'Take a practice exam to see where you stand',
       href: `#/practice/exam?lectures=${lecs.join(',')}`,
     });
+    if (exam.daysLeft <= 2) {
+      recs.push({ kind: 'sheet', icon: 'sheet', title: `Read the review sheet for ${exam.title}`, subtitle: 'The rules, memory tricks and traps on one page', href: `#/review/${lecs.join(',')}` });
+    }
   }
   const weak = weakSkills(state, course, { limit: 3, now }).filter((w) => w.stats.p < 0.7);
   if (weak.length) {
