@@ -1,6 +1,6 @@
 # Chem Companion — C102 study guide
 
-A study app for **C102 Elementary Chemistry II at IU South Bend** (Smith, *General, Organic & Biological Chemistry*), Lectures 1–15.
+A study app for **C102 Elementary Chemistry II at IU South Bend** (Smith, *General, Organic & Biological Chemistry*), Lectures 1–17.
 
 It's a static web app with no build step and no dependencies. It works offline, installs to a phone's home screen, and stores progress on the device.
 
@@ -26,7 +26,7 @@ It's a static web app with no build step and no dependencies. It works offline, 
   - If she knows the answer, she can swipe right or tap **Dash** to rush the rings in for bonus points.
   - Each run has 3 lives. Misses show the explanation and go to the Mistakes notebook.
   - Fish caught along the way unlock outfits and oceans.
-  - There are 15 decks, from Foundations (Lectures 1–4) to lipids and sugars, all drawn from the same question generators as Practice.
+  - There are 16 decks, from Foundations (Lectures 1–4) to lipids, sugars and amino acids, all drawn from the same question generators as Practice.
   - A whole run counts toward mastery as one result per skill, scored by accuracy. Fast game answers count, but they can't outweigh careful quiz answers.
   - Slow / Chill / Normal / Fast speeds. Slow gives about twice the normal time and barely speeds up. Sound effects and vibration can be turned off in the game menu. Android phones vibrate fully; iPhones allow only a light tap, on iOS 18 or newer.
 - **Name Lab**: type any compound name from class and see the structure it describes, the correct IUPAC name, the formula and the chirality centers. If a name is wrong, it explains why.
@@ -37,7 +37,7 @@ It's a static web app with no build step and no dependencies. It works offline, 
   - **Quiz me** mode hides the products, and **Drill all reactions** practices them all.
 - **Nursing connections**: short notes on how each topic shows up in nursing (antidotes, ABGs, DKA, drug safety). They appear in the lessons and all together under **Reference → Nursing**, marked as extra (beyond the slides).
 - **This confused me**: a button on every question, lesson page, flashcard and reaction. Reports go to the cloud database so confusing spots can be fixed. See [docs/GOOGLE_SIGN_IN.md](docs/GOOGLE_SIGN_IN.md#reading-this-confused-me-reports).
-- **Reference**: functional groups, naming rules, properties, shapes, acid–base, glossary and a pH calculator.
+- **Reference**: functional groups, naming rules, properties, shapes, acid–base, the 20 amino acids, glossary and a pH calculator.
 - **Progress**:
   - Mastery for every skill.
   - Streaks, a study heatmap, upcoming exam countdowns and milestones.
@@ -96,7 +96,7 @@ ruby tools/serve.rb
 
 Then open <http://localhost:8080>. The server disables caching, so edits show up on reload.
 
-Run the tests (~660 tests: chemistry engine, every question generator × 150 seeds, content integrity, state and migrations, router, cloud sync, feedback reports):
+Run the tests (~770 tests: chemistry engine, every question generator × 150 seeds, content integrity, state and migrations, router, cloud sync, feedback reports):
 
 ```bash
 /System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Helpers/jsc -m tests/run.js

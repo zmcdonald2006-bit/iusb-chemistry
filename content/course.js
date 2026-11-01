@@ -15,8 +15,10 @@ import l12 from './lectures/l12.js';
 import l13 from './lectures/l13.js';
 import l14 from './lectures/l14.js';
 import l15 from './lectures/l15.js';
+import l16 from './lectures/l16.js';
+import l17 from './lectures/l17.js';
 
-export const LECTURES = [l01, l02, l03, l04, l05, l06, l07, l08, l09, l10, l11, l12, l13, l14, l15];
+export const LECTURES = [l01, l02, l03, l04, l05, l06, l07, l08, l09, l10, l11, l12, l13, l14, l15, l16, l17];
 
 export const COURSE = {
   code: 'C102',
@@ -24,12 +26,23 @@ export const COURSE = {
   school: 'IU South Bend',
   textbook: 'Smith, General, Organic & Biological Chemistry',
   // Bump when content changes so the app can show "what's new".
-  contentVersion: '2026.10.26',
+  contentVersion: '2026.11.01',
   lectures: LECTURES,
 };
 
 // Shown on the "What's new" screen after an update. Newest first.
 export const CHANGELOG = [
+  {
+    version: '2026.11.01',
+    title: 'New: Lectures 16 & 17 (carbohydrates in the body and amino acids)',
+    items: [
+      'Lecture 16, Carbohydrates & the Body: acetals and hemiacetals, glycosidic linkages (α down, β up), maltose, lactose, sucrose, lactose intolerance, artificial sweeteners, cellulose, starch, glycogen, fed vs fasting, GAGs, chitin and blood types',
+      'Lecture 17, Amino Acids: all 20 amino acids, D and L, zwitterions and pH, how to draw a dipeptide, N- and C-terminal ends, enkephalins, disulfide bonds, oxytocin and vasopressin',
+      'New drawings in the style of the slides: joined sugar rings and straight peptide chains',
+      'Fresh practice for both lectures, review sheets, flashcards, new Word Splash words and nursing connections',
+      'Sea Lion Splash: a new Amino Atoll deck, and Sugar Shoals now covers Lecture 16. Reference has a new amino acid table',
+    ],
+  },
   {
     version: '2026.10.26',
     title: 'Search, review sheets, and new ways to practice',

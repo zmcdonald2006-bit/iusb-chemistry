@@ -391,6 +391,13 @@ table.t tr:last-child td { border-bottom: 0; }
 .mol-box.plain { border: 0; background: transparent; padding: 4px; }
 .mol-svg { display: block; height: auto; max-width: 100%; color: var(--text); }
 .mol-svg .bond { stroke: currentColor; }
+.mol-svg .bond.glyco { stroke: var(--accent); }
+.mol-box.pep-long { width: 100%; max-width: 100%; min-width: 0; }
+.mol-box.pep-long .mol { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.mol-box.pep-long .mol-svg { max-width: none; margin: 0 auto; }
+.pep-swipe { font-size: .8rem; color: var(--text-3); text-align: center; margin-top: 2px; }
+@media (min-width: 900px) { .pep-swipe { display: none; } }
+.mol-svg .bond.amide { stroke: var(--bad); stroke-width: 2.6px; }
 .mol-svg .atom { fill: currentColor; font-family: var(--font); font-weight: 560; }
 .mol-svg .el-O { fill: var(--el-O); }
 .mol-svg .el-N { fill: var(--el-N); }

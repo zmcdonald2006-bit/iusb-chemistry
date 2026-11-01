@@ -4,6 +4,7 @@ import { parseSmiles } from '../js/chem/smiles.js';
 import { canonicalKey } from '../js/chem/analyze.js';
 import { renderMolecule } from '../js/chem/render.js';
 import { renderSugar } from '../js/chem/sugars.js';
+import { renderPeptide } from '../js/chem/peptides.js';
 
 // The response a perfect student would give.
 export function perfectResponse(q) {
@@ -29,6 +30,7 @@ export function validateQuestion(q) {
     for (const m of q.figure.mols || []) figs.push(m.smiles);
     if (q.figure.rxn) { figs.push(q.figure.rxn.from); if (q.figure.rxn.to) figs.push(q.figure.rxn.to); }
     for (const sg of q.figure.sugars || []) { try { renderSugar(sg); } catch (e) { fail(`sugar figure fails: ${e.message}`); } }
+    for (const pp of q.figure.peptides || []) { try { renderPeptide(pp); } catch (e) { fail(`peptide figure fails: ${e.message}`); } }
   }
   for (const s of figs) {
     try { parseSmiles(s); renderMolecule(s, { highlight: q.figure.highlight }); } catch (e) { fail(`figure "${s}" fails: ${e.message}`); }
@@ -42,12 +44,13 @@ export function validateQuestion(q) {
     case 'struct': {
       if (q.choices.length < 2) fail('needs ≥2 structure choices');
       if (!(q.answer >= 0 && q.answer < q.choices.length)) fail('answer out of range');
-      const keys = q.choices.map((c) => (c.sugar ? `g:${JSON.stringify(c.sugar)}` : c.smiles ? canonicalKey(c.smiles) : `t:${c.text}`));
+      const keys = q.choices.map((c) => (c.peptide ? `p:${JSON.stringify(c.peptide)}` : c.sugar ? `g:${JSON.stringify(c.sugar)}` : c.smiles ? canonicalKey(c.smiles) : `t:${c.text}`));
       if (new Set(keys).size !== keys.length) fail('duplicate structures');
       for (const c of q.choices) {
         if (c.smiles) renderMolecule(c.smiles);
         if (c.sugar) { try { renderSugar(c.sugar); } catch (e) { fail(`sugar choice fails: ${e.message}`); } }
-        if (!c.smiles && !c.sugar && !c.text) fail('structure choice needs smiles, sugar or text');
+        if (c.peptide) { try { renderPeptide(c.peptide); } catch (e) { fail(`peptide choice fails: ${e.message}`); } }
+        if (!c.smiles && !c.sugar && !c.peptide && !c.text) fail('structure choice needs smiles, sugar, peptide or text');
       }
       break;
     }

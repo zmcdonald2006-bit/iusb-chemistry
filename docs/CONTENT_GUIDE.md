@@ -72,7 +72,8 @@ Section ids appear in links (`#/learn/l11/naming`), so keep them short and stabl
 | `check` | `q: question` | A quick check inside the notes. It also joins the practice pool |
 | `rxn` | `from`, `reagent`, `to`, `caption?` | Reaction drawing. `from`/`to` are SMILES or arrays of SMILES |
 | `tetra` | `items: [{ groups: [top, left, wedge, dash], caption? }]`, `caption?` | 3-D tetrahedral drawings (chirality) |
-| `sugars` | `items: [{ sugar: 'D-glucose', caption?, mark?, numbers? }]`, `caption?` | Fischer and Haworth projections of sugars (Lecture 15). Ready-made names are in `SUGARS` in [js/chem/sugars.js](../js/chem/sugars.js); a custom Fischer item is `{ top, rows: [['H','OH'], 'C=O', …], bottom }` |
+| `sugars` | `items: [{ sugar: 'D-glucose', caption?, mark?, numbers? }]`, `caption?` | Fischer and Haworth projections of sugars, and rings joined into disaccharides and polysaccharides (`maltose`, `cellulose`, `amylopectin`…). Ready-made names are in `SUGARS` in [js/chem/sugars.js](../js/chem/sugars.js); a custom Fischer item is `{ top, rows: [['H','OH'], 'C=O', …], bottom }` |
+| `peptides` | `items: [{ seq: ['Ala', 'Ser'], caption? }]` or `{ rs: ['R1', 'R2'] }`, `n?` (`'H3N⁺'`, `'H2N'`), `c?` (`'O⁻'`, `'OH'`), `caption?` | Amino acids and peptides drawn like the slides: a straight backbone, C=O up, R down, amide bonds in color. Names are in [js/chem/aminoacids.js](../js/chem/aminoacids.js). Three or more amino acids scroll sideways on a phone |
 | `compare` | `items: [{ title, text }]` | Side-by-side boxes |
 | `link` | `href: '#/…'`, `text` | In-app button link |
 
@@ -117,7 +118,7 @@ Every question has `id` (unique across the course, e.g. `l11-q01`), `skill`, `ty
 | `type` | Fields | Answer format |
 |---|---|---|
 | `mc` | `choices: [text…]`, `answer` | index of the right choice; choices are shuffled unless `shuffle: false` |
-| `struct` | `choices: [{ smiles }…]` or `[{ sugar: spec }…]`, `answer` | "Which structure is…" with drawn choices. `sugar` takes a Fischer or Haworth spec (see the `sugars` block); rings are shown one per row |
+| `struct` | `choices: [{ smiles }…]`, `[{ sugar: spec }…]` or `[{ peptide: spec }…]`, `answer` | "Which structure is…" with drawn choices. `sugar` takes a Fischer or Haworth spec (see the `sugars` block); rings are shown one per row |
 | `tf` | `answer` | `true` / `false` |
 | `multi` | `choices`, `answer: [i, j…]` | "Select all that apply" |
 | `num` | `answer`, `tol?` or `rel?`, `decimals?`, `placeholder?` | number; default tolerance 0.5% |
@@ -128,7 +129,7 @@ Every question has `id` (unique across the course, e.g. `l11-q01`), `skill`, `ty
 | `match` | `left`, `right`, `answer: [right index for each left]` | Tap-to-pair on screen; the right side is shuffled for her. Pairs must be one-to-one (the tests check) |
 | `atoms` | `figure: { smiles }`, `selectable?: [atom…]`, `answer: [atom…]` | "Tap every chirality center…" |
 
-Figures: `{ smiles, numbers?, highlight? }`, `{ mols: [...] }`, `{ rxn: { from, reagent, to? } }`, `{ tetras: [...] }`, or `{ sugars: [...] }` (Fischer/Haworth, same items as the `sugars` block).
+Figures: `{ smiles, numbers?, highlight? }`, `{ mols: [...] }`, `{ rxn: { from, reagent, to? } }`, `{ tetras: [...] }`, `{ sugars: [...] }` (same items as the `sugars` block) or `{ peptides: [...] }` (same items as the `peptides` block).
 
 ```js
 { id: 'l05-q07', skill: 'l05.naming', type: 'name', prompt: 'Name this alcohol.',

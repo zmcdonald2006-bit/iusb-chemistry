@@ -1,5 +1,5 @@
 import { h, icon, md, mdi } from '../ui/dom.js';
-import { ring, bar, levelChip, molView, molsView, rxnView, tetraView, sugarsView, pageHead, sectionTitle, emptyState, autoNumbers, nursingNote } from '../ui/components.js';
+import { ring, bar, levelChip, molView, molsView, rxnView, tetraView, sugarsView, peptidesView, pageHead, sectionTitle, emptyState, autoNumbers, nursingNote } from '../ui/components.js';
 import { questionView } from '../ui/question.js';
 import { lectureProgress } from '../state/progress.js';
 import { markSectionRead, recordAttempt, overrideAttempt } from '../state/store.js';
@@ -169,6 +169,7 @@ export function renderBlock(b, ctx) {
     case 'rxn': return h('div', {}, rxnView({ from: b.from, reagent: b.reagent, to: b.to }), b.caption ? mdi(b.caption, 'div', 'caption') : null);
     case 'tetra': return tetraView(b.items, b.caption);
     case 'sugars': return sugarsView(b.items, b.caption);
+    case 'peptides': return peptidesView(b.items, b.caption);
     case 'link': return h('a', { class: 'btn secondary', href: b.href }, mdi(b.text));
     case 'example': return exampleBlock(b);
     case 'check': return checkBlock(b, ctx);

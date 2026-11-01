@@ -9,7 +9,8 @@ const NAMES_2 = ['l05-name-mc', 'l06e-name-mc', 'l06h-name-mc', 'l06t-name-mc', 
 const PRODUCTS = ['l04-hydrogenation', 'l04-halogenation', 'l04-hydrohalogenation', 'l04-hydration', 'l05-dehydration', 'l05-oxidation', 'l06-disulfide', 'l08-oxidation', 'l08-reduction', 'l10-neutralize', 'l11-salt'];
 const AMINES = ['l11-classify', 'l11-vs-alcohol', 'l11-shape', 'l11-name-mc', 'l11-hbond', 'l11-salt', 'l11-alkaloid', 'l11-conjugate'];
 const LIPIDS = ['l13-mp', 'l13-sat', 'l13-omega', 'l13-hydrolyzable', 'l13-fat-oil', 'l13-food', 'l13-phospho', 'l13-tag-products', 'l13-tag-reagent', 'l14-transport', 'l14-lipo', 'l14-hormone', 'l14-hormone-job', 'l14-vitamin', 'l14-cox'];
-const SUGARS = ['l15-classify', 'l15-dl', 'l15-centers', 'l15-anomer', 'l15-which-sugar'];
+const SUGARS = ['l15-classify', 'l15-dl', 'l15-centers', 'l15-anomer', 'l15-which-sugar', 'l16-kind', 'l16-composition', 'l16-linkage-drawn', 'l16-linkage', 'l16-hydrolysis', 'l16-digest', 'l16-sweetener', 'l16-fed-fast', 'l16-gag', 'l16-blood-compat', 'l16-blood-sugar'];
+const AMINO = ['l17-class', 'l17-abbrev', 'l17-chiral', 'l17-dl', 'l17-charge', 'l17-terminal', 'l17-dipeptide-name', 'l17-protein-job', 'l17-body'];
 const BODY = ['l12-agonist', 'l12-messenger', 'l12-precursor', 'l12-pea', 'l12-nervous', 'l12-amine-form', 'l12-drug-ep', 'l12-drug-ssri', 'l12-drug-hist'];
 
 export const DECKS = [
@@ -27,9 +28,10 @@ export const DECKS = [
   { id: 'amines', name: 'Amine Alley', desc: 'Lecture 11: classify, name, alkaloids, salts', lectures: [11], gens: AMINES },
   { id: 'body', name: 'Nerve Reef', desc: 'Lecture 12: neurotransmitters and drugs', lectures: [12], gens: BODY },
   { id: 'lipids', name: 'Lipid Lagoon', desc: 'Lectures 13–14: fats, membranes, steroids, vitamins', lectures: [13, 14], gens: LIPIDS },
-  { id: 'sugars', name: 'Sugar Shoals', desc: 'Lecture 15: classify sugars, D or L, anomers', lectures: [15], gens: SUGARS },
+  { id: 'sugars', name: 'Sugar Shoals', desc: 'Lectures 15–16: sugars, linkages, glycogen, blood types', lectures: [15, 16], gens: SUGARS },
+  { id: 'amino', name: 'Amino Atoll', desc: 'Lecture 17: side chains, charge and pH, peptides, hormones', lectures: [17], gens: AMINO },
   { id: 'everything', name: 'Open Ocean', desc: 'Everything, tilted toward your weak spots', lectures: [],
-    gens: ['l02-fg-single', 'l02-carbonyl', 'l01-shape', 'l01-angle', ...NAMES_1, ...NAMES_2, 'l03-cclass', 'l05-classify', 'l06-halide-class', 'l04-cistrans', 'l04-cistrans-possible', 'l07-chiral-yn', 'l02-polar', 'l02-hbond', 'l02-solubility', ...PRODUCTS, 'l04-reagent', 'l08-oxred-classify', 'l09-acidic', 'l09-conjugate', 'l09-stronger', 'l09-identify', 'l09-buffer', ...AMINES, ...BODY, ...LIPIDS, ...SUGARS] },
+    gens: ['l02-fg-single', 'l02-carbonyl', 'l01-shape', 'l01-angle', ...NAMES_1, ...NAMES_2, 'l03-cclass', 'l05-classify', 'l06-halide-class', 'l04-cistrans', 'l04-cistrans-possible', 'l07-chiral-yn', 'l02-polar', 'l02-hbond', 'l02-solubility', ...PRODUCTS, 'l04-reagent', 'l08-oxred-classify', 'l09-acidic', 'l09-conjugate', 'l09-stronger', 'l09-identify', 'l09-buffer', ...AMINES, ...BODY, ...LIPIDS, ...SUGARS, ...AMINO] },
 ];
 
 export const deckById = (id) => DECKS.find((d) => d.id === id) || null;

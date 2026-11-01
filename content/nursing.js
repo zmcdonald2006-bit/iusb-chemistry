@@ -246,6 +246,52 @@ export const NURSING = [
     id: 'n-l15-galactosemia', lecture: 'l15', section: 'common', title: 'Newborn screening',
     text: '**Galactosemia** is on the newborn screening panel. Babies who have it must avoid galactose, which means **no breast milk or regular formula** (lactose = glucose + galactose); they get a **soy-based** formula instead.',
   },
+  // Lecture 16 — Carbohydrates & the body
+  {
+    id: 'n-l16-lactose', lecture: 'l16', section: 'health', title: 'Intolerance is not an allergy',
+    text: '**Lactose intolerance** is a shortage of an enzyme: cramps and diarrhea, but no danger. A **milk allergy** is an immune reaction to milk **proteins** and can cause hives or anaphylaxis. Patients often mix them up, so ask what actually happens when they drink milk before you chart it.',
+  },
+  {
+    id: 'n-l16-pku', lecture: 'l16', section: 'health', title: 'Why diet soda warns about phenylalanine',
+    text: 'Aspartame is broken down into the amino acid **phenylalanine** (Lecture 17). People with **phenylketonuria (PKU)** cannot process it, so foods with aspartame carry the label "Phenylketonurics: contains phenylalanine".',
+  },
+  {
+    id: 'n-l16-fiber', lecture: 'l16', section: 'polysaccharides', title: 'Fiber and constipation',
+    text: 'Humans cannot digest cellulose, which is the point: **insoluble fiber** adds bulk that keeps stool moving. Teaching a constipated patient about fiber goes with teaching them to **drink more fluids**, since fiber without water can make things worse.',
+  },
+  {
+    id: 'n-l16-glucagon', lecture: 'l16', section: 'glycogen', title: 'Glucagon rescues low blood sugar',
+    text: 'For severe hypoglycemia in a patient who cannot swallow, **glucagon** tells the **liver** to break down glycogen and release glucose. It works poorly when glycogen stores are low, for example after long fasting or heavy alcohol use, so those patients need IV dextrose.',
+  },
+  {
+    id: 'n-l16-heparin', lecture: 'l16', section: 'gags', title: 'Heparin on the unit',
+    text: '**Heparin** is a common anticoagulant, given IV or by subcutaneous injection because it is not absorbed from the gut. Nurses watch for **bleeding**, follow the **aPTT** on continuous infusions, and know the antidote: **protamine sulfate**.',
+  },
+  {
+    id: 'n-l16-transfusion', lecture: 'l16', section: 'blood', title: 'Giving blood safely',
+    text: 'Before a transfusion, two licensed staff verify the patient and the blood at the bedside. Stay with the patient for the first 15 minutes: **fever, chills, back pain or trouble breathing** mean **stop the transfusion**. Real blood matching also includes the **Rh factor**, which is why **O negative** is the emergency choice for red cells.',
+  },
+  // Lecture 17 — Amino acids
+  {
+    id: 'n-l17-protein', lecture: 'l17', section: 'proteins', title: 'Protein and wound healing',
+    text: 'Since protein is not stored, poor intake shows up fast. Patients with **burns, pressure injuries or surgical wounds** need more than 0.8 g/kg, and a low-protein diet slows healing. That is why dietitians are consulted for these patients.',
+  },
+  {
+    id: 'n-l17-naloxone', lecture: 'l17', section: 'enkephalins', title: 'Naloxone and the opioid receptor',
+    text: 'Morphine and heroin work at the receptors your enkephalins use. **Naloxone (Narcan)** blocks those receptors and reverses an overdose within minutes. It wears off sooner than many opioids do, so keep watching the patient\'s **breathing** after it is given.',
+  },
+  {
+    id: 'n-l17-insulin', lecture: 'l17', section: 'disulfide', title: 'Why insulin is injected',
+    text: 'Insulin is a protein. Swallowed, it would be digested like any other protein, with its peptide bonds hydrolyzed in the gut, so it is **injected**. Heat and shaking can also ruin a protein\'s shape, which is why insulin storage instructions matter.',
+  },
+  {
+    id: 'n-l17-oxytocin', lecture: 'l17', section: 'hormones', title: 'Pitocin in labor and delivery',
+    text: '**Pitocin** is synthetic oxytocin, used to induce labor and to control bleeding after delivery. It runs on an infusion pump while nurses monitor **contraction strength and frequency** and the **fetal heart rate**, since contractions that come too often can stress the baby.',
+  },
+  {
+    id: 'n-l17-adh', lecture: 'l17', section: 'hormones', title: 'When ADH goes wrong',
+    text: 'Too little ADH causes **diabetes insipidus**: huge amounts of dilute urine and dehydration. Too much causes **SIADH**: the kidneys hold water and **blood sodium falls**. Either way, nurses track **intake and output, daily weights and sodium**.',
+  },
 ];
 
 export const nursingFor = (lecture, section) => NURSING.filter((n) => n.lecture === lecture && n.section === section);

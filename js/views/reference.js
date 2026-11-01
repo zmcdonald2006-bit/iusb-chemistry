@@ -2,9 +2,10 @@ import { h, icon, mdi, clear } from '../ui/dom.js';
 import { pageHead, molView, nursingNote } from '../ui/components.js';
 import { glossary, LECTURES } from '../../content/course.js';
 import { NURSING } from '../../content/nursing.js';
+import { AMINO_ACIDS, AA_CLASSES, aaSmiles, aaSideAtoms } from '../chem/aminoacids.js';
 
 const TABS = [
-  ['groups', 'Functional groups'], ['naming', 'Naming'], ['properties', 'Properties'], ['shapes', 'Shapes'], ['acidbase', 'Acids & bases'], ['nursing', 'Nursing'], ['glossary', 'Glossary'],
+  ['groups', 'Functional groups'], ['naming', 'Naming'], ['properties', 'Properties'], ['shapes', 'Shapes'], ['acidbase', 'Acids & bases'], ['aminoacids', 'Amino acids'], ['nursing', 'Nursing'], ['glossary', 'Glossary'],
 ];
 
 const FAMILIES = [
@@ -20,8 +21,8 @@ const FAMILIES = [
   ['Aldehyde', 'CC=O', '–CHO', '-al', 'L8'],
   ['Ketone', 'CC(C)=O', 'C–CO–C', '-one', 'L8'],
   ['Carboxylic acid', 'CC(=O)O', '–COOH', '-oic acid', 'L10'],
-  ['Ester', 'CC(=O)OC', '–COOR', '(not covered yet)', 'L2'],
-  ['Amide', 'CC(N)=O', '–CONH₂', '(not covered yet)', 'L2'],
+  ['Ester', 'CC(=O)OC', '–COOR', '(in fats: L13)', 'L2'],
+  ['Amide', 'CC(N)=O', '–CONH₂', '(the peptide bond: L17)', 'L2'],
 ];
 
 export default function reference({ app, main, params }) {
@@ -36,7 +37,7 @@ export default function reference({ app, main, params }) {
   });
   const body = h('div', { class: 'stack' });
   main.appendChild(body);
-  ({ groups, naming, properties, shapes, acidbase, nursing, glossary: glossaryTab })[tab](body, app);
+  ({ groups, naming, properties, shapes, acidbase, aminoacids, nursing, glossary: glossaryTab })[tab](body, app);
 }
 
 function table(head, rows) {
@@ -117,6 +118,15 @@ function acidbase(body) {
     ['Blood', 'pH 7.35–7.45; H₂CO₃/HCO₃⁻ buffer'],
   ]));
   body.appendChild(h('a', { class: 'btn secondary', href: '#/tools/ph' }, icon('flask'), 'Open the pH calculator'));
+}
+
+function aminoacids(body) {
+  body.appendChild(h('p', { class: 'muted' }, 'The 20 amino acids from Lecture 17. Side chains are shaded.'));
+  for (const [cls, label] of Object.entries(AA_CLASSES)) {
+    const list = AMINO_ACIDS.filter((a) => a.cls === cls);
+    body.appendChild(h('h3', {}, label[0].toUpperCase() + label.slice(1)));
+    body.appendChild(h('div', { class: 'mols' }, list.map((a) => molView({ smiles: aaSmiles(a), highlight: aaSideAtoms(a), scale: 26, caption: `${a.name[0].toUpperCase()}${a.name.slice(1)}: ${a.three}, ${a.one}` }))));
+  }
 }
 
 function nursing(body) {

@@ -4,6 +4,7 @@ import { figureView, molView } from './components.js';
 import { checkAnswer, answerText } from '../quiz/checkers.js';
 import { renderMolecule } from '../chem/render.js';
 import { renderSugar } from '../chem/sugars.js';
+import { renderPeptide } from '../chem/peptides.js';
 import { makeRng } from '../lib/random.js';
 import { skillById } from '../../content/course.js';
 import { formulaHtml } from '../chem/condensed.js';
@@ -94,8 +95,8 @@ export function questionView(q, opts = {}) {
   const choiceButtons = [];
   function buildChoices() {
     const multi = q.type === 'multi';
-    // sugar rings are wide: one per row so they stay readable on a phone
-    const rings = q.type === 'struct' && q.choices.some((c) => c.sugar && c.sugar.ring);
+    // sugar rings and peptides are wide: one per row so they stay readable on a phone
+    const rings = q.type === 'struct' && q.choices.some((c) => c.peptide || (c.sugar && (c.sugar.ring || c.sugar.linked)));
     const wrap = h('div', { class: q.type === 'struct' ? `struct-choices${rings ? ' wide' : ''}` : 'choices', role: multi ? 'group' : 'radiogroup' });
     order.forEach((orig, disp) => {
       const c = q.choices[orig];
@@ -103,7 +104,8 @@ export function questionView(q, opts = {}) {
       if (multi) btn.appendChild(h('span', { class: 'check-box', html: iconSvg('check') }));
       else btn.appendChild(h('span', { class: 'key' }, LETTERS[disp]));
       if (q.type === 'struct') {
-        if (c.sugar) btn.appendChild(h('div', { class: 'mol', html: renderSugar(c.sugar, { scale: c.sugar.ring ? 52 : 32 }) }));
+        if (c.peptide) btn.appendChild(h('div', { class: 'mol', html: renderPeptide(c.peptide) }));
+        else if (c.sugar) btn.appendChild(h('div', { class: 'mol', html: renderSugar(c.sugar, { scale: c.sugar.ring ? 52 : c.sugar.linked ? 40 : 32 }) }));
         else if (c.smiles) btn.appendChild(h('div', { class: 'mol', html: renderMolecule(c.smiles, { scale: 28 }) }));
         else btn.appendChild(h('span', { class: 'nr' }, c.text));
         btn.setAttribute('aria-label', `Choice ${LETTERS[disp]}${c.text ? `: ${c.text}` : ''}`);
@@ -442,7 +444,7 @@ function choiceText(q, i) {
 }
 function questionText(q) {
   const f = q.figure;
-  const fig = !f ? '' : f.smiles ? ` [structure: ${f.smiles}]` : f.rxn ? ` [reaction: ${f.rxn.from} + ${f.rxn.reagent || ''}]` : f.sugars ? ` [sugar: ${f.sugars.map((x) => x.sugar || x.caption || 'drawing').join(', ')}]` : '';
+  const fig = !f ? '' : f.smiles ? ` [structure: ${f.smiles}]` : f.rxn ? ` [reaction: ${f.rxn.from} + ${f.rxn.reagent || ''}]` : f.sugars ? ` [sugar: ${f.sugars.map((x) => x.sugar || x.caption || 'drawing').join(', ')}]` : f.peptides ? ` [peptide: ${f.peptides.map((x) => (x.seq ? x.seq.join('-') : (x.rs || []).join('-'))).join(', ')}]` : '';
   return `${q.prompt}${fig}`;
 }
 function describeResponse(q, r) {

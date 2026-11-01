@@ -18,7 +18,7 @@ import * as rx from '../js/chem/reactions.js';
 import { markup } from '../js/lib/markup.js';
 import { normalizeQuestion } from '../js/quiz/bank.js';
 
-const BLOCK_TYPES = new Set(['p', 'h', 'list', 'callout', 'mol', 'mols', 'table', 'steps', 'example', 'check', 'rxn', 'tetra', 'sugars', 'compare', 'link']);
+const BLOCK_TYPES = new Set(['p', 'h', 'list', 'callout', 'mol', 'mols', 'table', 'steps', 'example', 'check', 'rxn', 'tetra', 'sugars', 'peptides', 'compare', 'link']);
 const CALLOUT_KINDS = new Set(['key', 'tip', 'warn', 'exam', 'memory', 'life']);
 
 function textsOf(obj, out = []) {

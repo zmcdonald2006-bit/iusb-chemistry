@@ -2,7 +2,7 @@
 //
 // ✏️ Safe to edit and extend:
 //   word     4–9 letters, A–Z only (written in capitals)
-//   lecture  'l01'…'l15'; section: the lesson section the "Read the notes" button opens
+//   lecture  'l01'…'l17'; section: the lesson section the "Read the notes" button opens
 //   clue     shown only if she taps "Show clue" (must not contain the word itself)
 //   smiles   optional structure drawn after the word is solved
 // The tests check every entry. Adding words changes which word comes up on future days, but never
@@ -253,4 +253,31 @@ export const WORDS = [
   { word: 'DIABETES', lecture: 'l15', section: 'common', clue: 'Disease of too little insulin or insulin resistance.' },
   { word: 'ANOMER', lecture: 'l15', section: 'cyclic', clue: 'α or β form of a cyclic sugar.' },
   { word: 'HAWORTH', lecture: 'l15', section: 'glucose-ring', clue: '___ projection: a flat drawing of a sugar ring.' },
+  // Lecture 16 — Carbohydrates & the body
+  { word: 'MALTOSE', lecture: 'l16', section: 'disaccharides', clue: 'Malt sugar: two glucose units.' },
+  { word: 'ACETAL', lecture: 'l16', section: 'acetals', clue: 'A carbon with two OR groups.' },
+  { word: 'LACTASE', lecture: 'l16', section: 'health', clue: 'The enzyme that people with milk-sugar intolerance are low in.' },
+  { word: 'ASPARTAME', lecture: 'l16', section: 'health', clue: 'The sweetener sold as Equal.' },
+  { word: 'SUCRALOSE', lecture: 'l16', section: 'health', clue: 'The sweetener sold as Splenda, 500× sweeter than table sugar.' },
+  { word: 'AMYLOSE', lecture: 'l16', section: 'polysaccharides', clue: 'The unbranched, linear form of the polymer in potatoes.' },
+  { word: 'AMYLASE', lecture: 'l16', section: 'polysaccharides', clue: 'The enzyme that digests the polysaccharide in rice.' },
+  { word: 'FIBER', lecture: 'l16', section: 'polysaccharides', clue: 'Insoluble ___: what cellulose makes up in the diet.' },
+  { word: 'FASTING', lecture: 'l16', section: 'glycogen', clue: 'No food for 6–12 hours; the liver releases glucose.' },
+  { word: 'HEPARIN', lecture: 'l16', section: 'gags', clue: 'Anticoagulant stored in the mast cells of the liver.' },
+  { word: 'CHITIN', lecture: 'l16', section: 'gags', clue: 'Polysaccharide in crustacean exoskeletons.' },
+  { word: 'FUCOSE', lecture: 'l16', section: 'blood', clue: 'L-sugar found on every blood type.' },
+  { word: 'ANTIBODY', lecture: 'l16', section: 'blood', clue: 'A protein produced to fight a foreign molecule.' },
+  // Lecture 17 — Amino acids
+  { word: 'PROTEIN', lecture: 'l17', section: 'proteins', clue: 'A large polypeptide, more than 40 units long.' },
+  { word: 'KERATIN', lecture: 'l17', section: 'proteins', clue: 'Fibrous protein in hair, skin and nails.' },
+  { word: 'FERRITIN', lecture: 'l17', section: 'proteins', clue: 'Protein that stores iron in the liver.' },
+  { word: 'GLYCINE', lecture: 'l17', section: 'structure', clue: 'The simplest amino acid: R = H.', smiles: '[NH3+]CC(=O)[O-]' },
+  { word: 'ALANINE', lecture: 'l17', section: 'structure', clue: 'The amino acid with R = CH₃.', smiles: '[NH3+]C(C)C(=O)[O-]' },
+  { word: 'CYSTEINE', lecture: 'l17', section: 'disulfide', clue: 'Amino acid with an SH side chain.', smiles: '[NH3+]C(CS)C(=O)[O-]' },
+  { word: 'LYSINE', lecture: 'l17', section: 'sidechains', clue: 'Basic amino acid, abbreviated with a K.', smiles: '[NH3+]C(CCCC[NH3+])C(=O)[O-]' },
+  { word: 'SERINE', lecture: 'l17', section: 'sidechains', clue: 'Polar amino acid with R = CH₂OH.', smiles: '[NH3+]C(CO)C(=O)[O-]' },
+  { word: 'PEPTIDE', lecture: 'l17', section: 'peptides', clue: '___ bond: the amide bond joining amino acids.' },
+  { word: 'DIPEPTIDE', lecture: 'l17', section: 'peptides', clue: 'Two amino acids joined by one amide bond.' },
+  { word: 'ENDORPHIN', lecture: 'l17', section: 'enkephalins', clue: 'Family of polypeptides that reduce pain and enhance mood.' },
+  { word: 'OXYTOCIN', lecture: 'l17', section: 'hormones', clue: 'Hormone that contracts the uterus and signals for milk.' },
 ];

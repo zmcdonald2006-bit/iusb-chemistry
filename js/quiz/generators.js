@@ -7,6 +7,7 @@ import { propertyGenerators } from './gen/properties.js';
 import { acidBaseGenerators } from './gen/acidbase.js';
 import { amineGenerators } from './gen/amines.js';
 import { biomoleculeGenerators } from './gen/biomolecules.js';
+import { sugarProteinGenerators } from './gen/sugars-proteins.js';
 import { moleculeOf, nameTyped, nameMcq, drawMcq, mcq } from './gen/common.js';
 import { parseSmiles, neighbors } from '../chem/smiles.js';
 import { functionalGroups } from '../chem/analyze.js';
@@ -85,7 +86,7 @@ const extra = [
   },
 ];
 
-export const GENERATORS = [...structureGenerators, ...reactionGenerators, ...propertyGenerators, ...acidBaseGenerators, ...amineGenerators, ...biomoleculeGenerators, ...extra];
+export const GENERATORS = [...structureGenerators, ...reactionGenerators, ...propertyGenerators, ...acidBaseGenerators, ...amineGenerators, ...biomoleculeGenerators, ...sugarProteinGenerators, ...extra];
 
 const BY_ID = new Map(GENERATORS.map((g) => [g.id, g]));
 

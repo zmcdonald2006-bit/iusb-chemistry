@@ -1,4 +1,5 @@
-// Sugar drawings for Lecture 15: Fischer projections and Haworth projections.
+// Sugar drawings for Lectures 15–17: Fischer projections, Haworth projections and rings linked into
+// disaccharides and polysaccharides (Fischer projections of amino acids use the same code).
 // Kept separate from the general structure renderer (render.js): these are fixed textbook
 // templates, not layouts computed from SMILES, so a sugar drawn here can't affect any other drawing.
 // Both return SVG markup using the same CSS classes as the molecule drawings (.mol-svg, .bond, .atom…).
@@ -13,6 +14,8 @@ function fmt(g) {
 function elClass(g) {
   if (/^(OH|HO|O)$/.test(g)) return 'el-O';
   if (/^H$/.test(g)) return 'el-H';
+  if (/^(Cl)$/.test(g)) return 'el-Cl';
+  if (/^(H3N⁺|NH|NH2)/.test(g)) return 'el-N';
   return 'el-C';
 }
 const textWidth = (g, fs) => g.replace(/\d/g, '').length * fs * 0.62 + (g.match(/\d/g) || []).length * fs * 0.45;
@@ -122,13 +125,22 @@ const RINGS = {
 export function renderHaworth(spec, opts = {}) {
   const S = opts.scale || 56;
   const fs = Math.round(S * 0.3);
+  const parts = [];
+  const box = newBox();
+  drawRing(parts, spec, S, fs, 0, 0, box);
+  const pad = fs * 0.5;
+  return svg(parts, [box.minX - pad, box.minY - pad, box.maxX + pad, box.maxY + pad], S, spec.title || opts.title, 'haworth');
+}
+
+const newBox = () => ({ minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity });
+const grow = (b, x0, y0, x1, y1) => { b.minX = Math.min(b.minX, x0); b.maxX = Math.max(b.maxX, x1); b.minY = Math.min(b.minY, y0); b.maxY = Math.max(b.maxY, y1); };
+
+// One Haworth ring, centered at (ox, oy). Returns where its atoms ended up.
+function drawRing(parts, spec, S, fs, ox, oy, box) {
   const T = RINGS[spec.ring === 5 ? 5 : 6];
   const P = {};
-  for (const [k, [x, y]] of Object.entries(T.pts)) P[k] = { x: x * S, y: y * S };
-  const parts = [];
+  for (const [k, [x, y]] of Object.entries(T.pts)) P[k] = { x: ox + x * S, y: oy + y * S };
   const marks = new Set(spec.mark || []);
-  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-  const grow = (x0, y0, x1, y1) => { minX = Math.min(minX, x0); maxX = Math.max(maxX, x1); minY = Math.min(minY, y0); maxY = Math.max(maxY, y1); };
   T.carbons.forEach((c, i) => { if (marks.has(i)) parts.push(`<circle class="hl" cx="${r2(P[c].x)}" cy="${r2(P[c].y)}" r="${r2(S * 0.2)}"/>`); });
   // ring bonds (shortened at the O label)
   const n = T.order.length;
@@ -143,12 +155,13 @@ export function renderHaworth(spec, opts = {}) {
     parts.push(`<line class="bond" x1="${r2(p.x)}" y1="${r2(p.y)}" x2="${r2(q.x)}" y2="${r2(q.y)}"${thick ? ` stroke-width="${r2(Math.max(3.5, S * 0.11))}"` : ''}/>`);
   }
   parts.push(`<text class="atom el-O" x="${r2(P.O.x)}" y="${r2(P.O.y + fs * 0.36)}" font-size="${fs}" text-anchor="middle">O</text>`);
-  grow(P.O.x - fs, P.O.y - fs, P.O.x + fs, P.O.y + fs);
+  grow(box, P.O.x - fs, P.O.y - fs, P.O.x + fs, P.O.y + fs);
   // substituents straight up and down from each ring carbon
   const L = S * 0.5;
   T.carbons.forEach((c, i) => {
     const pair = (spec.subs || [])[i] || [];
     const p = P[c];
+    const rel = p.x - ox;
     pair.forEach((g, k) => {
       if (!g) return;
       const dir = k === 0 ? -1 : 1;
@@ -157,22 +170,114 @@ export function renderHaworth(spec, opts = {}) {
       const ty = end + dir * fs * 0.55;
       const w = textWidth(g, fs);
       // carbons at the far left/right of the ring write their labels outward, away from the ring
-      const side = Math.abs(p.x) > 0.9 * S ? Math.sign(p.x) : 0;
+      const side = Math.abs(rel) > 0.9 * S ? Math.sign(rel) : 0;
       const anchor = side > 0 ? 'start' : side < 0 ? 'end' : 'middle';
       const tx = p.x - side * fs * 0.35;
       parts.push(`<text class="atom grp ${elClass(g)}" x="${r2(tx)}" y="${r2(ty + fs * 0.36)}" font-size="${fs}" text-anchor="${anchor}">${fmt(g)}</text>`);
       const x0 = side > 0 ? tx : side < 0 ? tx - w : tx - w / 2;
-      grow(x0, ty - fs * 0.6, x0 + w, ty + fs * 0.6);
+      grow(box, x0, ty - fs * 0.6, x0 + w, ty + fs * 0.6);
     });
     if (spec.numbers && spec.numbers[i] != null) {
-      const out = { x: p.x + (p.x >= 0 ? fs * 0.55 : -fs * 0.55), y: p.y + fs * 0.25 };
-      parts.push(`<text class="locant" x="${r2(out.x)}" y="${r2(out.y)}" font-size="${r2(fs * 0.75)}" text-anchor="${p.x >= 0 ? 'start' : 'end'}">${spec.numbers[i]}</text>`);
+      const out = { x: p.x + (rel >= 0 ? fs * 0.55 : -fs * 0.55), y: p.y + fs * 0.25 };
+      parts.push(`<text class="locant" x="${r2(out.x)}" y="${r2(out.y)}" font-size="${r2(fs * 0.75)}" text-anchor="${rel >= 0 ? 'start' : 'end'}">${spec.numbers[i]}</text>`);
     }
-    grow(p.x - fs, p.y - fs, p.x + fs, p.y + fs);
+    grow(box, p.x - fs, p.y - fs, p.x + fs, p.y + fs);
   });
-  const pad = fs * 0.5;
-  return svg(parts, [minX - pad, minY - pad, maxX + pad, maxY + pad], S, spec.title || opts.title, 'haworth');
+  return P;
 }
+
+/**
+ * Rings joined into a disaccharide or polysaccharide (Lecture 16).
+ * spec = {
+ *   linked: true,
+ *   rings: [{ ...Haworth spec, at: [x, y] }…],   // leave a substituent null where a link attaches
+ *   links: [{ from: [ring, 'C1'], to: [ring, 'C4'] | [x, y], o: [x, y] }…],   // from → O → to, drawn in color.
+ *                                                // Numbers are in bond lengths; [x, y] alone is a free end.
+ * }
+ */
+function renderLinked(spec, opts = {}) {
+  const S = opts.scale || 46;
+  const fs = Math.round(S * 0.3);
+  const parts = [];
+  const box = newBox();
+  const pts = spec.rings.map((r) => drawRing(parts, r, S, fs, r.at[0] * S, r.at[1] * S, box));
+  const at = (e) => (typeof e[1] === 'string' ? pts[e[0]][e[1]] : { x: e[0] * S, y: e[1] * S });
+  const w = r2(Math.max(2, S * 0.06));
+  for (const l of spec.links) {
+    const a = at(l.from), o = { x: l.o[0] * S, y: l.o[1] * S };
+    // a bond to the O, stopping short of the O's label (and of a label at its far end, if it has one)
+    const seg = (p, q, trimStart = false) => {
+      const len = Math.hypot(q.x - p.x, q.y - p.y) || 1, d = fs * 0.55;
+      const ux = (p.x - q.x) / len, uy = (p.y - q.y) / len;
+      const st = trimStart ? { x: p.x - ux * d, y: p.y - uy * d } : p;
+      parts.push(`<line class="bond glyco" stroke-width="${w}" x1="${r2(st.x)}" y1="${r2(st.y)}" x2="${r2(q.x + ux * d)}" y2="${r2(q.y + uy * d)}"/>`);
+    };
+    seg(a, o);
+    if (l.to) seg(at(l.to), o, typeof l.to[1] !== 'string');
+    parts.push(`<text class="atom el-O" x="${r2(o.x)}" y="${r2(o.y + fs * 0.36)}" font-size="${fs}" text-anchor="middle">O</text>`);
+    grow(box, o.x - fs, o.y - fs, o.x + fs, o.y + fs);
+  }
+  // a chain that carries on past the drawing: a short open bond with no atom at its end
+  for (const t of spec.open || []) {
+    let a = at(t.from);
+    const b = { x: t.to[0] * S, y: t.to[1] * S };
+    if (typeof t.from[1] !== 'string') { // starts at a linking O: leave its label clear
+      const len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+      a = { x: a.x + (b.x - a.x) / len * fs * 0.6, y: a.y + (b.y - a.y) / len * fs * 0.6 };
+    }
+    parts.push(`<line class="bond" stroke-dasharray="${r2(S * 0.09)} ${r2(S * 0.09)}" x1="${r2(a.x)}" y1="${r2(a.y)}" x2="${r2(b.x)}" y2="${r2(b.y)}"/>`);
+    grow(box, b.x - fs * 0.4, b.y - fs * 0.4, b.x + fs * 0.4, b.y + fs * 0.4);
+  }
+  const pad = fs * 0.5;
+  return svg(parts, [box.minX - pad, box.minY - pad, box.maxX + pad, box.maxY + pad], S, spec.title || opts.title, 'haworth linked');
+}
+
+// Rings on the slides, with room to leave out the substituent a link replaces.
+const glcRing = (c1 = ['H', 'OH'], c4 = ['H', 'OH'], c6 = 'CH2OH') => ({ ring: 6, subs: [c1, ['H', 'OH'], ['OH', 'H'], c4, [c6, 'H']] });
+const galRing = (c1 = ['H', 'OH'], c4 = ['OH', 'H']) => glcRing(c1, c4);
+const nagRing = (c1 = ['H', 'OH'], c4 = ['H', 'OH']) => ({ ring: 6, subs: [c1, ['H', 'NHCOCH3'], ['OH', 'H'], c4, ['CH2OH', 'H']] });
+const fruRingLinked = (c1 = 'CH2OH', c5 = 'CH2OH') => ({ ring: 5, subs: [[null, c1], ['OH', 'H'], ['H', 'OH'], [c5, 'H']] });
+
+// The two ways rings join, as on the slides: α (link down, rings level) or β (link up, the next ring raised).
+const ALPHA_STEP = [3.3, 0];
+const BETA_STEP = [2.3, -1.1];
+function pair(left, right, kind) {
+  const [dx, dy] = kind === 'α' ? ALPHA_STEP : BETA_STEP;
+  return {
+    linked: true,
+    rings: [{ ...left, at: [0, 0] }, { ...right, at: [dx, dy] }],
+    links: [{ from: [0, 'C1'], to: [1, 'C4'], o: kind === 'α' ? [1.65, 0.8] : [1.15, -0.45] }],
+  };
+}
+// A stretch of a long chain: two rings, with open bonds where it carries on in both directions.
+function chain(left, right, kind) {
+  const p = pair(left, right, kind);
+  const [dx, dy] = kind === 'α' ? ALPHA_STEP : BETA_STEP;
+  p.open = [{ from: [0, 'C4'], to: [-1.55, 0.75] }];
+  if (kind === 'α') {
+    p.links.push({ from: [1, 'C1'], o: [dx + 1.65, 0.8] });
+    p.open.push({ from: [dx + 1.65, 0.8], to: [dx + 2.2, 0.35] });
+  } else {
+    p.links.push({ from: [1, 'C1'], o: [dx + 1.15, dy - 0.55] });
+    p.open.push({ from: [dx + 1.15, dy - 0.55], to: [dx + 1.75, dy - 0.95] });
+  }
+  return p;
+}
+// Glucose and fructose joined anomeric carbon to anomeric carbon, stacked as on the slides.
+const stacked = (top, bottom) => ({
+  linked: true,
+  rings: [{ ...top, at: [0, 0] }, { ...bottom, at: [-0.1, 2.55] }],
+  links: [{ from: [0, 'C1'], to: [1, 'C1'], o: [1.15, 1.2] }],
+});
+const LINK_UP = ['H', null], LINK_DOWN_H = [null, 'H'];
+const amylopectin = () => {
+  const c = chain(glcRing(LINK_UP, ['H', null]), glcRing(LINK_UP, ['H', null], 'CH2'), 'α');
+  // a third ring branches off the CH₂ (C6) of the second ring
+  c.rings.push({ ...glcRing(LINK_UP, ['H', null]), at: [1.6, -2.75] });
+  c.links.push({ from: [2, 'C1'], to: [2.75, -1.17], o: [2.75, -1.9] });
+  c.open.push({ from: [2, 'C4'], to: [-0.0, -2.0] });
+  return c;
+};
 
 // Ready-made specs for the sugars on the slides, so content and questions stay consistent.
 export const SUGARS = {
@@ -190,6 +295,23 @@ export const SUGARS = {
   'β-D-glucose': { ring: 6, subs: [['OH', 'H'], ['H', 'OH'], ['OH', 'H'], ['H', 'OH'], ['CH2OH', 'H']] },
   'α-D-fructose': { ring: 5, subs: [['CH2OH', 'OH'], ['OH', 'H'], ['H', 'OH'], ['CH2OH', 'H']] },
   'β-D-fructose': { ring: 5, subs: [['OH', 'CH2OH'], ['OH', 'H'], ['H', 'OH'], ['CH2OH', 'H']] },
+  // Lecture 16: rings as drawn on the slides
+  'α-D-galactose': galRing(),
+  'L-fucose': { ring: 6, subs: [['H', 'OH'], ['OH', 'H'], ['H', 'OH'], ['H', 'OH'], ['H', 'CH3']] },
+  'N-acetyl-D-glucosamine': nagRing(),
+  'N-acetyl-D-galactosamine': nagRing(['H', 'OH'], ['OH', 'H']),
+  'glucuronate': { ring: 6, subs: [['OH', 'H'], ['H', 'OH'], ['OH', 'H'], ['H', 'OH'], ['COO⁻', 'H']] },
+  // joined rings
+  'α-glycoside': pair(glcRing(LINK_UP), glcRing(['H', 'OH'], LINK_UP), 'α'),
+  'β-glycoside': pair(glcRing(LINK_DOWN_H), glcRing(['H', 'OH'], LINK_UP), 'β'),
+  'maltose': pair(glcRing(LINK_UP), glcRing(['H', 'OH'], LINK_UP), 'α'),
+  'lactose': pair(galRing(LINK_DOWN_H), glcRing(['H', 'OH'], LINK_UP), 'β'),
+  'sucrose': stacked(glcRing(LINK_UP), fruRingLinked()),
+  'sucralose': stacked({ ring: 6, subs: [LINK_UP, ['H', 'OH'], ['OH', 'H'], ['Cl', 'H'], ['CH2OH', 'H']] }, fruRingLinked('CH2Cl', 'CH2Cl')),
+  'cellulose': chain(glcRing(LINK_DOWN_H, ['H', null]), glcRing(LINK_DOWN_H, ['H', null]), 'β'),
+  'amylose': chain(glcRing(LINK_UP, ['H', null]), glcRing(LINK_UP, ['H', null]), 'α'),
+  'amylopectin': amylopectin(),
+  'chitin': chain(nagRing(LINK_DOWN_H, ['H', null]), nagRing(LINK_DOWN_H, ['H', null]), 'β'),
 };
 
 // Resolve a block/figure spec: either a full spec or { sugar: 'D-glucose', …overrides }.
@@ -205,5 +327,6 @@ export function sugarSpec(spec) {
 
 export function renderSugar(spec, opts = {}) {
   const s = sugarSpec(spec);
+  if (s.linked) return renderLinked(s, opts);
   return s.ring ? renderHaworth(s, opts) : renderFischer(s, opts);
 }

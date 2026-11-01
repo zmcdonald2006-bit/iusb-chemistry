@@ -2,6 +2,7 @@
 import { h, icon, iconSvg, md, mdi, clear } from './dom.js';
 import { renderMolecule, renderTetrahedral } from '../chem/render.js';
 import { renderSugar } from '../chem/sugars.js';
+import { renderPeptide } from '../chem/peptides.js';
 import { nameCompound } from '../chem/namer.js';
 import { LEVELS } from '../state/progress.js';
 
@@ -122,13 +123,30 @@ export function sugarsView(items, caption) {
   return h('div', {}, wrap, mdi(caption, 'div', 'caption'));
 }
 
-// Figure for a question: {smiles}, {mols}, {rxn}, {tetras}, {sugars}
+// Peptides and amino acids drawn like the slides (Lecture 17): items are renderPeptide specs plus an optional caption
+export function peptidesView(items, caption) {
+  const wrap = h('div', { class: 'mols' });
+  for (const it of items) {
+    // three or more amino acids are too wide for a phone at a readable size: they scroll sideways instead
+    const long = (it.rs || it.seq).length >= 3;
+    const box = h('figure', { class: `mol-box${long ? ' pep-long' : ''}`, style: { margin: '0' } });
+    box.appendChild(h('div', { class: 'mol', html: renderPeptide(it, { title: it.caption }) }));
+    if (long) box.appendChild(h('div', { class: 'pep-swipe' }, 'Swipe sideways to see the whole chain'));
+    if (it.caption) box.appendChild(mdi(it.caption, 'figcaption', 'mol-caption'));
+    wrap.appendChild(box);
+  }
+  if (!caption) return wrap;
+  return h('div', {}, wrap, mdi(caption, 'div', 'caption'));
+}
+
+// Figure for a question: {smiles}, {mols}, {rxn}, {tetras}, {sugars}, {peptides}
 export function figureView(fig, opts = {}) {
   if (!fig) return null;
   if (fig.rxn) return rxnView(fig.rxn);
   if (fig.mols) return molsView(fig.mols);
   if (fig.tetras) return tetraView(fig.tetras);
   if (fig.sugars) return sugarsView(fig.sugars);
+  if (fig.peptides) return peptidesView(fig.peptides);
   if (fig.smiles) return molView({ ...fig, ...opts });
   return null;
 }
