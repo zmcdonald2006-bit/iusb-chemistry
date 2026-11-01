@@ -891,6 +891,7 @@ textarea.input { resize: vertical; min-height: 76px; font: inherit; }
 .t-acidbase { --c: var(--nurse); }
 .t-joining { --c: var(--accent); }
 .t-hydrolysis { --c: var(--heart); }
+.t-ringclose { --c: var(--text-2); }
 .rm-type .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
 .rm-legend { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 10px; }
 .rm-legend .chip-select[aria-pressed="true"] { background: var(--c); border-color: var(--c); color: #fff; }

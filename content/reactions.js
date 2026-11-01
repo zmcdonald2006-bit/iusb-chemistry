@@ -19,8 +19,12 @@ export const FAMILIES = [
   { id: 'disulfide', label: 'Disulfide', smiles: 'CCSSCC', lecture: 'l06' },
   { id: 'amine', label: 'Amine', smiles: 'CCCN', lecture: 'l11' },
   { id: 'ammonium', label: 'Ammonium salt', smiles: 'CCC[NH3+].[Cl-]', lecture: 'l11' },
-  { id: 'monosaccharide', label: 'Monosaccharide', smiles: 'OCC1OC(O)C(O)C(O)C1O', lecture: 'l15' },
+  { id: 'opensugar', label: 'Open-chain sugar', smiles: 'O=CC(O)C(O)C(O)C(O)CO', lecture: 'l15' },
+  { id: 'monosaccharide', label: 'Sugar ring', smiles: 'OCC1OC(O)C(O)C(O)C1O', lecture: 'l15' },
   { id: 'disaccharide', label: 'Disaccharide', smiles: 'OCC1OC(OC2C(CO)OC(O)C(O)C2O)C(O)C(O)C1O', lecture: 'l16' },
+  { id: 'fatparts', label: 'Glycerol + fatty acids', smiles: 'OCC(O)CO', lecture: 'l13' },
+  { id: 'tag', label: 'Triacylglycerol', smiles: 'CCCCCCCCCCCCCCCC(=O)OCC(COC(=O)CCCCCCCCCCCCCCC)OC(=O)CCCCCCCCCCCCCCC', lecture: 'l13' },
+  { id: 'soap', label: 'Glycerol + soap', smiles: 'CCCCCCCC/C=C\\CCCCCCCC(=O)[O-].[Na+]', lecture: 'l13' },
   { id: 'aminoacid', label: 'Amino acid', smiles: '[NH3+]C(C)C(=O)[O-]', lecture: 'l17' },
   { id: 'dipeptide', label: 'Dipeptide', smiles: '[NH3+]C(C)C(=O)NC(CO)C(=O)[O-]', lecture: 'l17' },
 ];
@@ -34,6 +38,7 @@ export const TYPES = {
   acidbase: { label: 'Acid–base', text: 'An acid **gives its H⁺** to a base.' },
   joining: { label: 'Joining', text: 'Two molecules **join and lose H₂O**.' },
   hydrolysis: { label: 'Hydrolysis', text: '**Water breaks a bond**: the reverse of joining.' },
+  ringclose: { label: 'Ring closing', text: 'An **OH adds to a C=O in the same molecule**, making a ring.' },
 };
 
 export const REACTIONS = [
@@ -168,8 +173,40 @@ REACTIONS.push({
 // "See this reagent? Think this reaction." For the reagent decoder table.
 REACTIONS.push(
   {
+    id: 'tag-form', name: 'Forming a triacylglycerol', type: 'joining', from: 'fatparts', to: 'tag', reagent: '+ 3 palmitic acid',
+    lecture: 'l13', section: 'tags', skill: 'l13.tags', practice: 'l13-tag-build', example: ['OCC(O)CO', 'CCCCCCCCCCCCCCCC(=O)OCC(COC(=O)CCCCCCCCCCCCCCC)OC(=O)CCCCCCCCCCCCCCC'], equation: 'glycerol + 3 palmitic acid → tripalmitin + 3 H₂O',
+    rule: 'Each of the **3 OH groups of glycerol** reacts with the **COOH of a fatty acid**, losing water, to make **three esters**.',
+    steps: ['Draw the three carbons of glycerol.', 'Replace each OH with an **ester**: –O–CO–R, where R is the fatty acid\'s chain.', 'Count the water: 3 esters form, so **3 H₂O** leave.'],
+    trap: 'It takes **three** fatty acids, and three waters are lost, not one. The three fatty acids can be the same or different.',
+    body: 'Triacylglycerols are how your body stores energy, in adipose cells: **9 kcal/g**.',
+  },
+  {
+    id: 'tag-hyd', name: 'Hydrolysis of a triacylglycerol', type: 'hydrolysis', from: 'tag', to: 'fatparts', reagent: '3 H₂O, H₂SO₄',
+    lecture: 'l13', section: 'hydrolysis', skill: 'l13.hydrolysis', practice: 'l13-tag-products', example: ['CCCCCCCCCCCCCCCCCC(=O)OCC(COC(=O)CCCCCCCCCCCCCCCCC)OC(=O)CCCCCCCCCCCCCCCCC', ['OCC(O)CO', 'CCCCCCCCCCCCCCCCCC(=O)O']], equation: 'tristearin + 3 H₂O → glycerol + 3 stearic acid',
+    rule: 'With water and **acid (or lipases in the body)**, the **three ester bonds** break and give back **glycerol + three fatty acids**.',
+    steps: ['Find the three ester bonds.', 'Break each one: the chains come off as **fatty acids (RCOOH)**.', 'What is left of the middle becomes **glycerol**, with 3 OH groups.'],
+    trap: 'Acid or lipase gives fatty **acids** (COOH). Only NaOH gives fatty acid **salts** (COO⁻ Na⁺).',
+    body: 'To use stored fat for energy, **lipases** hydrolyze these esters. Lipase is the enzyme olestra\'s crowded esters resist, which is why olestra has no calories.',
+  },
+  {
+    id: 'saponify', name: 'Saponification (making soap)', type: 'hydrolysis', from: 'tag', to: 'soap', reagent: '3 NaOH, H₂O',
+    lecture: 'l13', section: 'soap', skill: 'l13.hydrolysis', practice: 'l13-soap-formula', example: ['CCCCCCCC/C=C\\CCCCCCCC(=O)OCC(COC(=O)CCCCCCC/C=C\\CCCCCCCC)OC(=O)CCCCCCC/C=C\\CCCCCCCC', ['OCC(O)CO', 'CCCCCCCC/C=C\\CCCCCCCC(=O)[O-].[Na+]']], equation: 'triolein + 3 NaOH → glycerol + 3 sodium oleate (soap)',
+    rule: '**Basic hydrolysis**: NaOH breaks the three ester bonds and gives **glycerol + three fatty acid salts**, which are **soap**.',
+    steps: ['Find the three ester bonds.', 'Break each one: the chains come off as **salts, RCOO⁻ Na⁺**.', 'What is left of the middle becomes **glycerol**.'],
+    trap: 'The product is the **salt** (COO⁻ Na⁺), not the fatty acid (COOH). In a base, the acid would lose its proton anyway.',
+    body: 'A soap\'s **nonpolar tail dissolves grease** and its **ionic head dissolves in water**. Soaps are made from lard, tallow, coconut oil and palm oil.',
+  },
+  {
+    id: 'ring-close', name: 'Closing a sugar ring', type: 'ringclose', from: 'opensugar', to: 'monosaccharide', reagent: 'ring closes',
+    lecture: 'l15', section: 'glucose-ring', skill: 'l15.cyclic', practice: 'l15-haworth', example: ['O=CC(O)C(O)C(O)C(O)CO', 'OCC1OC(O)C(O)C(O)C1O'], equation: 'open-chain glucose → cyclic glucose (a hemiacetal). No atoms are lost',
+    rule: 'The aldehyde or ketone and an alcohol **on the same molecule** react to make a **cyclic hemiacetal**. In glucose, the **C5 OH** attacks **C1**.',
+    steps: ['Find the OH on C5: it is the right distance from the C=O.', 'That OH becomes the **–O– in the ring**.', 'The **C=O becomes C–OH**: the new anomeric carbon.', 'Its OH points **down = α**, **up = β**.'],
+    trap: 'Glucose (an aldehyde) closes at C1 into a **six**-membered ring; fructose (a ketone) closes at C2 into a **five**-membered ring. C1 only becomes a chirality center once the ring forms.',
+    body: 'In water, glucose is almost entirely in its ring forms: **α 37%**, **β 63%**, and only a trace of open chain.',
+  },
+  {
     id: 'glyco-form', name: 'Forming a glycosidic linkage', type: 'joining', from: 'monosaccharide', to: 'disaccharide', reagent: '+ glucose, −H₂O',
-    lecture: 'l16', section: 'disaccharides', skill: 'l16.disaccharides', practice: 'l16-glyco-form', example: ['OCC1OC(O)C(O)C(O)C1O', 'OCC1OC(OC2C(CO)OC(O)C(O)C2O)C(O)C(O)C1O'],
+    lecture: 'l16', section: 'disaccharides', skill: 'l16.disaccharides', practice: 'l16-glyco-form', example: ['OCC1OC(O)C(O)C(O)C1O', 'OCC1OC(OC2C(CO)OC(O)C(O)C2O)C(O)C(O)C1O'], equation: 'glucose + glucose → maltose + H₂O',
     rule: 'The **hemiacetal OH on C1** of one sugar and an **OH on C4** of another lose **H₂O**, leaving **C1–O–C4**: a **glycosidic linkage**.',
     steps: ['Find the hemiacetal OH: C1, the ring carbon with two oxygens.', 'Find the OH on C4 of the second ring.', 'Remove H₂O from those two OH groups and bridge the rings with the one O that is left.', 'Bond from C1 pointing **down = α**; **up = β**.'],
     trap: 'One oxygen stays as the bridge, and C1 is now an **acetal** (two OR), not a hemiacetal.',
@@ -177,7 +214,7 @@ REACTIONS.push(
   },
   {
     id: 'glyco-hyd', name: 'Hydrolysis of a glycosidic linkage', type: 'hydrolysis', from: 'disaccharide', to: 'monosaccharide', reagent: 'H₂O',
-    lecture: 'l16', section: 'disaccharides', skill: 'l16.disaccharides', practice: 'l16-hydrolysis', example: ['OCC1OC(OC2C(CO)OC(O)C(O)C2O)C(O)C(O)C1O', ['OCC1OC(O)C(O)C(O)C1O', 'OCC1OC(O)C(O)C(O)C1O']],
+    lecture: 'l16', section: 'disaccharides', skill: 'l16.disaccharides', practice: 'l16-hydrolysis', example: ['OCC1OC(OC2C(CO)OC(O)C(O)C2O)C(O)C(O)C1O', ['OCC1OC(O)C(O)C(O)C1O', 'OCC1OC(O)C(O)C(O)C1O']], equation: 'maltose + H₂O → 2 glucose',
     rule: '**Water cleaves the C–O glycosidic linkage** and gives **two monosaccharides**: the reverse of forming it.',
     steps: ['Find the O bridging the two rings.', 'Break the bond between C1 and that O.', 'Water adds back: each ring ends up with an OH where the bridge was.', 'Name the sugars: maltose → 2 glucose; lactose → glucose + galactose; sucrose → glucose + fructose.'],
     trap: 'Hydrolysis **adds** water; forming the linkage **removes** it.',
@@ -185,7 +222,7 @@ REACTIONS.push(
   },
   {
     id: 'peptide-form', name: 'Forming a peptide bond', type: 'joining', from: 'aminoacid', to: 'dipeptide', reagent: '+ Ser, −H₂O',
-    lecture: 'l17', section: 'draw', skill: 'l17.draw', practice: 'l17-draw', example: ['[NH3+]C(C)C(=O)[O-]', '[NH3+]C(C)C(=O)NC(CO)C(=O)[O-]'],
+    lecture: 'l17', section: 'draw', skill: 'l17.draw', practice: 'l17-draw', example: ['[NH3+]C(C)C(=O)[O-]', '[NH3+]C(C)C(=O)NC(CO)C(=O)[O-]'], equation: 'alanine + serine → Ala–Ser + H₂O',
     rule: 'The **–COO⁻** of one amino acid joins the **–NH₃⁺** of another: remove **one O** and **two H** (they leave as H₂O) and connect **C to N**.',
     steps: ['Place the first amino acid on the left, with its –COO⁻ next to the –NH₃⁺ of the second.', 'Remove one O from –COO⁻ and two H from –NH₃⁺.', 'Connect the C to the N. The new N keeps one H.', 'Check the ends: free –NH₃⁺ on the left, free –COO⁻ on the right.'],
     trap: 'Order matters: Ala–Ser and Ser–Ala are **different compounds**. The first one named keeps the free –NH₃⁺.',
@@ -205,6 +242,8 @@ export const REAGENTS = [
   { reagent: '[O] / [H]', on: 'thiol / disulfide', does: 'oxidation / reduction', gives: 'disulfide / 2 thiols', ids: ['thiol-ox', 'disulfide-red'] },
   { reagent: 'NaOH', on: 'carboxylic acid', does: 'acid–base', gives: 'carboxylate salt + H₂O', ids: ['neutralize'] },
   { reagent: 'HCl', on: 'amine', does: 'acid–base', gives: 'ammonium salt (water soluble)', ids: ['amine-acid'] },
+  { reagent: 'H₂O + H₂SO₄, or lipase', on: 'triacylglycerol', does: 'hydrolysis', gives: 'glycerol + 3 fatty acids', ids: ['tag-hyd'] },
+  { reagent: 'NaOH', on: 'triacylglycerol', does: 'saponification', gives: 'glycerol + 3 fatty acid salts (soap)', ids: ['saponify'] },
   { reagent: 'a second sugar, −H₂O', on: 'monosaccharide', does: 'joining', gives: 'disaccharide', ids: ['glyco-form'] },
   { reagent: 'H₂O', on: 'disaccharide', does: 'hydrolysis', gives: '2 monosaccharides', ids: ['glyco-hyd'] },
   { reagent: 'a second amino acid, −H₂O', on: 'amino acid', does: 'joining', gives: 'dipeptide', ids: ['peptide-form'] },

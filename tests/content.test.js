@@ -269,6 +269,19 @@ describe('Reaction map', () => {
     if (!sameMolecule(byId['peptide-form'].example[1], peptideSmiles(['Ala', 'Ser']))) throw new Error('peptide-form should show Ala–Ser');
     if (!sameMolecule(byId['peptide-form'].example[0], aaSmiles(aminoAcid('Ala')))) throw new Error('peptide-form should start from alanine');
     balance(aaSmiles(aminoAcid('Ala')), aaSmiles(aminoAcid('Ser')), byId['peptide-form'].example[1]);
+    // triacylglycerols: glycerol + 3 fatty acids = the fat + 3 H₂O; hydrolysis and soap undo it
+    const sum = (list) => { const o = {}; for (const [s, k] of list) for (const [el, n] of Object.entries(atoms(s))) o[el] = (o[el] || 0) + k * n; return o; };
+    const sameAtoms = (a, b, name) => { for (const el of new Set([...Object.keys(a), ...Object.keys(b)])) if ((a[el] || 0) !== (b[el] || 0)) throw new Error(`${name}: ${el} ${a[el]} ≠ ${b[el]}`); };
+    const H2O = 'O', NAOH = '[Na+].[OH-]';
+    const form = byId['tag-form'].example, hyd = byId['tag-hyd'].example, sap = byId.saponify.example;
+    sameAtoms(sum([[form[0], 1], ['CCCCCCCCCCCCCCCC(=O)O', 3]]), sum([[form[1], 1], [H2O, 3]]), 'tag-form');
+    sameAtoms(sum([[hyd[0], 1], [H2O, 3]]), sum([[hyd[1][0], 1], [hyd[1][1], 3]]), 'tag-hyd');
+    sameAtoms(sum([[sap[0], 1], [NAOH, 3]]), sum([[sap[1][0], 1], [sap[1][1], 3]]), 'saponify');
+    expect(sameMolecule(sap[1][1], rx.neutralizeAcid('CCCCCCCC/C=C\\CCCCCCCC(=O)O'))).toBe(true); // the soap is the fatty acid's sodium salt
+    // closing a ring loses no atoms, and makes exactly one hemiacetal
+    const ring = byId['ring-close'].example;
+    sameAtoms(atoms(ring[0]), atoms(ring[1]), 'ring-close');
+    expect(acetalCarbons(ring[1]).hemiacetal.length).toBe(1);
     // disulfide reduction is thiol oxidation backwards
     if (!sameMolecule(rx.oxidizeThiol(byId['disulfide-red'].example[1]), byId['disulfide-red'].example[0])) throw new Error('disulfide-red example');
   });

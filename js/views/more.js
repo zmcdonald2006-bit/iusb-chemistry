@@ -17,7 +17,7 @@ export default function more({ app, main }) {
     item('#/reactions', 'map', 'Reaction map', 'Every reaction in one place'),
     item('#/lab', 'lab', 'Name Lab', 'Type a name, see the structure'),
     item('#/search', 'search', 'Search', 'Notes, terms, cards & reactions'),
-    item('#/review', 'sheet', 'Review sheets', 'Each lecture on one page'),
+    item('#/review', 'sheet', 'Review sheets', 'Each lecture, boiled down'),
     item('#/reference', 'list', 'Reference', 'Tables, rules & glossary'),
     item('#/reference/nursing', 'nurse', 'Nursing connections', 'Where this class shows up in nursing'),
     item('#/tools/ph', 'flask', 'pH calculator', 'With the sig-fig rule')));

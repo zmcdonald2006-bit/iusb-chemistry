@@ -63,7 +63,7 @@ function sheet(l, multi) {
 }
 
 function picker(app, main) {
-  main.appendChild(pageHead({ title: 'Review sheets', sub: 'Each lecture on one page: the rules, memory tricks, traps and key terms from the notes. For the night before, or right before you walk in.' }));
+  main.appendChild(pageHead({ title: 'Review sheets', sub: 'Each lecture boiled down to the rules, memory tricks, traps and key terms from the notes. For the night before, or right before you walk in.' }));
   const exams = upcomingExams(app.state, dayKey()).filter((e) => (e.lectures || []).length);
   if (exams.length) {
     main.appendChild(sectionTitle('For your exams'));

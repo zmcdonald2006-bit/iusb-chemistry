@@ -24,10 +24,14 @@ const NODES = [
   { id: 'disulfide', x: 292, y: 570 },
   { id: 'amine', x: 80, y: 652 },
   { id: 'ammonium', x: 292, y: 652 },
-  { id: 'monosaccharide', x: 96, y: 744 },
-  { id: 'disaccharide', x: 96, y: 836 },
-  { id: 'aminoacid', x: 292, y: 744 },
-  { id: 'dipeptide', x: 292, y: 836 },
+  { id: 'opensugar', x: 86, y: 744 },
+  { id: 'monosaccharide', x: 86, y: 836 },
+  { id: 'disaccharide', x: 86, y: 928 },
+  { id: 'fatparts', x: 278, y: 744 },
+  { id: 'tag', x: 278, y: 836 },
+  { id: 'soap', x: 278, y: 928 },
+  { id: 'aminoacid', x: 86, y: 1020 },
+  { id: 'dipeptide', x: 292, y: 1020 },
 ];
 const NH = 32; // node height
 const label = (n) => n.label || FAMILIES.find((f) => f.id === n.id).label;
@@ -51,11 +55,15 @@ export const EDGES = [
   ['thiol-ox', 'thiol', 'disulfide', -9, 'left'],
   ['disulfide-red', 'disulfide', 'thiol', 9, 'right'],
   ['amine-acid', 'amine', 'ammonium', 0, 'above'],
+  ['ring-close', 'opensugar', 'monosaccharide', 0, 'right'],
+  ['tag-form', 'fatparts', 'tag', -9, 'left'],
+  ['tag-hyd', 'tag', 'fatparts', 9, 'right'],
+  ['saponify', 'tag', 'soap', 0, 'right'],
   ['glyco-form', 'monosaccharide', 'disaccharide', -9, 'left'],
   ['glyco-hyd', 'disaccharide', 'monosaccharide', 9, 'right'],
-  ['peptide-form', 'aminoacid', 'dipeptide', 0, 'right'],
+  ['peptide-form', 'aminoacid', 'dipeptide', 0, 'above'],
 ];
-const SHORT = { hydration: ['H₂O, H₂SO₄'], dehydration: ['H₂SO₄', '(−H₂O)'], 'red-ald': ['H₂, Pd'], 'red-ket': ['H₂, Pd'], hydrogenation: ['H₂, Pd'], halogenation: ['X₂'], hydrohalogenation: ['HX'], neutralize: ['NaOH'], 'disulfide-red': ['[H]'], 'amine-acid': ['HCl'], 'glyco-form': ['−H₂O'], 'glyco-hyd': ['H₂O'], 'peptide-form': ['−H₂O'] };
+const SHORT = { hydration: ['H₂O, H₂SO₄'], dehydration: ['H₂SO₄', '(−H₂O)'], 'red-ald': ['H₂, Pd'], 'red-ket': ['H₂, Pd'], hydrogenation: ['H₂, Pd'], halogenation: ['X₂'], hydrohalogenation: ['HX'], neutralize: ['NaOH'], 'disulfide-red': ['[H]'], 'amine-acid': ['HCl'], 'glyco-form': ['−H₂O'], 'glyco-hyd': ['H₂O'], 'peptide-form': ['−H₂O'], 'ring-close': ['ring closes'], 'tag-form': ['−3 H₂O'], 'tag-hyd': ['H₂O, H₂SO₄', 'or lipase'], saponify: ['NaOH'] };
 
 function mapSvg() {
   const NS = 'http://www.w3.org/2000/svg';
@@ -65,7 +73,7 @@ function mapSvg() {
     if (text != null) e.textContent = text;
     return e;
   };
-  const svg = el('svg', { viewBox: `0 0 ${W} 864`, class: 'rmap', role: 'group', 'aria-label': 'Reaction map: tap a family or an arrow' });
+  const svg = el('svg', { viewBox: `0 0 ${W} 1048`, class: 'rmap', role: 'group', 'aria-label': 'Reaction map: tap a family or an arrow' });
 
   // alcohol hub → 1°, 2°, 3°
   const hub = node('alcohol');
@@ -270,6 +278,7 @@ function reactionCard(r) {
   const drawing = h('div', { class: 'rm-drawing' });
   // The explanation names the product, so in quiz mode it stays hidden until she checks her answer.
   const details = h('div', {},
+    r.equation ? h('div', { class: 'caption', style: { margin: '0 0 8px' } }, mdi(r.equation)) : null,
     h('p', { class: 'small', style: { margin: '0 0 8px' } }, mdi(r.rule)),
     h('div', { class: 'steps-title' }, 'How to draw the product'),
     h('ol', { class: 'steps compact' }, r.steps.map((s) => h('li', {}, mdi(s)))),

@@ -367,6 +367,19 @@ export const biomoleculeGenerators = [
     },
   },
   {
+    id: 'l13-tag-build', skill: 'l13.tags', title: 'Building a triacylglycerol',
+    make(r) {
+      const a = r.pick(ACIDS);
+      const tri = ACYL[a].tri;
+      const other = ACYL[r.pick(ACIDS.filter((x) => x !== a))].tri;
+      const choices = [`${tri} + 3 H₂O`, `${tri} + 1 H₂O`, `${other} + 3 H₂O`, `glycerol + 3 ${saltName(a)}`];
+      return mcq(`**Glycerol** reacts with **3 ${a}**. What forms?`, choices, 0, {
+        skill: 'l13.tags',
+        explain: `Each of the 3 OH groups of glycerol reacts with the COOH of a fatty acid, making **3 esters** and losing **3 H₂O**: **${tri}**.`,
+      });
+    },
+  },
+  {
     id: 'l13-soap-formula', skill: 'l13.hydrolysis', title: 'Pick the product (condensed formula)',
     make(r) {
       const t = randomTag(r);
