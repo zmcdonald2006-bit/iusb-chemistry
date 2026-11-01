@@ -9,7 +9,9 @@ import { FAMILIES, REACTIONS, TYPES, REAGENTS } from '../content/reactions.js';
 import { NURSING } from '../content/nursing.js';
 import * as messages from '../content/messages.js';
 import { parseSmiles } from '../js/chem/smiles.js';
-import { sameMolecule } from '../js/chem/analyze.js';
+import { sameMolecule, elementCounts } from '../js/chem/analyze.js';
+import { acetalCarbons } from '../js/quiz/gen/sugars-proteins.js';
+import { aminoAcid, aaSmiles, peptideSmiles } from '../js/chem/aminoacids.js';
 import { nameCompound } from '../js/chem/namer.js';
 import { renderMolecule, renderTetrahedral } from '../js/chem/render.js';
 import { renderSugar } from '../js/chem/sugars.js';
@@ -214,7 +216,7 @@ describe('Reaction map', () => {
       if (!fam.has(r.from) || (r.to && !fam.has(r.to))) throw new Error(`${r.id}: unknown family`);
       if (!getGenerator(r.practice)) throw new Error(`${r.id}: no generator ${r.practice}`);
       checkSmiles(r.example[0], r.id);
-      if (r.example[1]) checkSmiles(r.example[1], r.id);
+      for (const t of [].concat(r.example[1] || [])) checkSmiles(t, r.id);
       if (!TYPES[r.type]) throw new Error(`${r.id}: unknown type ${r.type}`);
       if (!skillById(r.skill)) throw new Error(`${r.id}: unknown skill ${r.skill}`);
       const lec = lectureById(r.lecture);
@@ -249,6 +251,24 @@ describe('Reaction map', () => {
     same('thiol-ox', rx.oxidizeThiol(byId['thiol-ox'].example[0]));
     expect(rx.oxidizeAldehyde(byId['ket-ox'].example[0])).toBeNull();
     same('amine-acid', rx.protonateAmine(byId['amine-acid'].example[0], 'Cl'));
+    // joining two molecules loses exactly one H₂O; hydrolysis puts it back
+    const atoms = (s) => elementCounts(s).counts;
+    const balance = (a, b, joined) => {
+      const ca = atoms(a), cb = atoms(b), cj = atoms(joined);
+      for (const el of new Set([...Object.keys(ca), ...Object.keys(cb)])) {
+        const want = (ca[el] || 0) + (cb[el] || 0) - (el === 'H' ? 2 : el === 'O' ? 1 : 0);
+        if ((cj[el] || 0) !== want) throw new Error(`${joined}: ${el} ${cj[el]} ≠ ${want}`);
+      }
+    };
+    balance(byId['glyco-form'].example[0], byId['glyco-form'].example[0], byId['glyco-form'].example[1]);
+    balance(...byId['glyco-hyd'].example[1], byId['glyco-hyd'].example[0]);
+    if (!sameMolecule(byId['glyco-form'].example[1], byId['glyco-hyd'].example[0])) throw new Error('glycoside examples should be each other\'s reverse');
+    const link = acetalCarbons(byId['glyco-form'].example[1]);
+    expect(link.acetal.length).toBe(1); // the new C1 acetal
+    expect(link.hemiacetal.length).toBe(1); // the second ring keeps its own
+    if (!sameMolecule(byId['peptide-form'].example[1], peptideSmiles(['Ala', 'Ser']))) throw new Error('peptide-form should show Ala–Ser');
+    if (!sameMolecule(byId['peptide-form'].example[0], aaSmiles(aminoAcid('Ala')))) throw new Error('peptide-form should start from alanine');
+    balance(aaSmiles(aminoAcid('Ala')), aaSmiles(aminoAcid('Ser')), byId['peptide-form'].example[1]);
     // disulfide reduction is thiol oxidation backwards
     if (!sameMolecule(rx.oxidizeThiol(byId['disulfide-red'].example[1]), byId['disulfide-red'].example[0])) throw new Error('disulfide-red example');
   });

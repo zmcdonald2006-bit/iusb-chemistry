@@ -19,6 +19,10 @@ export const FAMILIES = [
   { id: 'disulfide', label: 'Disulfide', smiles: 'CCSSCC', lecture: 'l06' },
   { id: 'amine', label: 'Amine', smiles: 'CCCN', lecture: 'l11' },
   { id: 'ammonium', label: 'Ammonium salt', smiles: 'CCC[NH3+].[Cl-]', lecture: 'l11' },
+  { id: 'monosaccharide', label: 'Monosaccharide', smiles: 'OCC1OC(O)C(O)C(O)C1O', lecture: 'l15' },
+  { id: 'disaccharide', label: 'Disaccharide', smiles: 'OCC1OC(OC2C(CO)OC(O)C(O)C2O)C(O)C(O)C1O', lecture: 'l16' },
+  { id: 'aminoacid', label: 'Amino acid', smiles: '[NH3+]C(C)C(=O)[O-]', lecture: 'l17' },
+  { id: 'dipeptide', label: 'Dipeptide', smiles: '[NH3+]C(C)C(=O)NC(CO)C(=O)[O-]', lecture: 'l17' },
 ];
 
 // Reaction types, with the one-line idea behind each.
@@ -28,6 +32,8 @@ export const TYPES = {
   oxidation: { label: 'Oxidation', text: '**More C–O bonds or fewer C–H bonds** (for sulfur: S–H → S–S). Shown as **[O]**.' },
   reduction: { label: 'Reduction', text: '**Fewer C–O bonds or more C–H bonds**: the reverse of oxidation. Shown as **[H]** or **H₂, Pd** on a C=O.' },
   acidbase: { label: 'Acid–base', text: 'An acid **gives its H⁺** to a base.' },
+  joining: { label: 'Joining', text: 'Two molecules **join and lose H₂O**.' },
+  hydrolysis: { label: 'Hydrolysis', text: '**Water breaks a bond**: the reverse of joining.' },
 };
 
 export const REACTIONS = [
@@ -160,6 +166,33 @@ REACTIONS.push({
 });
 
 // "See this reagent? Think this reaction." For the reagent decoder table.
+REACTIONS.push(
+  {
+    id: 'glyco-form', name: 'Forming a glycosidic linkage', type: 'joining', from: 'monosaccharide', to: 'disaccharide', reagent: '+ glucose, −H₂O',
+    lecture: 'l16', section: 'disaccharides', skill: 'l16.disaccharides', practice: 'l16-glyco-form', example: ['OCC1OC(O)C(O)C(O)C1O', 'OCC1OC(OC2C(CO)OC(O)C(O)C2O)C(O)C(O)C1O'],
+    rule: 'The **hemiacetal OH on C1** of one sugar and an **OH on C4** of another lose **H₂O**, leaving **C1–O–C4**: a **glycosidic linkage**.',
+    steps: ['Find the hemiacetal OH: C1, the ring carbon with two oxygens.', 'Find the OH on C4 of the second ring.', 'Remove H₂O from those two OH groups and bridge the rings with the one O that is left.', 'Bond from C1 pointing **down = α**; **up = β**.'],
+    trap: 'One oxygen stays as the bridge, and C1 is now an **acetal** (two OR), not a hemiacetal.',
+    body: 'Glycogen in your liver and muscles is a huge branched chain of glucose units joined this way.',
+  },
+  {
+    id: 'glyco-hyd', name: 'Hydrolysis of a glycosidic linkage', type: 'hydrolysis', from: 'disaccharide', to: 'monosaccharide', reagent: 'H₂O',
+    lecture: 'l16', section: 'disaccharides', skill: 'l16.disaccharides', practice: 'l16-hydrolysis', example: ['OCC1OC(OC2C(CO)OC(O)C(O)C2O)C(O)C(O)C1O', ['OCC1OC(O)C(O)C(O)C1O', 'OCC1OC(O)C(O)C(O)C1O']],
+    rule: '**Water cleaves the C–O glycosidic linkage** and gives **two monosaccharides**: the reverse of forming it.',
+    steps: ['Find the O bridging the two rings.', 'Break the bond between C1 and that O.', 'Water adds back: each ring ends up with an OH where the bridge was.', 'Name the sugars: maltose → 2 glucose; lactose → glucose + galactose; sucrose → glucose + fructose.'],
+    trap: 'Hydrolysis **adds** water; forming the linkage **removes** it.',
+    body: '**Lactase** cleaves lactose, and low lactase means lactose intolerance. **Amylase** digests starch. Humans have no **β-glycosidase**, so cellulose passes through as fiber.',
+  },
+  {
+    id: 'peptide-form', name: 'Forming a peptide bond', type: 'joining', from: 'aminoacid', to: 'dipeptide', reagent: '+ Ser, −H₂O',
+    lecture: 'l17', section: 'draw', skill: 'l17.draw', practice: 'l17-draw', example: ['[NH3+]C(C)C(=O)[O-]', '[NH3+]C(C)C(=O)NC(CO)C(=O)[O-]'],
+    rule: 'The **–COO⁻** of one amino acid joins the **–NH₃⁺** of another: remove **one O** and **two H** (they leave as H₂O) and connect **C to N**.',
+    steps: ['Place the first amino acid on the left, with its –COO⁻ next to the –NH₃⁺ of the second.', 'Remove one O from –COO⁻ and two H from –NH₃⁺.', 'Connect the C to the N. The new N keeps one H.', 'Check the ends: free –NH₃⁺ on the left, free –COO⁻ on the right.'],
+    trap: 'Order matters: Ala–Ser and Ser–Ala are **different compounds**. The first one named keeps the free –NH₃⁺.',
+    body: 'Proteins are long chains of these bonds. Digestion hydrolyzes them, which is why insulin, a protein, has to be injected.',
+  },
+);
+
 export const REAGENTS = [
   { reagent: 'H₂, Pd', on: 'alkene', does: 'hydrogenation', gives: 'alkane', ids: ['hydrogenation'] },
   { reagent: 'H₂, Pd (or NADH)', on: 'aldehyde / ketone', does: 'reduction', gives: '1° / 2° alcohol', ids: ['red-ald', 'red-ket'] },
@@ -172,4 +205,7 @@ export const REAGENTS = [
   { reagent: '[O] / [H]', on: 'thiol / disulfide', does: 'oxidation / reduction', gives: 'disulfide / 2 thiols', ids: ['thiol-ox', 'disulfide-red'] },
   { reagent: 'NaOH', on: 'carboxylic acid', does: 'acid–base', gives: 'carboxylate salt + H₂O', ids: ['neutralize'] },
   { reagent: 'HCl', on: 'amine', does: 'acid–base', gives: 'ammonium salt (water soluble)', ids: ['amine-acid'] },
+  { reagent: 'a second sugar, −H₂O', on: 'monosaccharide', does: 'joining', gives: 'disaccharide', ids: ['glyco-form'] },
+  { reagent: 'H₂O', on: 'disaccharide', does: 'hydrolysis', gives: '2 monosaccharides', ids: ['glyco-hyd'] },
+  { reagent: 'a second amino acid, −H₂O', on: 'amino acid', does: 'joining', gives: 'dipeptide', ids: ['peptide-form'] },
 ];

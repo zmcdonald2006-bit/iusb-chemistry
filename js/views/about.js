@@ -21,7 +21,7 @@ function changeBody(c) {
 // Shown once after the app updates: what changed since this device last opened it. The newest
 // update in full; any older ones she missed by title (all of them are on the What's new page).
 // The list scrolls and the buttons stay in view.
-export function whatsNewPopup(app, entries) {
+export function whatsNewPopup(app, entries, onClosed = () => {}) {
   const [latest, ...older] = entries;
   let m = null;
   const body = h('div', {},
@@ -37,7 +37,7 @@ export function whatsNewPopup(app, entries) {
     title: '✨ The app just updated',
     label: 'What\'s new',
     body,
-    onClose: (r) => { if (r === 'all') app.navigate('#/about'); },
+    onClose: (r) => { onClosed(); if (r === 'all') app.navigate('#/about'); },
   });
   return m;
 }

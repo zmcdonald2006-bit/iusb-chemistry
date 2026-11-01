@@ -247,6 +247,17 @@ export const sugarProteinGenerators = [
     },
   },
   {
+    id: 'l16-glyco-form', skill: 'l16.disaccharides', title: 'What do these sugars make?',
+    make(r) {
+      const d = r.pick(DISACCHARIDES);
+      const others = DISACCHARIDES.filter((x) => x !== d).map((x) => `${x.name} + H₂O`);
+      return mcq(`**${cap(d.parts)}** join by a glycosidic linkage. What forms?`, [`${d.name} + H₂O`, ...others, `${d.name} + O₂`], 0, {
+        skill: 'l16.disaccharides',
+        explain: `${cap(d.parts)} make **${d.name}** (${d.nick}). An OH from each sugar lines up, and **H₂O is removed**.`,
+      });
+    },
+  },
+  {
     id: 'l16-linkage-drawn', skill: 'l16.disaccharides', title: 'α or β linkage?',
     make(r) {
       const sugar = r.pick(['α-glycoside', 'β-glycoside', 'maltose', 'lactose']);

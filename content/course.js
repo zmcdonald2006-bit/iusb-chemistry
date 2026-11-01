@@ -39,6 +39,7 @@ export const CHANGELOG = [
       'Lecture 16, Carbohydrates & the Body: acetals and hemiacetals, glycosidic linkages (α down, β up), maltose, lactose, sucrose, lactose intolerance, artificial sweeteners, cellulose, starch, glycogen, fed vs fasting, GAGs, chitin and blood types',
       'Lecture 17, Amino Acids: all 20 amino acids, D and L, zwitterions and pH, how to draw a dipeptide, N- and C-terminal ends, enkephalins, disulfide bonds, oxytocin and vasopressin',
       'New drawings in the style of the slides: joined sugar rings and straight peptide chains',
+      'Reaction map: new rows for forming and hydrolyzing glycosidic linkages and for forming peptide bonds',
       'Fresh practice for both lectures, review sheets, flashcards, new Word Splash words and nursing connections',
       'Sea Lion Splash: a new Amino Atoll deck, and Sugar Shoals now covers Lecture 16. Reference has a new amino acid table',
     ],

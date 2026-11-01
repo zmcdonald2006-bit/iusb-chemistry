@@ -305,15 +305,15 @@ async function afterStart() {
 }
 
 // After an update: a pop-up listing what changed, once per device. It waits for a calm moment
-// (not in the middle of a quiz, lesson or game) and counts as seen only once it has been shown.
+// (not in the middle of a quiz, lesson or game) and counts as seen only once she has closed it, so a
+// reload or closing the app with it open just shows it again.
 let pendingWhatsNew = [];
 function markSeen() { store.update((s) => { s.meta.lastSeenVersion = COURSE.contentVersion; }, { silent: true }); }
 function showWhatsNew() {
   if (!pendingWhatsNew.length || document.hidden || !isCalm() || document.querySelector('.modal-backdrop')) return;
   const entries = pendingWhatsNew;
   pendingWhatsNew = [];
-  markSeen();
-  whatsNewPopup(app, entries);
+  whatsNewPopup(app, entries, markSeen);
 }
 
 async function requestPersistence() {
