@@ -3,6 +3,7 @@
 // and fall fast, because heat denatures the enzyme past its optimum.
 
 const r2 = (x) => Math.round(x * 100) / 100;
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const AXES = {
   pH: { min: 0, max: 12, step: 1, label: 'pH' },
   temp: { min: 0, max: 60, step: 10, label: 'Temperature (°C)' },
@@ -23,6 +24,7 @@ export function renderActivity(spec, opts = {}) {
   const ax = AXES[spec.x];
   if (!ax) throw new Error(`unknown axis "${spec.x}"`);
   const curves = spec.curves || [];
+  if (curves.some((c) => typeof c.peak !== 'number')) throw new Error('peaks must be numbers');
   if (!curves.length) throw new Error('no curves');
   const W = 320, H = 190, L = 44, R = 12, T = 26, B = 40;
   const px = (v) => L + ((v - ax.min) / (ax.max - ax.min)) * (W - L - R);
@@ -46,9 +48,9 @@ export function renderActivity(spec, opts = {}) {
       pts.push(`${r2(px(v))},${r2(py(activityAt(spec.x, c.peak, v) * 0.92))}`);
     }
     parts.push(`<polyline class="curve c${i % 4}" points="${pts.join(' ')}"/>`);
-    if (c.label) parts.push(`<text class="curve-label c${i % 4}" x="${r2(px(c.peak))}" y="${r2(py(0.92) - 7)}" font-size="14" text-anchor="middle">${c.label}</text>`);
+    if (c.label) parts.push(`<text class="curve-label c${i % 4}" x="${r2(px(c.peak))}" y="${r2(py(0.92) - 7)}" font-size="14" text-anchor="middle">${esc(c.label)}</text>`);
   });
   const title = opts.title || spec.title;
-  const label = title ? `<title>${String(title).replace(/[*_<>&]/g, '')}</title>` : '';
+  const label = title ? `<title>${esc(String(title).replace(/[*_]/g, ''))}</title>` : '';
   return `<svg class="mol-svg activity-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img">${label}${parts.join('')}</svg>`;
 }

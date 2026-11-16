@@ -30,6 +30,7 @@ export const hBondsOf = (b) => (b === 'G' || b === 'C' ? 3 : 2);
 export const hBonds = (seq) => [...seq].reduce((n, b) => n + hBondsOf(b), 0);
 
 const r2 = (x) => Math.round(x * 100) / 100;
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 /**
  * spec = {
@@ -88,6 +89,6 @@ export function renderDNA(spec, opts = {}) {
     }
   }
   const title = opts.title || spec.title;
-  const label = title ? `<title>${String(title).replace(/[*_<>&]/g, '')}</title>` : '';
+  const label = title ? `<title>${esc(String(title).replace(/[*_]/g, ''))}</title>` : '';
   return `<svg class="mol-svg dna-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${r2(width)} ${height}" width="${r2(width)}" height="${height}" role="img">${label}${parts.join('')}</svg>`;
 }

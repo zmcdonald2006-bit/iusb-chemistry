@@ -429,3 +429,17 @@ describe('Lecture 18–20 answers', () => {
     }
   });
 });
+
+describe('New drawings escape their text', () => {
+  it('never pass markup through from a label or title', async () => {
+    const { renderActivity } = await import('../js/chem/activity.js');
+    const { renderDNA } = await import('../js/chem/dna.js');
+    const a = renderActivity({ x: 'pH', curves: [{ label: '<img src=x onerror=alert(1)>', peak: 3 }] }, { title: '</title><script>x</script>' });
+    const d = renderDNA({ top: 'ACGT' }, { title: '<script>x</script>' });
+    for (const svg of [a, d]) { expect(/<(img|script)/i.test(svg)).toBe(false); }
+    let threw = false; try { renderDNA({ top: 'AC<b>' }); } catch { threw = true; }
+    expect(threw).toBe(true);
+    threw = false; try { renderActivity({ x: 'pH', curves: [{ label: 'A', peak: '2"/><script>' }] }); } catch { threw = true; }
+    expect(threw).toBe(true);
+  });
+});
