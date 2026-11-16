@@ -261,3 +261,11 @@ describe('Progress', () => {
     expect(sheet.href).toBe('#/review/l01');
   });
 });
+
+describe('Backup safety', () => {
+  it('keeps only date keys and non-negative numbers in daily activity', () => {
+    const evil = '<img src=x onerror=alert(1)>';
+    const s = migrate({ schema: 1, activity: { '2026-11-01': { q: 5, c: '3', secs: evil, read: -2 }, [evil]: { q: 1 }, '2026-11-02': evil } });
+    expect(JSON.stringify(s.activity)).toBe(JSON.stringify({ '2026-11-01': { q: 5, c: 3 } }));
+  });
+});

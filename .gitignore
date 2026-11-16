@@ -3,3 +3,11 @@ _site/
 node_modules/
 *.log
 .claude/
+# Never commit service-account keys or other credentials (the Firebase key belongs only in GitHub Secrets)
+*serviceAccount*.json
+*service-account*.json
+*-firebase-adminsdk-*.json
+*.pem
+*.p12
+.env
+.env.*

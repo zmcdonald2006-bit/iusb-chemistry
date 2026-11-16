@@ -97,7 +97,22 @@ export function migrate(data, now = Date.now()) {
   s.game.words = mergeWords(s.game.words, null);
   if (!Array.isArray(s.sessions)) s.sessions = [];
   if (!Array.isArray(s.exams)) s.exams = [];
+  s.activity = cleanActivity(s.activity);
   return s;
+}
+
+// Daily activity is counts only (questions, correct, seconds, sections read). A damaged or edited
+// backup can't smuggle anything else in: keys must be dates and values non-negative numbers.
+function cleanActivity(activity) {
+  const out = {};
+  if (!activity || typeof activity !== 'object') return out;
+  for (const [d, act] of Object.entries(activity)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(d) || !act || typeof act !== 'object') continue;
+    const clean = {};
+    for (const [f, v] of Object.entries(act)) { const n = Number(v); if (/^[a-z]+$/i.test(f) && Number.isFinite(n) && n >= 0) clean[f] = n; }
+    out[d] = clean;
+  }
+  return out;
 }
 
 export function validateBackup(obj) {

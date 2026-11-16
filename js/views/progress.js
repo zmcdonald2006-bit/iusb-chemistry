@@ -83,13 +83,13 @@ function accuracyChart(st, today) {
   const days = [];
   for (let i = 29; i >= 0; i--) days.push(addDays(today, -i));
   const W = 600, H = 150, pad = 22;
-  const max = Math.max(10, ...days.map((d) => (st.activity[d] || {}).q || 0));
+  const max = Math.max(10, ...days.map((d) => Number((st.activity[d] || {}).q) || 0));
   const bw = (W - pad * 2) / days.length;
   let bars = '';
   days.forEach((d, i) => {
     const a = st.activity[d] || {};
-    const q = a.q || 0;
-    const c = a.c || 0;
+    const q = Math.max(0, Number(a.q) || 0); // numbers only: this goes into raw SVG
+    const c = Math.max(0, Number(a.c) || 0);
     const hq = ((H - pad * 2) * q) / max;
     const hc = ((H - pad * 2) * c) / max;
     const x = pad + i * bw + 2;
