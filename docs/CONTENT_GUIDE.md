@@ -74,6 +74,8 @@ Section ids appear in links (`#/learn/l11/naming`), so keep them short and stabl
 | `tetra` | `items: [{ groups: [top, left, wedge, dash], caption? }]`, `caption?` | 3-D tetrahedral drawings (chirality) |
 | `sugars` | `items: [{ sugar: 'D-glucose', caption?, mark?, numbers? }]`, `caption?` | Fischer and Haworth projections of sugars, and rings joined into disaccharides and polysaccharides (`maltose`, `cellulose`, `amylopectin`…). Ready-made names are in `SUGARS` in [js/chem/sugars.js](../js/chem/sugars.js); a custom Fischer item is `{ top, rows: [['H','OH'], 'C=O', …], bottom }` |
 | `peptides` | `items: [{ seq: ['Ala', 'Ser'], caption? }]` or `{ rs: ['R1', 'R2'] }`, `n?` (`'H3N⁺'`, `'H2N'`), `c?` (`'O⁻'`, `'OH'`), `caption?` | Amino acids and peptides drawn like the slides: a straight backbone, C=O up, R down, amide bonds in color. Names are in [js/chem/aminoacids.js](../js/chem/aminoacids.js). Three or more amino acids scroll sideways on a phone |
+| `dna` | `items: [{ top: 'GATTCGA', bottom?, bonds?, caption? }]` | A DNA or RNA strand like the Lecture 20 slides: one colored box per base, 5′ and 3′ ends labeled. `top` is written 5′ → 3′. `bottom`: `'auto'` (default; the complementary strand, 3′ → 5′, with 2 or 3 dashed hydrogen bonds per pair), `'blank'` (boxes with ?), `'none'` (one strand only) or your own letters. `bonds: false` hides the hydrogen bonds. Pairing helpers (`complement`, `hBonds`) are in [js/chem/dna.js](../js/chem/dna.js) |
+| `activity` | `x: 'pH' \| 'temp'`, `curves: [{ label, peak }]`, `caption?` | Enzyme activity curves (Lecture 19): one hump per curve, peaking at `peak` (pH 0–12 or 0–60 °C). Temperature curves fall fast past the optimum |
 | `compare` | `items: [{ title, text }]` | Side-by-side boxes |
 | `link` | `href: '#/…'`, `text` | In-app button link |
 
@@ -129,7 +131,7 @@ Every question has `id` (unique across the course, e.g. `l11-q01`), `skill`, `ty
 | `match` | `left`, `right`, `answer: [right index for each left]` | Tap-to-pair on screen; the right side is shuffled for her. Pairs must be one-to-one (the tests check) |
 | `atoms` | `figure: { smiles }`, `selectable?: [atom…]`, `answer: [atom…]` | "Tap every chirality center…" |
 
-Figures: `{ smiles, numbers?, highlight? }`, `{ mols: [...] }`, `{ rxn: { from, reagent, to? } }`, `{ tetras: [...] }`, `{ sugars: [...] }` (same items as the `sugars` block) or `{ peptides: [...] }` (same items as the `peptides` block).
+Figures: `{ smiles, numbers?, highlight? }`, `{ mols: [...] }`, `{ rxn: { from, reagent, to? } }`, `{ tetras: [...] }`, `{ sugars: [...] }` (same items as the `sugars` block) `{ peptides: [...] }` (same items as the `peptides` block), `{ dna: [...] }` (same items as the `dna` block) or `{ activity: { x, curves } }`.
 
 ```js
 { id: 'l05-q07', skill: 'l05.naming', type: 'name', prompt: 'Name this alcohol.',

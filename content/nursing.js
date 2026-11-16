@@ -292,6 +292,61 @@ export const NURSING = [
     id: 'n-l17-adh', lecture: 'l17', section: 'hormones', title: 'When ADH goes wrong',
     text: 'Too little ADH causes **diabetes insipidus**: huge amounts of dilute urine and dehydration. Too much causes **SIADH**: the kidneys hold water and **blood sodium falls**. Either way, nurses track **intake and output, daily weights and sodium**.',
   },
+  // Lecture 18 — Proteins
+  {
+    id: 'n-l18-co', lecture: 'l18', section: 'hemoglobin', title: 'Carbon monoxide and the pulse oximeter',
+    text: 'A standard pulse oximeter can\'t tell CO-bound hemoglobin from O₂-bound hemoglobin, so **SpO₂ can read normal** while tissues starve for oxygen. Suspect CO with headache, dizziness and confusion, especially when several people from one home are sick. Treatment is **100% oxygen** (sometimes hyperbaric), and a **co-oximetry** blood test confirms it.',
+  },
+  {
+    id: 'n-l18-sickle', lecture: 'l18', section: 'hemoglobin', title: 'Caring for a sickle cell crisis',
+    text: 'Sickled cells block small vessels and cause severe pain. Care centers on **pain control, IV fluids and oxygen**. Dehydration, cold, infection and low oxygen can all trigger a crisis. These patients are also at high risk for infection, so a **fever is treated as urgent**.',
+  },
+  {
+    id: 'n-l18-vitc', lecture: 'l18', section: 'common', title: 'Vitamin C, collagen and wound healing',
+    text: 'Collagen can\'t form properly without vitamin C. Severe deficiency causes **scurvy**: bleeding gums, easy bruising and wounds that won\'t heal. For patients with pressure injuries or slow-healing wounds, nurses screen nutrition, because **protein and vitamin C** intake both matter.',
+  },
+  {
+    id: 'n-l18-prion', lecture: 'l18', section: 'secondary', title: 'Prions and infection control',
+    text: 'Prions are misfolded proteins, not living cells, and they **resist the usual sterilization** that kills bacteria and viruses. When Creutzfeldt–Jakob disease is suspected, facilities follow special protocols for instruments that touch brain, spinal cord or eye tissue, sometimes discarding them.',
+  },
+  {
+    id: 'n-l18-heat', lecture: 'l18', section: 'denaturation', title: 'Denaturation at the bedside',
+    text: 'Alcohol hand rub and heat sterilization work by **denaturing microbial proteins**. The same chemistry is why **heat stroke** (core temperature above about 40 °C, 104 °F) is an emergency: the body\'s own proteins start to unfold and organs are damaged, so rapid cooling comes first.',
+  },
+  // Lecture 19 — Enzymes
+  {
+    id: 'n-l19-labs', lecture: 'l19', section: 'classes', title: 'Enzymes on the lab report',
+    text: '**ALT** is alanine transaminase, the transferase from the slides. Damaged liver cells leak it into the blood, so a high ALT points to **liver injury**. Enzymes from other organs work the same way: a high blood **lipase** suggests **pancreatitis**.',
+  },
+  {
+    id: 'n-l19-pancreatitis', lecture: 'l19', section: 'allosteric', title: 'Pancreatitis: zymogens switched on too soon',
+    text: 'If trypsinogen and other zymogens activate **inside the pancreas**, the enzymes begin digesting the pancreas itself. Patients have severe upper abdominal pain, often radiating to the back, and a high lipase. Care focuses on **IV fluids, pain control** and close monitoring.',
+  },
+  {
+    id: 'n-l19-penicillin', lecture: 'l19', section: 'drugs', title: 'Penicillin allergy',
+    text: 'Ask about allergies before every antibiotic dose. Hives, wheezing, or swelling of the face and throat after a dose can mean **anaphylaxis**: stop the drug and call for help. **Epinephrine** is the first-line treatment.',
+  },
+  {
+    id: 'n-l19-statins', lecture: 'l19', section: 'drugs', title: 'Teaching about statins',
+    text: 'Patients on statins should report **unexplained muscle pain or weakness**, a sign of rare muscle damage, and liver tests may be checked. Some statins, like simvastatin, are taken in the evening, and **grapefruit juice** can raise the levels of certain statins.',
+  },
+  {
+    id: 'n-l19-hiv', lecture: 'l19', section: 'drugs', title: 'HIV medicines on schedule',
+    text: 'HIV drugs, protease inhibitors included, must be taken **on schedule every day**: missed doses let the virus multiply and become **resistant**. Protease inhibitors also interact with many other drugs, so a complete medication list matters.',
+  },
+  // Lecture 20 — Nucleic acids
+  {
+    id: 'n-l20-chemo', lecture: 'l20', section: 'flow', title: 'Why chemotherapy has side effects',
+    text: 'Many chemotherapy drugs block **DNA replication**, so they hit every fast-dividing cell: cancer, but also hair follicles, the gut lining and bone marrow. That explains hair loss, nausea, mouth sores and low blood counts. When white counts fall, nurses watch closely for **infection**.',
+  },
+  {
+    id: 'n-l20-acyclovir', lecture: 'l20', section: 'nucleosides', title: 'Antivirals that imitate nucleosides',
+    text: '**Acyclovir** (for herpes viruses) looks like a guanine nucleoside. The virus builds it into its DNA, and the chain can\'t grow any longer. Keep the patient **well hydrated** and follow kidney function, since acyclovir can crystallize in the kidneys.',
+  },
+  {
+    id: 'n-l20-uric', lecture: 'l20', section: 'nucleotides', title: 'Purines, uric acid and gout',
+    text: 'Purines from DNA and RNA are broken down to **uric acid**. Too much causes **gout**. When chemotherapy kills many cancer cells at once, released purines can spike uric acid (**tumor lysis syndrome**), so allopurinol and IV fluids are given to protect the kidneys.',
+  },
 ];
 
 export const nursingFor = (lecture, section) => NURSING.filter((n) => n.lecture === lecture && n.section === section);

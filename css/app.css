@@ -398,6 +398,28 @@ table.t tr:last-child td { border-bottom: 0; }
 .pep-swipe { font-size: .8rem; color: var(--text-3); text-align: center; margin-top: 2px; }
 @media (min-width: 900px) { .pep-swipe { display: none; } }
 .mol-svg .bond.amide { stroke: var(--bad); stroke-width: 2.6px; }
+/* DNA strands (Lecture 20): A green, T red, G orange, C blue, U purple, like the slides' colored bases */
+.dna-svg .base { stroke-width: 1.6px; }
+.dna-svg .base-A { fill: color-mix(in srgb, var(--ok) 18%, transparent); stroke: var(--ok); }
+.dna-svg .base-T { fill: color-mix(in srgb, var(--bad) 16%, transparent); stroke: var(--bad); }
+.dna-svg .base-G { fill: color-mix(in srgb, var(--el-S) 18%, transparent); stroke: var(--el-S); }
+.dna-svg .base-C { fill: color-mix(in srgb, var(--el-N) 16%, transparent); stroke: var(--el-N); }
+.dna-svg .base-U { fill: color-mix(in srgb, var(--el-Na) 16%, transparent); stroke: var(--el-Na); }
+.dna-svg .base-q { fill: transparent; stroke: var(--text-3); stroke-dasharray: 3 3; }
+.dna-svg .base-letter { fill: currentColor; font-family: var(--font); font-weight: 750; }
+.dna-svg .dna-end { fill: var(--text-2); font-family: var(--font); font-weight: 700; }
+.dna-svg .dna-bb { stroke: var(--text-2); stroke-width: 3px; stroke-linecap: round; }
+.dna-svg .dna-stem { stroke: var(--text-3); stroke-width: 1.4px; }
+.dna-svg .hbond { stroke: var(--text-2); stroke-width: 1.4px; stroke-dasharray: 2.5 2.5; }
+/* enzyme activity curves (Lecture 19) */
+.activity-svg .ax { stroke: currentColor; stroke-width: 1.4px; }
+.activity-svg .tick, .activity-svg .axlabel { fill: var(--text-2); font-family: var(--font); }
+.activity-svg .curve { fill: none; stroke-width: 2.4px; stroke-linejoin: round; }
+.activity-svg .curve-label { font-family: var(--font); font-weight: 800; }
+.activity-svg .curve.c0 { stroke: var(--ok); } .activity-svg .curve-label.c0 { fill: var(--ok); }
+.activity-svg .curve.c1 { stroke: var(--el-N); } .activity-svg .curve-label.c1 { fill: var(--el-N); }
+.activity-svg .curve.c2 { stroke: var(--bad); } .activity-svg .curve-label.c2 { fill: var(--bad); }
+.activity-svg .curve.c3 { stroke: var(--el-S); } .activity-svg .curve-label.c3 { fill: var(--el-S); }
 .mol-svg .atom { fill: currentColor; font-family: var(--font); font-weight: 560; }
 .mol-svg .el-O { fill: var(--el-O); }
 .mol-svg .el-N { fill: var(--el-N); }

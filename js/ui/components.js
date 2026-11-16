@@ -3,6 +3,8 @@ import { h, icon, iconSvg, md, mdi, clear } from './dom.js';
 import { renderMolecule, renderTetrahedral } from '../chem/render.js';
 import { renderSugar } from '../chem/sugars.js';
 import { renderPeptide } from '../chem/peptides.js';
+import { renderDNA } from '../chem/dna.js';
+import { renderActivity } from '../chem/activity.js';
 import { nameCompound } from '../chem/namer.js';
 import { LEVELS } from '../state/progress.js';
 
@@ -139,7 +141,30 @@ export function peptidesView(items, caption) {
   return h('div', {}, wrap, mdi(caption, 'div', 'caption'));
 }
 
-// Figure for a question: {smiles}, {mols}, {rxn}, {tetras}, {sugars}, {peptides}
+// DNA and RNA strands (Lecture 20): items are renderDNA specs ({ top: 'GATTCGA', bottom? }) plus an optional caption
+export function dnaView(items, caption) {
+  const wrap = h('div', { class: 'mols' });
+  for (const it of items) {
+    const box = h('figure', { class: 'mol-box', style: { margin: '0' } });
+    box.appendChild(h('div', { class: 'mol', html: renderDNA(it, { title: it.caption || `5′ ${it.top} 3′` }) }));
+    if (it.caption) box.appendChild(mdi(it.caption, 'figcaption', 'mol-caption'));
+    wrap.appendChild(box);
+  }
+  if (!caption) return wrap;
+  return h('div', {}, wrap, mdi(caption, 'div', 'caption'));
+}
+
+// Enzyme activity against pH or temperature (Lecture 19): spec = { x: 'pH' | 'temp', curves: [{ label, peak }] }
+export function activityView(spec, caption) {
+  const box = h('figure', { class: 'mol-box', style: { margin: '0' } });
+  box.appendChild(h('div', { class: 'mol', html: renderActivity(spec, { title: spec.title || (spec.x === 'pH' ? 'Enzyme activity against pH' : 'Enzyme activity against temperature') }) }));
+  if (spec.caption) box.appendChild(mdi(spec.caption, 'figcaption', 'mol-caption'));
+  const wrap = h('div', { class: 'mols' }, box);
+  if (!caption) return wrap;
+  return h('div', {}, wrap, mdi(caption, 'div', 'caption'));
+}
+
+// Figure for a question: {smiles}, {mols}, {rxn}, {tetras}, {sugars}, {peptides}, {dna}, {activity}
 export function figureView(fig, opts = {}) {
   if (!fig) return null;
   if (fig.rxn) return rxnView(fig.rxn);
@@ -147,6 +172,8 @@ export function figureView(fig, opts = {}) {
   if (fig.tetras) return tetraView(fig.tetras);
   if (fig.sugars) return sugarsView(fig.sugars);
   if (fig.peptides) return peptidesView(fig.peptides);
+  if (fig.dna) return dnaView(fig.dna);
+  if (fig.activity) return activityView(fig.activity);
   if (fig.smiles) return molView({ ...fig, ...opts });
   return null;
 }

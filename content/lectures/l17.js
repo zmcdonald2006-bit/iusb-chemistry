@@ -252,7 +252,7 @@ export default {
         {
           t: 'check', q: {
             id: 'l17-c-enk', skill: 'l17.body', type: 'num', prompt: 'How many amino acids are there in met-enkephalin?',
-            answer: 5, tol: 0, explain: '**5**: Tyr–Gly–Gly–Phe–Met. *Penta*peptide = five.',
+            answer: 5, tol: 0, explain: '**5**: Tyr–Gly–Gly–Phe–Met. **Penta**peptide = five.',
           },
         },
       ],

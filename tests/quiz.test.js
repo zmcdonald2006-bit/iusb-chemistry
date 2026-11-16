@@ -322,3 +322,110 @@ describe('Lecture 17 answers', () => {
     }
   });
 });
+
+// Independent checks of the Lecture 18–20 answers: worked out again here from the chemistry,
+// not from the generators' own tables.
+describe('Lecture 18–20 answers', () => {
+  const PAIR = { A: 'T', T: 'A', G: 'C', C: 'G' };
+  const pairs = (x, y) => x.length === y.length && [...x].every((b, i) => PAIR[b] === y[i]);
+  const rev = (x) => [...x].reverse().join('');
+  // a labeled strand "3′-ACG-5′" as the same strand read 5′ → 3′
+  const read53 = (t) => { const m = /^(\d)′-([ACGTU]+)-(\d)′$/.exec(t); if (!m) throw new Error(`bad strand label ${t}`); return m[1] === '5' ? m[2] : rev(m[2]); };
+
+  it('complementary strands pair base by base and run the other way', () => {
+    for (let i = 0; i < 200; i++) {
+      const q = makeGenerated('l20-complement', `chk${i}`);
+      if (!q) continue;
+      const s = /5′-([ACGT]+)-3′/.exec(q.prompt)[1];
+      const right = read53(q.choices[q.answer]);
+      // the partner strand, read 5′ → 3′, is the original's complement read backwards
+      if (!pairs(s, rev(right))) throw new Error(`${s}: ${q.choices[q.answer]} does not pair`);
+      q.choices.forEach((c, k) => { if (k !== q.answer && read53(c) === right) throw new Error(`${s}: ${c} is also right`); });
+    }
+  });
+  it('typed complementary strands are right in either direction asked', () => {
+    for (let i = 0; i < 200; i++) {
+      const q = makeGenerated('l20-complement-typed', `chk${i}`);
+      const s = /5′-([ACGT]+)-3′/.exec(q.prompt)[1];
+      const fiveToThree = /from \*\*5′ to 3′/.test(q.prompt);
+      if (!pairs(s, fiveToThree ? rev(q.answer) : q.answer)) throw new Error(`${s} → ${q.answer}`);
+      expect(checkAnswer(q, `5'-${fiveToThree ? q.answer : rev(q.answer)}-3'`).correct).toBe(true); // the strand with 5′/3′ labels
+      expect(checkAnswer(q, `3'-${fiveToThree ? rev(q.answer) : q.answer}-5'`).correct).toBe(true); // the same strand labeled the other way
+      if (q.answer !== rev(q.answer)) expect(checkAnswer(q, rev(q.answer)).correct).toBe(false); // read the wrong way
+    }
+  });
+  it('the slide examples', () => {
+    expect(pairs('GATTCGA', 'CTAAGCT')).toBe(true);
+    expect(rev('CTAAGCT')).toBe('TCGAATC');
+    expect(pairs('GTTCACCT', 'CAAGTGGA')).toBe(true);
+    expect(rev('TAACGCT')).toBe('TCGCAAT');
+    expect(pairs('ATTGCGA', 'TAACGCT')).toBe(true);
+    expect(pairs('TAGGCTA', 'ATCCGAT')).toBe(true);
+  });
+  it('hydrogen bonds: 3 per G–C pair, 2 per A–T pair', () => {
+    for (let i = 0; i < 100; i++) {
+      const q = makeGenerated('l20-hbonds', `chk${i}`);
+      const s = /5′-([ACGT]+)-3′/.exec(q.prompt)[1];
+      expect(q.answer).toBe(3 * (s.match(/[GC]/g) || []).length + 2 * (s.match(/[AT]/g) || []).length);
+    }
+  });
+  it('nucleotide abbreviations match the drawn structure', () => {
+    for (let i = 0; i < 150; i++) {
+      const q = makeGenerated('l20-abbrev', `chk${i}`);
+      if (!q.figure) continue;
+      const mol = parseSmiles(q.figure.smiles);
+      const P = mol.atoms.filter((a) => a.el === 'P').length;
+      // ribose has 4 O on the sugar (ring O, 2′, 3′, 5′); count O on carbons that are not bonded to P or the ring O
+      const ringO = mol.atoms.find((a) => a.el === 'O' && neighbors(mol, a.id).length === 2 && neighbors(mol, a.id).every((n) => mol.atoms[n].el === 'C'));
+      const hydroxyls = mol.atoms.filter((a) => a.el === 'O' && a !== ringO && neighbors(mol, a.id).length === 1 && mol.atoms[neighbors(mol, a.id)[0]].el === 'C'
+        && mol.bonds.find((b) => (b.a === a.id || b.b === a.id)).order === 1).length;
+      const deoxy = hydroxyls === 1; // only the 3′ OH left
+      const want = `${deoxy ? 'd' : ''}`;
+      const ans = q.choices[q.answer];
+      expect(ans.startsWith(want) && (deoxy || !ans.startsWith('d'))).toBe(true);
+      expect(ans.slice(-2, -1)).toBe('-MDT'[P]);
+    }
+  });
+  it('a side chain\'s role follows from its chemistry', () => {
+    for (let i = 0; i < 200; i++) {
+      const q = makeGenerated('l18-role', `chk${i}`);
+      const mol = parseSmiles(q.figure.smiles);
+      const side = q.figure.highlight.map((k) => mol.atoms[k]);
+      const charged = mol.atoms.filter((a) => a.charge).length > 2; // more than the –NH₃⁺ and –COO⁻
+      const sh = side.some((a) => a.el === 'S' && neighbors(mol, a.id).length === 1);
+      const polar = side.some((a) => a.el === 'O' || (a.el === 'N' && !a.aromatic)); // tryptophan's ring NH counts as nonpolar, as on the slide
+      const role = sh ? /disulfide/ : charged ? /ionic/ : polar ? /hydrogen/ : /interior/;
+      if (!role.test(q.choices[q.answer])) throw new Error(`${q.prompt}: ${q.choices[q.answer]}`);
+    }
+  });
+  it('isomerase reactions, and only those, keep the same formula', async () => {
+    const { ENZYME_REACTIONS } = await import('../js/chem/enzymes.js');
+    for (const r of ENZYME_REACTIONS) {
+      if (Array.isArray(r.to) || r.from.includes('.')) { expect(r.cls === 'isomerase').toBe(false); continue; }
+      expect(molecularFormula(r.from) === molecularFormula(r.to)).toBe(r.cls === 'isomerase');
+    }
+  });
+  it('the pH curve picked is the one nearest where the enzyme works', () => {
+    const where = { stomach: 1.7, 'small intestine': 8.5, blood: 7.4 };
+    for (let i = 0; i < 100; i++) {
+      const q = makeGenerated('l19-optimum', `chk${i}`);
+      const target = Object.entries(where).find(([k]) => q.prompt.includes(k))[1];
+      const byDist = [...q.figure.activity.curves].sort((a, b) => Math.abs(a.peak - target) - Math.abs(b.peak - target));
+      expect(byDist[0].label).toBe(q.choices[q.answer]);
+      if (Math.abs(byDist[1].peak - target) - Math.abs(byDist[0].peak - target) < 1) throw new Error('two curves are about as close');
+    }
+  });
+  it('hydrolysis gives back exactly the amino acids of the chain', () => {
+    for (let i = 0; i < 100; i++) {
+      const q = makeGenerated('l18-hydrolysis', `chk${i}`);
+      const seq = q.figure.peptides[0].seq;
+      const names = seq.map((t) => AMINO_ACIDS.find((a) => a.three === t).name).join(', ');
+      expect(q.choices[q.answer]).toBe(names);
+      // atom bookkeeping: peptide + (n − 1) H₂O = the amino acids
+      const pep = elementCounts(peptideSmiles(seq)).counts;
+      const sum = {};
+      for (const t of seq) for (const [el, n] of Object.entries(elementCounts(aaSmiles(AMINO_ACIDS.find((a) => a.three === t))).counts)) sum[el] = (sum[el] || 0) + n;
+      for (const el of Object.keys(sum)) expect((pep[el] || 0) + (el === 'H' ? 2 : el === 'O' ? 1 : 0) * (seq.length - 1)).toBe(sum[el]);
+    }
+  });
+});

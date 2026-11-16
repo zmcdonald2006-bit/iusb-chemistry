@@ -2,7 +2,7 @@
 //
 // ✏️ Safe to edit and extend:
 //   word     4–9 letters, A–Z only (written in capitals)
-//   lecture  'l01'…'l17'; section: the lesson section the "Read the notes" button opens
+//   lecture  'l01'…'l20'; section: the lesson section the "Read the notes" button opens
 //   clue     shown only if she taps "Show clue" (must not contain the word itself)
 //   smiles   optional structure drawn after the word is solved
 // The tests check every entry. Adding words changes which word comes up on future days, but never
@@ -280,4 +280,38 @@ export const WORDS = [
   { word: 'DIPEPTIDE', lecture: 'l17', section: 'peptides', clue: 'Two amino acids joined by one amide bond.' },
   { word: 'ENDORPHIN', lecture: 'l17', section: 'enkephalins', clue: 'Family of polypeptides that reduce pain and enhance mood.' },
   { word: 'OXYTOCIN', lecture: 'l17', section: 'hormones', clue: 'Hormone that contracts the uterus and signals for milk.' },
+  // Lecture 18 — Proteins
+  { word: 'HELIX', lecture: 'l18', section: 'secondary', clue: 'α-___: a coiled secondary structure.' },
+  { word: 'SUBUNIT', lecture: 'l18', section: 'quaternary', clue: 'One folded chain of a protein with quaternary structure.' },
+  { word: 'GLOBULAR', lecture: 'l18', section: 'common', clue: 'Compact, water-soluble kind of protein, like most enzymes.' },
+  { word: 'FIBROUS', lecture: 'l18', section: 'common', clue: 'Kind of protein bundled into rods or sheets, like keratin.' },
+  { word: 'HEME', lecture: 'l18', section: 'hemoglobin', clue: 'Non-protein unit around Fe²⁺ that binds O₂.' },
+  { word: 'MYOGLOBIN', lecture: 'l18', section: 'hemoglobin', clue: 'Single-chain protein that stores O₂ in tissues.' },
+  { word: 'SICKLE', lecture: 'l18', section: 'hemoglobin', clue: '___ cell anemia: one amino acid changed in hemoglobin.' },
+  { word: 'PRION', lecture: 'l18', section: 'secondary', clue: 'Protein behind Creutzfeldt–Jakob disease.' },
+  { word: 'PEPSIN', lecture: 'l18', section: 'hydrolysis', clue: 'Stomach enzyme that cleaves some peptide bonds.' },
+  { word: 'DENATURE', lecture: 'l18', section: 'denaturation', clue: 'To unfold a protein without breaking peptide bonds.' },
+  // Lecture 19 — Enzymes
+  { word: 'ENZYME', lecture: 'l19', section: 'characteristics', clue: 'A protein that acts as a biological catalyst.' },
+  { word: 'SUBSTRATE', lecture: 'l19', section: 'characteristics', clue: 'The molecule an enzyme acts on.' },
+  { word: 'MALTASE', lecture: 'l19', section: 'characteristics', clue: 'Enzyme that breaks maltose into 2 glucose.' },
+  { word: 'COFACTOR', lecture: 'l19', section: 'cofactors', clue: 'Nonprotein part some enzymes need: a metal ion or organic molecule.' },
+  { word: 'LIGASE', lecture: 'l19', section: 'classes', clue: 'Enzyme class that joins two molecules using ATP.' },
+  { word: 'LYASE', lecture: 'l19', section: 'classes', clue: 'Enzyme class that adds to or makes a double bond.' },
+  { word: 'ISOMERASE', lecture: 'l19', section: 'classes', clue: 'Enzyme class that turns one isomer into another.' },
+  { word: 'HYDROLASE', lecture: 'l19', section: 'classes', clue: 'Enzyme class that breaks bonds with water.' },
+  { word: 'ZYMOGEN', lecture: 'l19', section: 'allosteric', clue: 'Inactive enzyme, activated by cleavage, like trypsinogen.' },
+  { word: 'TRYPSIN', lecture: 'l19', section: 'allosteric', clue: 'Protein-digesting enzyme activated in the intestine from a zymogen.' },
+  { word: 'INHIBITOR', lecture: 'l19', section: 'inhibitors', clue: 'Something that binds an enzyme and lowers its activity.' },
+  // Lecture 20 — Nucleic acids
+  { word: 'RIBOSE', lecture: 'l20', section: 'nucleotides', clue: 'The sugar of RNA, with an OH on C2′.', smiles: 'OCC1OC(O)C(O)C1O' },
+  { word: 'ADENINE', lecture: 'l20', section: 'nucleotides', clue: 'Purine base, A, that pairs with T.', smiles: 'Nc1ncnc2[nH]cnc12' },
+  { word: 'GUANINE', lecture: 'l20', section: 'nucleotides', clue: 'Purine base, G, that pairs with C.', smiles: 'NC1=NC2=C(N=CN2)C(=O)N1' },
+  { word: 'CYTOSINE', lecture: 'l20', section: 'nucleotides', clue: 'Pyrimidine base, C, that pairs with G.', smiles: 'NC1=NC(=O)NC=C1' },
+  { word: 'THYMINE', lecture: 'l20', section: 'nucleotides', clue: 'Pyrimidine base found only in DNA.', smiles: 'CC1=CNC(=O)NC1=O' },
+  { word: 'URACIL', lecture: 'l20', section: 'nucleotides', clue: 'Pyrimidine base found only in RNA.', smiles: 'O=C1C=CNC(=O)N1' },
+  { word: 'PURINE', lecture: 'l20', section: 'nucleotides', clue: 'Two-ring base family: A and G.', smiles: 'c1ncc2[nH]cnc2n1' },
+  { word: 'NUCLEUS', lecture: 'l20', section: 'overview', clue: 'Where the chromosomes are kept in a cell.' },
+  { word: 'GENE', lecture: 'l20', section: 'overview', clue: 'A stretch of DNA used to make one protein.' },
+  { word: 'STRAND', lecture: 'l20', section: 'helix', clue: 'One of the two chains of the double helix.' },
 ];

@@ -32,13 +32,16 @@ const NODES = [
   { id: 'soap', x: 278, y: 928 },
   { id: 'aminoacid', x: 86, y: 1020 },
   { id: 'dipeptide', x: 292, y: 1020 },
+  { id: 'nucparts', x: 86, y: 1112 },
+  { id: 'nucleoside', x: 292, y: 1112 },
+  { id: 'nucleotide', x: 292, y: 1204 },
 ];
 const NH = 32; // node height
 const label = (n) => n.label || FAMILIES.find((f) => f.id === n.id).label;
 const nodeW = (n) => Math.round(label(n).length * 7.9 + 22);
 const node = (id) => NODES.find((n) => n.id === id);
 
-// [reaction id, from node, to node, x offset of the arrow, label side]
+// [reaction id, from node, to node, offset of the arrow (x for up/down, y for across), label side]
 export const EDGES = [
   ['hydrogenation', 'alkene', 'alkane', 0, 'right'],
   ['halogenation', 'alkene', 'dihalide', 0, 'above'],
@@ -61,9 +64,12 @@ export const EDGES = [
   ['saponify', 'tag', 'soap', 0, 'right'],
   ['glyco-form', 'monosaccharide', 'disaccharide', -9, 'left'],
   ['glyco-hyd', 'disaccharide', 'monosaccharide', 9, 'right'],
-  ['peptide-form', 'aminoacid', 'dipeptide', 0, 'above'],
+  ['peptide-form', 'aminoacid', 'dipeptide', -6, 'above'],
+  ['peptide-hyd', 'dipeptide', 'aminoacid', 6, 'below'],
+  ['nucleoside-form', 'nucparts', 'nucleoside', 0, 'above'],
+  ['nucleotide-form', 'nucleoside', 'nucleotide', 0, 'left'],
 ];
-const SHORT = { hydration: ['H₂O, H₂SO₄'], dehydration: ['H₂SO₄', '(−H₂O)'], 'red-ald': ['H₂, Pd'], 'red-ket': ['H₂, Pd'], hydrogenation: ['H₂, Pd'], halogenation: ['X₂'], hydrohalogenation: ['HX'], neutralize: ['NaOH'], 'disulfide-red': ['[H]'], 'amine-acid': ['HCl'], 'glyco-form': ['−H₂O'], 'glyco-hyd': ['H₂O'], 'peptide-form': ['−H₂O'], 'ring-close': ['ring closes'], 'tag-form': ['−3 H₂O'], 'tag-hyd': ['H₂O, H₂SO₄', 'or lipase'], saponify: ['NaOH'] };
+const SHORT = { hydration: ['H₂O, H₂SO₄'], dehydration: ['H₂SO₄', '(−H₂O)'], 'red-ald': ['H₂, Pd'], 'red-ket': ['H₂, Pd'], hydrogenation: ['H₂, Pd'], halogenation: ['X₂'], hydrohalogenation: ['HX'], neutralize: ['NaOH'], 'disulfide-red': ['[H]'], 'amine-acid': ['HCl'], 'glyco-form': ['−H₂O'], 'glyco-hyd': ['H₂O'], 'peptide-form': ['−H₂O'], 'peptide-hyd': ['H₂O'], 'nucleoside-form': ['−H₂O'], 'nucleotide-form': ['+ phosphate', '(−H₂O)'], 'ring-close': ['ring closes'], 'tag-form': ['−3 H₂O'], 'tag-hyd': ['H₂O, H₂SO₄', 'or lipase'], saponify: ['NaOH'] };
 
 function mapSvg() {
   const NS = 'http://www.w3.org/2000/svg';
@@ -73,7 +79,7 @@ function mapSvg() {
     if (text != null) e.textContent = text;
     return e;
   };
-  const svg = el('svg', { viewBox: `0 0 ${W} 1048`, class: 'rmap', role: 'group', 'aria-label': 'Reaction map: tap a family or an arrow' });
+  const svg = el('svg', { viewBox: `0 0 ${W} 1232`, class: 'rmap', role: 'group', 'aria-label': 'Reaction map: tap a family or an arrow' });
 
   // alcohol hub → 1°, 2°, 3°
   const hub = node('alcohol');
@@ -89,7 +95,7 @@ function mapSvg() {
     let x1, y1, x2, y2;
     if (a.y === b.y) { // across
       const dir = b.x > a.x ? 1 : -1;
-      x1 = a.x + dir * nodeW(a) / 2; x2 = b.x - dir * nodeW(b) / 2; y1 = y2 = a.y;
+      x1 = a.x + dir * nodeW(a) / 2; x2 = b.x - dir * nodeW(b) / 2; y1 = y2 = a.y + dx;
     } else { // up or down
       const dir = b.y > a.y ? 1 : -1;
       x1 = x2 = a.x + dx; y1 = a.y + dir * NH / 2; y2 = b.y - dir * NH / 2;
@@ -103,8 +109,8 @@ function mapSvg() {
     const lines = SHORT[rid] || [r.reagent.replace(/\s*\(.*\)$/, '')];
     const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
     lines.forEach((t, i) => {
-      const attrs = side === 'above'
-        ? { x: mx, y: my - 7, 'text-anchor': 'middle' }
+      const attrs = side === 'above' || side === 'below'
+        ? { x: mx, y: side === 'above' ? my - 7 : my + 17, 'text-anchor': 'middle' }
         : { x: mx + (side === 'left' ? -6 : 6), y: my + 4.5 + (i - (lines.length - 1) / 2) * 14, 'text-anchor': side === 'left' ? 'end' : 'start' };
       g.appendChild(el('text', { ...attrs, class: 'rm-label' }, t));
     });

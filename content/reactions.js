@@ -27,6 +27,9 @@ export const FAMILIES = [
   { id: 'soap', label: 'Glycerol + soap', smiles: 'CCCCCCCC/C=C\\CCCCCCCC(=O)[O-].[Na+]', lecture: 'l13' },
   { id: 'aminoacid', label: 'Amino acid', smiles: '[NH3+]C(C)C(=O)[O-]', lecture: 'l17' },
   { id: 'dipeptide', label: 'Dipeptide', smiles: '[NH3+]C(C)C(=O)NC(CO)C(=O)[O-]', lecture: 'l17' },
+  { id: 'nucparts', label: 'Base + sugar', smiles: 'NC1=NC(=O)NC=C1.OCC1OC(O)C(O)C1O', lecture: 'l20' },
+  { id: 'nucleoside', label: 'Nucleoside', smiles: 'C9(N1C=CC(N)=NC1=O)OC(CO)C(O)C9O', lecture: 'l20' },
+  { id: 'nucleotide', label: 'Nucleotide', smiles: 'C9(N1C=CC(N)=NC1=O)OC(COP(=O)([O-])[O-])C(O)C9O', lecture: 'l20' },
 ];
 
 // Reaction types, with the one-line idea behind each.
@@ -228,6 +231,30 @@ REACTIONS.push(
     trap: 'Order matters: Ala–Ser and Ser–Ala are **different compounds**. The first one named keeps the free –NH₃⁺.',
     body: 'Proteins are long chains of these bonds. Digestion hydrolyzes them, which is why insulin, a protein, has to be injected.',
   },
+  {
+    id: 'peptide-hyd', name: 'Hydrolysis of a peptide bond', type: 'hydrolysis', from: 'dipeptide', to: 'aminoacid', reagent: 'H₂O (acid, base or enzymes)',
+    lecture: 'l18', section: 'hydrolysis', skill: 'l18.hydrolysis', practice: 'l18-hydrolysis', example: ['[NH3+]C(C)C(=O)NC(CO)C(=O)[O-]', ['[NH3+]C(C)C(=O)[O-]', '[NH3+]C(CO)C(=O)[O-]']], equation: 'Ala–Ser + H₂O → alanine + serine',
+    rule: '**Water breaks the amide (peptide) bond**: the C=O gets an O back (–COO⁻) and the N gets an H back (–NH₃⁺), freeing each amino acid. It is the reverse of forming the bond.',
+    steps: ['Find each peptide bond: the C(=O)–N between two amino acids.', 'Break it and add H₂O: the carbonyl side becomes –COO⁻, the N side becomes –NH₃⁺.', 'Draw each amino acid with its own side chain. A chain of n amino acids needs **n − 1 H₂O**.'],
+    trap: 'Hydrolysis breaks **peptide bonds**; **denaturation does not**. Cooking an egg unfolds ovalbumin but leaves its sequence intact.',
+    body: '**Pepsin** in the stomach cleaves some peptide bonds; **trypsin** and **chymotrypsin** in the intestine finish the job, giving amino acids. That is why protein drugs like insulin are injected.',
+  },
+  {
+    id: 'nucleoside-form', name: 'Forming a nucleoside', type: 'joining', from: 'nucparts', to: 'nucleoside', reagent: '+ cytosine, −H₂O',
+    lecture: 'l20', section: 'nucleosides', skill: 'l20.naming', practice: 'l20-nucleoside-name', example: ['OCC1OC(O)C(O)C1O', 'C9(N1C=CC(N)=NC1=O)OC(CO)C(O)C9O'], equation: 'ribose + cytosine → cytidine + H₂O',
+    rule: 'The **anomeric carbon (C1′)** of ribose or 2-deoxyribose joins an **N atom of the base**, and **H₂O** is lost. The new C–N bond is an **N-glycoside**.',
+    steps: ['Find C1′: the ring carbon bonded to two oxygens (the ring O and its OH).', 'Find the N–H of the base that attaches (N9 of a purine, N1 of a pyrimidine).', 'Remove the OH from C1′ and the H from the N; they leave as H₂O. Join C1′ to N.', 'Name it: purine + ribose → **-osine**; pyrimidine + ribose → **-idine**; add **deoxy-** for 2-deoxyribose.'],
+    trap: 'A nucleo**s**ide has **no phosphate**. Add a phosphate and it becomes a nucleo**t**ide.',
+    body: 'Antiviral drugs like **acyclovir** are fake nucleosides: the virus builds them into its DNA, and the chain stops growing.',
+  },
+  {
+    id: 'nucleotide-form', name: 'Forming a nucleotide', type: 'joining', from: 'nucleoside', to: 'nucleotide', reagent: '+ phosphate, −H₂O',
+    lecture: 'l20', section: 'phosphates', skill: 'l20.naming', practice: 'l20-abbrev', example: ['C9(N1C=CC(N)=NC1=O)OC(CO)C(O)C9O', 'C9(N1C=CC(N)=NC1=O)OC(COP(=O)([O-])[O-])C(O)C9O'], equation: 'cytidine + HPO₄²⁻ → CMP + H₂O',
+    rule: 'A **phosphate** joins the **5′-OH** of a nucleoside, and **H₂O** is lost. One phosphate gives a monophosphate (MP); more give di- (DP) and triphosphates (TP).',
+    steps: ['Find the 5′ carbon: the CH₂OH outside the sugar ring.', 'Join the phosphate to that O, losing H₂O.', 'Abbreviate: (**d** if deoxy) + base letter + **M/D/T** + **P**. Cytidine 5′-monophosphate = **CMP**.'],
+    trap: 'The phosphate goes on the **5′-OH**, not the 2′ or 3′. In DNA and RNA strands, the 3′-OH links to the next nucleotide\'s phosphate.',
+    body: '**ATP**, adenosine triphosphate, is the cell\'s short-term energy store. Ligases spend it, breaking it into ADP + phosphate.',
+  },
 );
 
 export const REAGENTS = [
@@ -247,4 +274,7 @@ export const REAGENTS = [
   { reagent: 'a second sugar, −H₂O', on: 'monosaccharide', does: 'joining', gives: 'disaccharide', ids: ['glyco-form'] },
   { reagent: 'H₂O', on: 'disaccharide', does: 'hydrolysis', gives: '2 monosaccharides', ids: ['glyco-hyd'] },
   { reagent: 'a second amino acid, −H₂O', on: 'amino acid', does: 'joining', gives: 'dipeptide', ids: ['peptide-form'] },
+  { reagent: 'H₂O (acid, base, or pepsin, trypsin, chymotrypsin)', on: 'peptide / protein', does: 'hydrolysis', gives: 'amino acids', ids: ['peptide-hyd'] },
+  { reagent: 'a base, −H₂O', on: 'ribose / 2-deoxyribose', does: 'joining (at C1′)', gives: 'nucleoside', ids: ['nucleoside-form'] },
+  { reagent: 'phosphate, −H₂O', on: 'nucleoside', does: 'joining (at the 5′-OH)', gives: 'nucleotide', ids: ['nucleotide-form'] },
 ];

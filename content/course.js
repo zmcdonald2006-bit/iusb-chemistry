@@ -17,8 +17,11 @@ import l14 from './lectures/l14.js';
 import l15 from './lectures/l15.js';
 import l16 from './lectures/l16.js';
 import l17 from './lectures/l17.js';
+import l18 from './lectures/l18.js';
+import l19 from './lectures/l19.js';
+import l20 from './lectures/l20.js';
 
-export const LECTURES = [l01, l02, l03, l04, l05, l06, l07, l08, l09, l10, l11, l12, l13, l14, l15, l16, l17];
+export const LECTURES = [l01, l02, l03, l04, l05, l06, l07, l08, l09, l10, l11, l12, l13, l14, l15, l16, l17, l18, l19, l20];
 
 export const COURSE = {
   code: 'C102',
@@ -26,12 +29,25 @@ export const COURSE = {
   school: 'IU South Bend',
   textbook: 'Smith, General, Organic & Biological Chemistry',
   // Bump when content changes so the app can show "what's new".
-  contentVersion: '2026.11.01',
+  contentVersion: '2026.11.15',
   lectures: LECTURES,
 };
 
 // Shown on the "What's new" screen after an update. Newest first.
 export const CHANGELOG = [
+  {
+    version: '2026.11.15',
+    title: 'New: Lectures 18, 19 & 20 (proteins, enzymes and nucleic acids)',
+    items: [
+      'Lecture 18, Proteins: primary, secondary (α-helix, β-sheet), tertiary and quaternary structure, what holds a protein together, predicting a side chain\'s role, keratin, collagen, hemoglobin and myoglobin, carbon monoxide, sickle cell anemia, hydrolysis and denaturation',
+      'Lecture 19, Enzymes: catalysts and -ase names, cofactors and NAD, the six enzyme classes with the key clue for each, lock-and-key vs induced fit, temperature and pH, allosteric control, zymogens, inhibitors, penicillin, HIV drugs and statins',
+      'Lecture 20, Nucleic Acids: nucleotides, ribose vs deoxyribose, purines and pyrimidines, nucleoside names, CMP to dATP, 5′ and 3′ ends, the double helix and A–T / G–C pairing',
+      'Write complementary DNA strands: type the answer, with fresh sequences every time, plus new DNA strand drawings with the hydrogen bonds shown',
+      'Enzyme activity graphs, an "is it a lyase or a hydrolase?" drill using the slides\' own reactions, and hydrolysis practice that draws the peptide',
+      'Reaction map: now also has peptide hydrolysis and forming nucleosides and nucleotides',
+      'Sea Lion Splash: new Enzyme Estuary and Helix Harbor decks. Plus flashcards, review sheets, 31 new Word Splash words and 13 nursing connections',
+    ],
+  },
   {
     version: '2026.11.01',
     title: 'New: Lectures 16 & 17 (carbohydrates in the body and amino acids)',

@@ -12,15 +12,19 @@ import { parseSmiles } from '../js/chem/smiles.js';
 import { sameMolecule, elementCounts } from '../js/chem/analyze.js';
 import { acetalCarbons } from '../js/quiz/gen/sugars-proteins.js';
 import { aminoAcid, aaSmiles, peptideSmiles } from '../js/chem/aminoacids.js';
+import { nucleoSmiles } from '../js/chem/nucleotides.js';
 import { nameCompound } from '../js/chem/namer.js';
 import { renderMolecule, renderTetrahedral } from '../js/chem/render.js';
 import { renderSugar } from '../js/chem/sugars.js';
+import { renderPeptide } from '../js/chem/peptides.js';
+import { renderDNA } from '../js/chem/dna.js';
+import { renderActivity } from '../js/chem/activity.js';
 import { generatorsForSkill, getGenerator } from '../js/quiz/generators.js';
 import * as rx from '../js/chem/reactions.js';
 import { markup } from '../js/lib/markup.js';
 import { normalizeQuestion } from '../js/quiz/bank.js';
 
-const BLOCK_TYPES = new Set(['p', 'h', 'list', 'callout', 'mol', 'mols', 'table', 'steps', 'example', 'check', 'rxn', 'tetra', 'sugars', 'peptides', 'compare', 'link']);
+const BLOCK_TYPES = new Set(['p', 'h', 'list', 'callout', 'mol', 'mols', 'table', 'steps', 'example', 'check', 'rxn', 'tetra', 'sugars', 'peptides', 'dna', 'activity', 'compare', 'link']);
 const CALLOUT_KINDS = new Set(['key', 'tip', 'warn', 'exam', 'memory', 'life']);
 
 function textsOf(obj, out = []) {
@@ -148,6 +152,9 @@ describe('Lesson sections', () => {
             for (const t of [].concat(b.to || [])) checkSmiles(t, where);
           }
           if (b.t === 'sugars') b.items.forEach((x) => { if (!renderSugar(x).includes('<svg')) throw new Error(`${where}: sugar drawing failed`); });
+          if (b.t === 'peptides') b.items.forEach((x) => { if (!renderPeptide(x).includes('<svg')) throw new Error(`${where}: peptide drawing failed`); });
+          if (b.t === 'dna') b.items.forEach((x) => { if (!renderDNA(x).includes('<svg')) throw new Error(`${where}: DNA drawing failed`); });
+          if (b.t === 'activity' && !renderActivity(b).includes('<svg')) throw new Error(`${where}: activity drawing failed`);
           if (b.t === 'tetra') b.items.forEach((x) => { if (x.groups.length !== 4) throw new Error(`${where}: tetra needs 4 groups`); renderTetrahedral(x.groups, x); });
           if (b.t === 'table') b.rows.forEach((r) => { if (r.length !== b.head.length) throw new Error(`${where}: row length ${r.length} ≠ ${b.head.length}`); });
           if (b.t === 'link' && !/^#\//.test(b.href)) throw new Error(`${where}: links must be in-app (#/…)`);
@@ -282,8 +289,30 @@ describe('Reaction map', () => {
     const ring = byId['ring-close'].example;
     sameAtoms(atoms(ring[0]), atoms(ring[1]), 'ring-close');
     expect(acetalCarbons(ring[1]).hemiacetal.length).toBe(1);
+    // peptide hydrolysis is peptide formation backwards; nucleosides and nucleotides each lose one H₂O
+    if (!sameMolecule(byId['peptide-hyd'].example[0], byId['peptide-form'].example[1])) throw new Error('peptide-hyd should start from the peptide-form product');
+    balance(...byId['peptide-hyd'].example[1], byId['peptide-hyd'].example[0]);
+    balance(byId['nucleoside-form'].example[0], 'NC1=NC(=O)NC=C1', byId['nucleoside-form'].example[1]);
+    if (!sameMolecule(byId['nucleoside-form'].example[1], nucleoSmiles('C', false, 0))) throw new Error('nucleoside-form should give cytidine');
+    sameAtoms(sum([[byId['nucleotide-form'].example[0], 1], ['[O-]P(=O)([O-])O', 1]]), sum([[byId['nucleotide-form'].example[1], 1], [H2O, 1]]), 'nucleotide-form');
+    if (!sameMolecule(byId['nucleotide-form'].example[1], nucleoSmiles('C', false, 1))) throw new Error('nucleotide-form should give CMP');
     // disulfide reduction is thiol oxidation backwards
     if (!sameMolecule(rx.oxidizeThiol(byId['disulfide-red'].example[1]), byId['disulfide-red'].example[0])) throw new Error('disulfide-red example');
+  });
+});
+
+describe('Emphasis markup', () => {
+  it('never leaves a stray * in any lecture text (nested or unbalanced emphasis)', () => {
+    const bad = [];
+    const walk = (o, where) => {
+      if (typeof o === 'string') { if (o.includes('*') && markup(o).replace(/<[^>]+>/g, '').includes('*')) bad.push(`${where}: ${o.slice(0, 80)}`); return; }
+      if (Array.isArray(o)) { o.forEach((x, i) => walk(x, `${where}[${i}]`)); return; }
+      if (o && typeof o === 'object') for (const [k, v] of Object.entries(o)) if (!['smiles', 'from', 'to', 'id', 'skill'].includes(k)) walk(v, `${where}.${k}`);
+    };
+    for (const l of LECTURES) walk(l, l.id);
+    walk(NURSING, 'nursing');
+    walk(REACTIONS, 'reactions');
+    if (bad.length) throw new Error(bad.slice(0, 5).join('\n'));
   });
 });
 
